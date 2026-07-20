@@ -92,3 +92,21 @@ class VectorSearchError(RAGPipelineError):
     """Raised when FAISS vector search fails."""
 
     pass
+
+
+class VLMReasoningError(ChartQAError):
+    """Base exception for VLM Reasoning Agent errors."""
+
+    pass
+
+
+class InvalidVLMOutputError(VLMReasoningError):
+    """Raised when VLM output fails JSON validation or Pydantic parsing."""
+
+    pass
+
+
+class PipelineError(ChartQAError):
+    """Raised when the master orchestration pipeline encounters an unrecoverable error."""
+
+    pass

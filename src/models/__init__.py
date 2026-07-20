@@ -5,7 +5,9 @@ from src.models.chart import (
     ChartImage,
     ClassificationResult,
     ExtractedDataPoint,
+    PipelineResult,
     RAGRetrievalResult,
+    ReasoningOutput,
 )
 from src.models.exceptions import (
     ChartQAError,
@@ -18,11 +20,14 @@ from src.models.exceptions import (
     FeatureEngineeringError,
     ForbiddenASTNodeError,
     InvalidExpressionError,
+    InvalidVLMOutputError,
     MLModelError,
     ModelNotFoundError,
+    PipelineError,
     RAGPipelineError,
     SafeCalculatorError,
     VectorSearchError,
+    VLMReasoningError,
 )
 
 __all__ = [
@@ -31,6 +36,8 @@ __all__ = [
     "ExtractedDataPoint",
     "ClassificationResult",
     "RAGRetrievalResult",
+    "ReasoningOutput",
+    "PipelineResult",
     "ChartQAError",
     "SafeCalculatorError",
     "InvalidExpressionError",
@@ -46,4 +53,7 @@ __all__ = [
     "EmbeddingGenerationError",
     "RAGPipelineError",
     "VectorSearchError",
+    "VLMReasoningError",
+    "InvalidVLMOutputError",
+    "PipelineError",
 ]

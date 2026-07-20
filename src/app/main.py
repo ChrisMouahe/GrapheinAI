@@ -1,10 +1,13 @@
-"""Main application entry point for ChartQA Multimodal Assistant Sprint 1 & Sprint 2 demonstration."""
+"""Main application entry point for ChartQA Multimodal Assistant Sprint 1, 2 & 3 demonstration."""
 
 from pathlib import Path
+
 from src.agents.classifier_agent import ClassifierAgent
+from src.agents.pipeline_agent import PipelineAgent
+from src.agents.reasoning_agent import ReasoningAgent
 from src.agents.retrieval_agent import RetrievalAgent
 from src.agents.safe_calculator import SafeCalculator
-from src.models.chart import ChartExtraction, ChartImage, ExtractedDataPoint
+from src.models.chart import ChartImage
 from src.utils.data_engineering import ChartQADataEngineer
 from src.utils.embedding_generator import EmbeddingGenerator
 from src.utils.feature_engineering import ChartQAFeatureEngineer
@@ -14,18 +17,19 @@ from src.utils.rag_pipeline import FAISSRAGPipeline
 
 def run_demo() -> None:
     print("==================================================")
-    print(" ChartQA Multimodal Assistant - Sprint 1 & 2 Demo")
+    print(" ChartQA Multimodal Assistant - Full Pipeline Demo")
+    print(" Sprints 1, 2 & 3 Architecture Demonstration")
     print("==================================================\n")
 
-    # 1. Sprint 1 Foundations
-    print("--- 1. Testing SafeCalculator (AST Only) ---")
-    calculator = SafeCalculator()
-    expr = "(125.4 + 180.2) / 2"
-    res = calculator.evaluate(expr)
-    print(f"SafeCalculator expression: {expr}  =>  Result: {res}\n")
+    # 1. Sprint 1 Foundations: SafeCalculator
+    print("--- 1. SafeCalculator (AST-Only Security Engine) ---")
+    calc = SafeCalculator()
+    expr_test = "(125.4 + 180.2) / 2"
+    calc_res = calc.evaluate(expr_test)
+    print(f"Expression: {expr_test}  =>  Calculated Result: {calc_res}\n")
 
-    # 2. Data Engineering & ML Training
-    print("--- 2. Machine Learning Classifier (XGBoost vs. RandomForest) ---")
+    # 2. Sprint 2 ML & RAG Indexing
+    print("--- 2. Machine Learning Classifier & FAISS RAG Setup ---")
     sample_csv = Path("data/raw/sample_chartqa.csv")
     if sample_csv.exists():
         engineer = ChartQADataEngineer(sample_csv)
@@ -33,31 +37,10 @@ def run_demo() -> None:
         df_cleaned = engineer.clean_missing_values()
 
         trainer = ChartQAClassifierTrainer(output_dir="models")
-        eval_metrics = trainer.train_and_evaluate(df_cleaned)
+        trainer.train_and_evaluate(df_cleaned)
 
-        print(f"Winning Model: {eval_metrics['winner']}")
-        print(f"XGBoost Metrics: {eval_metrics['XGBoost']}")
-        print(f"RandomForest Metrics: {eval_metrics['RandomForest']}\n")
-
-        # Predict with ClassifierAgent
-        classifier_agent = ClassifierAgent(
-            model_path="models/best_classifier.joblib",
-            metadata_path="models/classifier_metadata.json",
-        )
-        sample_q = "What is the average growth percentage across categories?"
-        pred_res = classifier_agent.predict(sample_q, chart_type="bar")
-        print(f"Question: '{sample_q}'")
-        print(f"Predicted Complexity: {pred_res.complexity} (Confidence: {pred_res.confidence:.2%})\n")
-
-    # 3. RAG & FAISS Vector Search
-    print("--- 3. RAG Pipeline & RetrievalAgent (FAISS + MiniLM Embeddings) ---")
-    rag_sample_items = [
-        {
-            "question": "What is the value of item A?",
-            "chart_type": "bar",
-            "resolution_formula": "value(item_A)",
-            "answer": "25.5",
-        },
+    # Build RAG index
+    rag_items = [
         {
             "question": "What is the average growth rate?",
             "chart_type": "line",
@@ -65,40 +48,62 @@ def run_demo() -> None:
             "answer": "7.8%",
         },
         {
-            "question": "What is the total count in 2023?",
+            "question": "What is the total sales revenue?",
             "chart_type": "bar",
-            "resolution_formula": "sum(count_2023)",
-            "answer": "150",
-        },
-        {
-            "question": "What is the percentage of slice B?",
-            "chart_type": "pie",
-            "resolution_formula": "(val_B / total) * 100",
-            "answer": "18.2%",
+            "resolution_formula": "sum(quarterly_revenue)",
+            "answer": "656.1",
         },
     ]
-
     embedder = EmbeddingGenerator()
-    pipeline = FAISSRAGPipeline(index_dir="models", embedding_generator=embedder)
-    pipeline.build_index(rag_sample_items)
+    rag_pipe = FAISSRAGPipeline(index_dir="models", embedding_generator=embedder)
+    rag_pipe.build_index(rag_items)
+    print("Trained ML model and built FAISS RAG vector index successfully.\n")
 
-    retrieval_agent = RetrievalAgent(
-        index_path="models/index.faiss",
-        metadata_path="models/metadata.pkl",
-        embedding_generator=embedder,
-    )
+    # 3. Sprint 3 Master Orchestration (PipelineAgent)
+    print("--- 3. Master PipelineAgent Orchestration (End-to-End) ---")
+    sample_img_path = Path("data/raw/sample_chart.png")
+    if not sample_img_path.exists():
+        print("Sample chart image not found. Creating fallback chart image...")
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        sample_img_path.parent.mkdir(parents=True, exist_ok=True)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.bar(["Q1 Sales", "Q2 Sales"], [125.4, 180.2], color=["#4C72B0", "#55A868"])
+        ax.set_title("Quarterly Sales 2024")
+        plt.tight_layout()
+        plt.savefig(sample_img_path, dpi=100)
+        plt.close(fig)
 
-    user_query = "Calculate average growth speed"
-    retrieved = retrieval_agent.retrieve(user_query, top_k=3)
+    pipeline = PipelineAgent()
+    target_question = "What is the average growth rate between Q1 and Q2 sales?"
 
-    print(f"User Search Query: '{user_query}'")
-    print("Top-3 Retrieved Examples:")
-    for idx, item in enumerate(retrieved, 1):
-        print(f"  [{idx}] Question: '{item['question']}'")
-        print(f"      Formula: {item['resolution_formula']} | Answer: {item['answer']} | Distance: {item['distance']:.4f}")
+    print(f"Target Image: {sample_img_path}")
+    print(f"User Question: '{target_question}'\n")
+    print("Executing Orchestration Pipeline:")
+    print("  [Step 1] ChartImage -> Input Image Loaded")
+    print("  [Step 2] ClassifierAgent -> Predicting Complexity & Chart Type")
+    print("  [Step 3] RetrievalAgent -> Searching Top-3 FAISS RAG Context")
+    print("  [Step 4] ReasoningAgent -> Prompting Gemini Flash Vision VLM")
+    print("  [Step 5] SafeCalculator -> Evaluating Arithmetic AST Formula\n")
 
-    print("\n==================================================")
-    print(" Sprint 2 ML & RAG execution completed successfully!")
+    result = pipeline.answer(image=sample_img_path, question=target_question)
+
+    print("==================================================")
+    print(" FINAL MULTIMODAL REASONING RESULT")
+    print("==================================================")
+    print(f"Final Answer: {result.final_answer}")
+    print(f"Calculation Expression: {result.calculation_expression}")
+    print(f"ML Complexity Level: {result.complexity.complexity} (Confidence: {result.complexity.confidence:.2%})")
+    print(f"Extracted Chart Title: {result.extracted_data.title}")
+    print(f"Extracted Data Points ({len(result.extracted_data.data_points)}):")
+    for dp in result.extracted_data.data_points:
+        print(f"  - {dp.label}: {dp.value} (confidence: {dp.confidence:.2f})")
+    print("\nStep-by-Step Reasoning:")
+    print(f"  {result.reasoning}")
+    print("\nRetrieved RAG Few-Shot Context Examples:")
+    for idx, ex in enumerate(result.retrieved_examples, 1):
+        print(f"  [{idx}] '{ex.get('question')}' => Formula: {ex.get('resolution_formula')}")
     print("==================================================")
 
 
