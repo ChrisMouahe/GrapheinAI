@@ -1,0 +1,9 @@
+chart_id,question,answer,chart_type,num_data_points,data_source
+img_001.png,What is the value of item A?,25.5,bar,4,statista
+img_002.png,Which category has the highest trend?,Category C,line,12,pew_research
+img_003.png,What is the percentage of slice B?,18.2,pie,5,statista
+img_004.png,What is the average growth rate?,7.8,line,8,our_world_in_data
+img_005.png,What is the total count in 2023?,150,bar,6,statista
+img_006.png,Compare sales of X vs Y,,bar,5,pew_research
+img_007.png,What is the minimum ratio?,0.45,scatter,15,our_world_in_data
+img_008.png,Which region leads in adoption?,North America,bar,,statista
