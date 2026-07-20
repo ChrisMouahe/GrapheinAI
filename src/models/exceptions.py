@@ -110,3 +110,21 @@ class PipelineError(ChartQAError):
     """Raised when the master orchestration pipeline encounters an unrecoverable error."""
 
     pass
+
+
+class SecurityGuardError(ChartQAError):
+    """Base exception for security guard errors."""
+
+    pass
+
+
+class PromptInjectionDetectedError(SecurityGuardError):
+    """Raised when a prompt injection attempt is detected in user input."""
+
+    pass
+
+
+class UIValidationError(ChartQAError):
+    """Raised when user input or file upload fails UI validation."""
+
+    pass

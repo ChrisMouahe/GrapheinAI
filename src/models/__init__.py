@@ -24,8 +24,11 @@ from src.models.exceptions import (
     MLModelError,
     ModelNotFoundError,
     PipelineError,
+    PromptInjectionDetectedError,
     RAGPipelineError,
     SafeCalculatorError,
+    SecurityGuardError,
+    UIValidationError,
     VectorSearchError,
     VLMReasoningError,
 )
@@ -56,4 +59,7 @@ __all__ = [
     "VLMReasoningError",
     "InvalidVLMOutputError",
     "PipelineError",
+    "SecurityGuardError",
+    "PromptInjectionDetectedError",
+    "UIValidationError",
 ]
