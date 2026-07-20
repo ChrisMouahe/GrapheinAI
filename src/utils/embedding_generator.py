@@ -55,7 +55,10 @@ class EmbeddingGenerator:
                     self.model_name,
                     cache_folder=str(self.cache_dir),
                 )
-                self._embedding_dim = self.model.get_sentence_embedding_dimension() or 384
+                dim = getattr(self.model, "get_embedding_dimension", None) or getattr(
+                    self.model, "get_sentence_embedding_dimension", None
+                )
+                self._embedding_dim = dim() if callable(dim) else 384
                 return
             except Exception:
                 pass
