@@ -1,4 +1,4 @@
-"""Master PipelineAgent orchestrating the end-to-end multimodal ChartQA reasoning pipeline."""
+"""Master PipelineAgent orchestrating the end-to-end multimodal ChartQA reasoning pipeline without mocks."""
 
 import logging
 from pathlib import Path
@@ -15,7 +15,7 @@ logger = logging.getLogger("PipelineAgent")
 
 
 class PipelineAgent:
-    """Master Orchestrator linking ClassifierAgent, RetrievalAgent, ReasoningAgent, and SafeCalculator."""
+    """Master Orchestrator linking ClassifierAgent, RetrievalAgent, ReasoningAgent, and SafeCalculator dynamically."""
 
     def __init__(
         self,
@@ -41,7 +41,7 @@ class PipelineAgent:
             question: User target question string.
 
         Returns:
-            PipelineResult containing final answer, extracted data, expression, reasoning, and metadata.
+            PipelineResult containing final answer, extracted data, expression, reasoning, initial interpretation, and metadata.
 
         Raises:
             PipelineError: If any step in the pipeline fails unrecoverably.
@@ -57,24 +57,25 @@ class PipelineAgent:
             chart_img = ChartImage(id=img_p.stem, file_path=img_p)
 
         chart_img.validate_exists(must_exist=False)
+        logger.info(f"Pipeline processing image: '{chart_img.file_path.resolve()}' | Question: '{question}'")
 
         try:
             # 2. Step 1: ClassifierAgent -> Predict Question Complexity and Chart Type
-            logger.info("Running ClassifierAgent...")
+            logger.info("Step 1: Running ClassifierAgent...")
             classification_res = self.classifier.predict(
                 question=question,
                 chart_type="bar",
             )
 
             # 3. Step 2: RetrievalAgent -> Top-3 RAG Few-shot Examples
-            logger.info("Running RetrievalAgent...")
+            logger.info("Step 2: Running RetrievalAgent...")
             retrieved_examples = self.retriever.retrieve(
                 query=question,
                 top_k=3,
             )
 
-            # 4. Step 3: ReasoningAgent (Gemini Flash Vision) -> VLM Reasoning & Formula
-            logger.info("Running ReasoningAgent (Gemini Flash Vision)...")
+            # 4. Step 3: ReasoningAgent -> VLM Vision Extraction & Initial Interpretation
+            logger.info("Step 3: Running ReasoningAgent (Gemini Flash Vision)...")
             reasoning_out = self.reasoner.analyze(
                 image=chart_img,
                 question=question,
@@ -84,7 +85,7 @@ class PipelineAgent:
             )
 
             # 5. Step 4: SafeCalculator (AST Only) -> Safe Arithmetic Computation
-            logger.info("Evaluating expression with SafeCalculator...")
+            logger.info("Step 4: Evaluating expression with SafeCalculator...")
             calc_expr = reasoning_out.calculation_expression
             final_answer = self.calculator.evaluate(calc_expr)
 
@@ -94,6 +95,7 @@ class PipelineAgent:
                 extracted_data=reasoning_out.extracted_data,
                 calculation_expression=calc_expr,
                 reasoning=reasoning_out.reasoning,
+                initial_interpretation=reasoning_out.initial_interpretation or "",
                 complexity=classification_res,
                 retrieved_examples=retrieved_examples,
             )

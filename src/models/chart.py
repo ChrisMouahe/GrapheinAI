@@ -116,6 +116,9 @@ class ReasoningOutput(BaseModel):
     extracted_data: ChartExtraction = Field(..., description="Extracted chart data points and metadata")
     reasoning: str = Field(..., description="Step-by-step reasoning explaining the logic")
     calculation_expression: str = Field(..., description="Arithmetic expression to be evaluated by SafeCalculator")
+    initial_interpretation: str | None = Field(
+        default=None, description="Automatic professional scientific narrative interpretation of the chart"
+    )
 
     model_config = {"extra": "ignore"}
 
@@ -127,7 +130,12 @@ class PipelineResult(BaseModel):
     extracted_data: ChartExtraction = Field(..., description="Extracted chart data points")
     calculation_expression: str = Field(..., description="Arithmetic expression evaluated by SafeCalculator")
     reasoning: str = Field(..., description="Step-by-step reasoning text")
+    initial_interpretation: str = Field(
+        default="", description="Automatic scientific narrative interpretation of the graphic"
+    )
     complexity: ClassificationResult = Field(..., description="ML complexity classification metadata")
-    retrieved_examples: list[dict[str, Any]] = Field(default_factory=list, description="Few-shot RAG context examples used")
+    retrieved_examples: list[dict[str, Any]] = Field(
+        default_factory=list, description="Few-shot RAG context examples used"
+    )
 
     model_config = {"extra": "ignore"}
