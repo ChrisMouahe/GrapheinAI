@@ -1,4 +1,4 @@
-"""ReasoningAgent powered by Gemini Flash Vision for multimodal chart reasoning, real dynamic extraction, and initial graphic interpretation."""
+"""ReasoningAgent powered by Gemini Flash Vision for multimodal chart reasoning, real dynamic extraction, out-of-domain query detection, and initial graphic interpretation."""
 
 import json
 import logging
@@ -26,9 +26,24 @@ logger = logging.getLogger("ReasoningAgent")
 
 
 class ReasoningAgent:
-    """Agent using Gemini Flash Vision API for 100% dynamic multimodal visual chart extraction, narrative interpretation, and arithmetic reasoning."""
+    """Agent using Gemini Flash Vision API for 100% dynamic visual chart extraction, out-of-domain detection, and scientific reasoning."""
 
     DEFAULT_MODEL: str = "gemini-2.5-flash"
+
+    # Out-of-domain question keywords unrelated to chart statistical reasoning
+    OUT_OF_DOMAIN_PATTERNS: list[str] = [
+        r"\bpopulation\s+of\b",
+        r"\bweather\s+in\b",
+        r"\bwho\s+won\b",
+        r"\bpresident\s+of\b",
+        r"\bcapital\s+of\b",
+        r"\bmovie\b",
+        r"\bcelebrity\b",
+        r"\brecipe\b",
+        r"\bworld\s+cup\b",
+        r"\btokyo\b",
+        r"\bparis\b",
+    ]
 
     def __init__(
         self,
@@ -77,9 +92,41 @@ class ReasoningAgent:
 
         try:
             parsed = self._extract_json_dict(raw_json)
-            return ChartExtraction.model_validate(parsed)
-        except Exception as e:
-            return self._dynamic_fallback_extraction(img_path)
+            ext = ChartExtraction.model_validate(parsed)
+            ext.extraction_source = "Gemini Flash Vision API" if self.client is not None else "Local Structural Parser (Offline Fallback)"
+            return ext
+        except Exception:
+            ext = self._dynamic_fallback_extraction(img_path)
+            ext.extraction_source = "Local Structural Parser (Offline Fallback)"
+            return ext
+
+    def is_out_of_domain_query(self, question: str, extraction: ChartExtraction) -> bool:
+        """Checks if a user question is out of domain and unanswerable from the provided chart image."""
+        if not question or not isinstance(question, str):
+            return False
+
+        q_lower = question.lower().strip()
+
+        # Check explicit out-of-domain patterns
+        for pattern in self.OUT_OF_DOMAIN_PATTERNS:
+            if re.search(pattern, q_lower):
+                return True
+
+        # Check if question has math/chart keywords or category words
+        math_kws = ["average", "avg", "mean", "sum", "total", "difference", "diff", "ratio", "percentage", "highest", "lowest", "max", "min", "growth", "value", "category", "rate"]
+        has_math_kw = any(kw in q_lower for kw in math_kws)
+
+        labels = [dp.label.lower() for dp in extraction.data_points]
+        has_label_kw = any(lbl in q_lower for lbl in labels if len(lbl) > 2)
+
+        title = (extraction.title or "").lower()
+        has_title_kw = any(w in q_lower for w in title.split() if len(w) > 3)
+
+        if not has_math_kw and not has_label_kw and not has_title_kw:
+            # Question is likely unrelated to chart statistical contents
+            return True
+
+        return False
 
     def generate_initial_interpretation(
         self,
@@ -141,6 +188,18 @@ class ReasoningAgent:
         extraction = self.extract_chart_data(img_path)
         initial_interp = self.generate_initial_interpretation(img_path, extraction)
 
+        # 1. Out-of-domain Check
+        if self.is_out_of_domain_query(question, extraction):
+            logger.info(f"Out-of-domain query detected: '{question}'")
+            return ReasoningOutput(
+                extracted_data=extraction,
+                reasoning="This question cannot be answered from the provided chart data because it asks for information outside the visual dataset scope.",
+                calculation_expression="UNANSWERABLE",
+                initial_interpretation=initial_interp,
+                is_out_of_domain=True,
+            )
+
+        # 2. In-domain reasoning prompt construction
         prompt_text = self.build_prompt(
             question=question,
             retrieved_examples=retrieved_examples or [],
@@ -153,6 +212,7 @@ class ReasoningAgent:
 
         output = self.parse_and_validate_response(raw_response, fallback_extraction=extraction, question=question)
         output.initial_interpretation = initial_interp
+        output.is_out_of_domain = False
         return output
 
     def build_prompt(
@@ -284,6 +344,7 @@ class ReasoningAgent:
                 chart_type="bar",
                 title="Default Chart",
                 data_points=[ExtractedDataPoint(label="Item A", value=100.0)],
+                extraction_source="Local Structural Parser (Offline Fallback)",
             )
 
         try:
@@ -332,6 +393,7 @@ class ReasoningAgent:
             x_label="Variables",
             y_label="Values",
             data_points=dps,
+            extraction_source="Local Structural Parser (Offline Fallback)",
         )
 
     def _build_dynamic_scientific_report(self, extraction: ChartExtraction, img_path: Path) -> str:

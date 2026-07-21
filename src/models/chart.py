@@ -34,6 +34,10 @@ class ChartExtraction(BaseModel):
     data_points: list[ExtractedDataPoint] = Field(
         default_factory=list, description="Extracted key-value data points"
     )
+    extraction_source: str = Field(
+        default="Gemini Flash Vision API",
+        description="Source of visual extraction (e.g. Gemini Flash Vision API vs Local Structural Parser)",
+    )
     metadata: dict[str, Any] = Field(
         default_factory=dict, description="Additional contextual metadata"
     )
@@ -119,6 +123,9 @@ class ReasoningOutput(BaseModel):
     initial_interpretation: str | None = Field(
         default=None, description="Automatic professional scientific narrative interpretation of the chart"
     )
+    is_out_of_domain: bool = Field(
+        default=False, description="True if target question cannot be answered from the chart data"
+    )
 
     model_config = {"extra": "ignore"}
 
@@ -136,6 +143,9 @@ class PipelineResult(BaseModel):
     complexity: ClassificationResult = Field(..., description="ML complexity classification metadata")
     retrieved_examples: list[dict[str, Any]] = Field(
         default_factory=list, description="Few-shot RAG context examples used"
+    )
+    is_out_of_domain: bool = Field(
+        default=False, description="True if target question cannot be answered from chart data"
     )
 
     model_config = {"extra": "ignore"}

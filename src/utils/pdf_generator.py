@@ -19,7 +19,6 @@ class PDFReportGenerator:
     def __init__(self) -> None:
         self.styles = getSampleStyleSheet()
 
-        # Custom paragraph styles
         self.title_style = ParagraphStyle(
             "DocTitle",
             parent=self.styles["Title"],
@@ -64,16 +63,7 @@ class PDFReportGenerator:
         image_path: Path | str,
         execution_latency: float = 0.0,
     ) -> bytes:
-        """Generates PDF report as bytes buffer.
-
-        Args:
-            result: PipelineResult model.
-            image_path: Path to chart image file.
-            execution_latency: Pipeline latency in seconds.
-
-        Returns:
-            bytes containing the PDF document.
-        """
+        """Generates PDF report as bytes buffer."""
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(
             buffer,
@@ -91,13 +81,13 @@ class PDFReportGenerator:
         story.append(Paragraph("ChartQA Multimodal Scientific Reasoning Report", self.title_style))
         story.append(
             Paragraph(
-                f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | GrapheinAI Multimodal Engine",
+                f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Engine: GrapheinAI Production System | Mode: {result.extracted_data.extraction_source}",
                 self.body_style,
             )
         )
         story.append(Spacer(1, 10))
 
-        # 2. Image & Quick Summary Section
+        # 2. Image Section
         if img_p.exists():
             try:
                 rl_img = RLImage(str(img_p), width=240, height=160)
@@ -108,6 +98,8 @@ class PDFReportGenerator:
 
         # 3. Final Answer Badge Card
         answer_text = f"<b>Final Calculated Answer: {result.final_answer}</b><br/><font size=9>Expression: {result.calculation_expression}</font>"
+        answer_bg = colors.HexColor("#D32F2F") if result.is_out_of_domain else colors.HexColor("#1565C0")
+
         answer_table = Table(
             [[Paragraph(answer_text, self.badge_style)]],
             colWidths=[540],
@@ -115,7 +107,7 @@ class PDFReportGenerator:
         answer_table.setStyle(
             TableStyle(
                 [
-                    ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#1565C0")),
+                    ("BACKGROUND", (0, 0), (-1, -1), answer_bg),
                     ("TOPPADDING", (0, 0), (-1, -1), 10),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
                     ("ALIGN", (0, 0), (-1, -1), "CENTER"),
@@ -134,8 +126,9 @@ class PDFReportGenerator:
         story.append(Paragraph(f"<b>AST SafeCalculator Expression:</b> <code>{result.calculation_expression}</code>", self.body_style))
         story.append(Spacer(1, 10))
 
-        # 5. Extracted Tabular Data Table
-        story.append(Paragraph("2. Dynamically Extracted Chart Data Table", self.h2_style))
+        # 5. Extracted Tabular Data Table (with HITL indicator)
+        hitl_note = " <i>(User Modified via Human-in-the-Loop)</i>" if result.extracted_data.metadata.get("is_hitl_modified") else ""
+        story.append(Paragraph(f"2. Dynamically Extracted Chart Data Table{hitl_note}", self.h2_style))
         dps = result.extracted_data.data_points
         table_data = [["Label / Category", "Value", "Confidence Score"]]
 
@@ -158,7 +151,7 @@ class PDFReportGenerator:
         story.append(data_table)
         story.append(Spacer(1, 15))
 
-        # 6. Automatic Scientific Graphic Interpretation (~1 page narrative)
+        # 6. Automatic Scientific Graphic Interpretation
         story.append(Paragraph("3. Automatic Scientific Graphic Interpretation", self.h2_style))
         interp_lines = result.initial_interpretation.split("\n")
         for line in interp_lines:

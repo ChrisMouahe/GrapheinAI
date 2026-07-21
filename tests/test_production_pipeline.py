@@ -1,4 +1,4 @@
-"""Integration test suite verifying dynamic execution, PDF report generation, and multi-image/multi-query variance."""
+"""Integration test suite verifying dynamic execution, PDF report generation, out-of-domain query handling, and multi-image/multi-query variance."""
 
 from pathlib import Path
 import pytest
@@ -22,7 +22,7 @@ def line_chart_path() -> Path:
 
 
 class TestProductionPipelineDynamics:
-    """Integration tests verifying dynamic pipeline variance and non-static behavior across different images and questions."""
+    """Integration tests verifying dynamic pipeline variance, out-of-domain filtering, and PDF generation."""
 
     def test_multi_image_dynamic_extraction_variance(self, bar_chart_path: Path, line_chart_path: Path) -> None:
         reasoner = ReasoningAgent()
@@ -32,8 +32,8 @@ class TestProductionPipelineDynamics:
 
         assert isinstance(ext_bar, ChartExtraction)
         assert isinstance(ext_line, ChartExtraction)
+        assert hasattr(ext_bar, "extraction_source")
 
-        # Dynamic extraction MUST produce different chart types or data values for different images
         assert ext_bar.chart_type != ext_line.chart_type or [dp.value for dp in ext_bar.data_points] != [dp.value for dp in ext_line.data_points]
 
     def test_initial_scientific_interpretation(self, bar_chart_path: Path) -> None:
@@ -54,8 +54,17 @@ class TestProductionPipelineDynamics:
         assert isinstance(res_q1, PipelineResult)
         assert isinstance(res_q2, PipelineResult)
 
-        # Different questions MUST produce different formulas or answers
         assert res_q1.calculation_expression != res_q2.calculation_expression or res_q1.final_answer != res_q2.final_answer
+
+    def test_out_of_domain_question_handling(self, bar_chart_path: Path) -> None:
+        pipeline = PipelineAgent()
+        ood_q = "What is the population of Tokyo in 2050?"
+        res = pipeline.answer(bar_chart_path, ood_q)
+
+        assert isinstance(res, PipelineResult)
+        assert res.is_out_of_domain is True
+        assert res.calculation_expression == "UNANSWERABLE"
+        assert "cannot be answered" in str(res.final_answer)
 
     def test_pdf_report_generation(self, bar_chart_path: Path) -> None:
         pipeline = PipelineAgent()

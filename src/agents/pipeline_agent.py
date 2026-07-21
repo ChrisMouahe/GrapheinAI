@@ -49,7 +49,6 @@ class PipelineAgent:
         if not question or not question.strip():
             raise PipelineError("Question string cannot be empty.")
 
-        # 1. Resolve ChartImage and validate file presence
         if isinstance(image, ChartImage):
             chart_img = image
         else:
@@ -60,22 +59,19 @@ class PipelineAgent:
         logger.info(f"Pipeline processing image: '{chart_img.file_path.resolve()}' | Question: '{question}'")
 
         try:
-            # 2. Step 1: ClassifierAgent -> Predict Question Complexity and Chart Type
-            logger.info("Step 1: Running ClassifierAgent...")
+            # 1. Step 1: ClassifierAgent -> Predict Question Complexity and Chart Type
             classification_res = self.classifier.predict(
                 question=question,
                 chart_type="bar",
             )
 
-            # 3. Step 2: RetrievalAgent -> Top-3 RAG Few-shot Examples
-            logger.info("Step 2: Running RetrievalAgent...")
+            # 2. Step 2: RetrievalAgent -> Top-3 RAG Few-shot Examples
             retrieved_examples = self.retriever.retrieve(
                 query=question,
                 top_k=3,
             )
 
-            # 4. Step 3: ReasoningAgent -> VLM Vision Extraction & Initial Interpretation
-            logger.info("Step 3: Running ReasoningAgent (Gemini Flash Vision)...")
+            # 3. Step 3: ReasoningAgent -> VLM Vision Extraction & Out-of-Domain Check
             reasoning_out = self.reasoner.analyze(
                 image=chart_img,
                 question=question,
@@ -84,12 +80,14 @@ class PipelineAgent:
                 complexity=classification_res.complexity,
             )
 
-            # 5. Step 4: SafeCalculator (AST Only) -> Safe Arithmetic Computation
-            logger.info("Step 4: Evaluating expression with SafeCalculator...")
+            # 4. Handle Out-of-Domain Query Cleanly
             calc_expr = reasoning_out.calculation_expression
-            final_answer = self.calculator.evaluate(calc_expr)
+            if calc_expr == "UNANSWERABLE" or reasoning_out.is_out_of_domain:
+                final_answer = "This question cannot be answered from the provided chart data."
+            else:
+                # Step 4: SafeCalculator (AST Only) -> Safe Arithmetic Computation
+                final_answer = self.calculator.evaluate(calc_expr)
 
-            # 6. Assemble complete PipelineResult
             return PipelineResult(
                 final_answer=final_answer,
                 extracted_data=reasoning_out.extracted_data,
@@ -98,6 +96,7 @@ class PipelineAgent:
                 initial_interpretation=reasoning_out.initial_interpretation or "",
                 complexity=classification_res,
                 retrieved_examples=retrieved_examples,
+                is_out_of_domain=reasoning_out.is_out_of_domain,
             )
 
         except Exception as e:

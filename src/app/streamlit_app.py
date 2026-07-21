@@ -56,12 +56,31 @@ st.markdown(
         margin-top: 15px;
         margin-bottom: 20px;
     }
+    .out-of-domain-badge {
+        background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
     .security-badge {
         background-color: #FFEBEE;
         border-left: 5px solid #D32F2F;
         padding: 10px;
         border-radius: 5px;
         margin-bottom: 15px;
+    }
+    .source-badge {
+        background-color: #E3F2FD;
+        border-left: 5px solid #1E88E5;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-weight: 600;
+        margin-bottom: 10px;
     }
     </style>
     """,
@@ -209,7 +228,6 @@ def main() -> None:
                     return
 
             else:
-                # Default sample image fallback
                 sample_img_path = Path("data/raw/sample_chart.png")
                 if sample_img_path.exists():
                     pil_image = Image.open(sample_img_path)
@@ -259,12 +277,15 @@ def main() -> None:
         st.subheader("4. 🛠️ Human-in-the-Loop (HITL) Data Point Editor")
         st.info("Dynamic data points extracted from the uploaded image. Edit, add, or delete values below to override final calculation inputs.")
 
-        # Extract initial dynamic data points
         if temp_img_path and temp_img_path.exists():
             initial_extraction = pipeline_agent.reasoner.extract_chart_data(temp_img_path)
             initial_data = [dp.model_dump() for dp in initial_extraction.data_points]
+            source_label = initial_extraction.extraction_source
         else:
             initial_data = [{"label": "Category A", "value": 100.0, "confidence": 0.95}]
+            source_label = "Local Structural Parser (Offline Fallback)"
+
+        st.markdown(f'<div class="source-badge">ℹ️ Visual Extraction Source Mode: <b>{source_label}</b></div>', unsafe_allow_html=True)
 
         df_initial = pd.DataFrame(initial_data)
 
@@ -302,7 +323,7 @@ def main() -> None:
                 progress_bar.progress(25, text="Running Classifier & FAISS Vector Search...")
                 time.sleep(0.1)
 
-                progress_bar.progress(50, text="Analyzing Vision Data & Generating Scientific Interpretation...")
+                progress_bar.progress(50, text="Analyzing Vision Data & Out-of-Domain Check...")
                 pipeline_result = pipeline_agent.answer(
                     image=temp_img_path,
                     question=user_question,
@@ -311,7 +332,8 @@ def main() -> None:
 
                 latency = time.time() - start_time
 
-                # Apply HITL modifications if user edited rows
+                # Check if user edited HITL rows
+                is_hitl_edited = False
                 if edited_df is not None and not edited_df.empty:
                     updated_dps = []
                     for _, r in edited_df.iterrows():
@@ -328,16 +350,27 @@ def main() -> None:
                             )
                         )
                     pipeline_result.extracted_data.data_points = updated_dps
+                    is_hitl_edited = True
+                    pipeline_result.extracted_data.metadata["is_hitl_modified"] = True
 
                 progress_bar.progress(100, text="Complete!")
                 time.sleep(0.2)
                 progress_bar.empty()
 
                 # Display Final Answer Result Card
-                st.markdown(
-                    f'<div class="result-badge">✨ Final Calculated Answer: {pipeline_result.final_answer}</div>',
-                    unsafe_allow_html=True,
-                )
+                if pipeline_result.is_out_of_domain:
+                    st.markdown(
+                        f'<div class="out-of-domain-badge">⚠️ Out-of-Domain Query<br/><font size=4>{pipeline_result.final_answer}</font></div>',
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(
+                        f'<div class="result-badge">✨ Final Calculated Answer: {pipeline_result.final_answer}</div>',
+                        unsafe_allow_html=True,
+                    )
+
+                if is_hitl_edited:
+                    st.warning("🛠️ Note: Human-in-the-Loop edits were detected and applied to the final calculation & PDF report.")
 
                 # PDF Export Section
                 pdf_bytes = pdf_generator.generate_pdf_bytes(
@@ -374,7 +407,7 @@ def main() -> None:
                     st.markdown("**Step-by-step Reasoning:**")
                     st.write(pipeline_result.reasoning)
 
-                    st.markdown("**Extracted Data Points (HITL Applied):**")
+                    st.markdown("**Extracted Data Points (HITL Status Included):**")
                     st.dataframe(pd.DataFrame([dp.model_dump() for dp in pipeline_result.extracted_data.data_points]))
 
                     st.markdown("**Retrieved Few-Shot RAG Context:**")
