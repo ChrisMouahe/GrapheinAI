@@ -1,4 +1,4 @@
-"""Domain models for ChartQA Multimodal Assistant using Pydantic v2."""
+"""Domain models for ChartQA Research-Grade Multimodal Assistant using Pydantic v2."""
 
 from pathlib import Path
 from typing import Any
@@ -7,10 +7,48 @@ from pydantic import BaseModel, Field, field_validator
 from src.models.exceptions import ChartValidationError
 
 
+class OCRTextBox(BaseModel):
+    """Represents a text region detected by OpenCV OCR processing."""
+
+    text: str | None = Field(default=None, description="Extracted text string or None if unreadable")
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="OCR confidence score")
+    box: list[int] = Field(default_factory=lambda: [0, 0, 0, 0], description="Bounding box coordinates [x, y, w, h]")
+    region: str = Field(default="plot", description="Region type: title, x_axis, y_axis, legend, plot")
+
+    model_config = {"extra": "ignore"}
+
+
+class ChartStructureInfo(BaseModel):
+    """Represents geometric visual structure detected by OpenCV computer vision."""
+
+    detected_type: str = Field(..., description="Detected visual type (bar, grouped_bar, line, pie, scatter)")
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Geometric detection confidence score")
+    has_x_axis: bool = Field(default=True, description="True if X axis line detected")
+    has_y_axis: bool = Field(default=True, description="True if Y axis line detected")
+    has_legend: bool = Field(default=False, description="True if legend box detected")
+    geometry_features: dict[str, Any] = Field(default_factory=dict, description="Visual contour and geometry features")
+
+    model_config = {"extra": "ignore"}
+
+
+class ValidationResult(BaseModel):
+    """Represents cross-validation metrics comparing OCR, Computer Vision, and VLM outputs."""
+
+    ocr_accuracy: float = Field(default=1.0, ge=0.0, le=1.0, description="Estimated OCR detection accuracy")
+    extraction_accuracy: float = Field(default=1.0, ge=0.0, le=1.0, description="Estimated visual extraction accuracy")
+    overall_confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Combined pipeline confidence score")
+    requires_human_confirmation: bool = Field(
+        default=False, description="True if overall_confidence < 0.70 requiring HITL confirmation"
+    )
+    validation_notes: list[str] = Field(default_factory=list, description="Validation audit observations")
+
+    model_config = {"extra": "ignore"}
+
+
 class ExtractedDataPoint(BaseModel):
     """Represents a single data point extracted from a chart image."""
 
-    label: str = Field(..., description="Label or category of the data point")
+    label: str | None = Field(default=None, description="Label or category of the data point, or None if unreadable")
     value: float | int | str = Field(..., description="Value associated with the label")
     confidence: float = Field(
         default=1.0,
@@ -25,9 +63,7 @@ class ExtractedDataPoint(BaseModel):
 class ChartExtraction(BaseModel):
     """Represents structured tabular or numerical data extracted from a chart."""
 
-    chart_type: str = Field(
-        ..., description="Type of the chart (e.g., bar, line, pie, scatter)"
-    )
+    chart_type: str = Field(..., description="Type of the chart (e.g., bar, line, pie, scatter)")
     title: str | None = Field(default=None, description="Title of the chart")
     x_label: str | None = Field(default=None, description="Label for the X-axis")
     y_label: str | None = Field(default=None, description="Label for the Y-axis")
@@ -35,8 +71,11 @@ class ChartExtraction(BaseModel):
         default_factory=list, description="Extracted key-value data points"
     )
     extraction_source: str = Field(
-        default="Gemini Flash Vision API",
-        description="Source of visual extraction (e.g. Gemini Flash Vision API vs Local Structural Parser)",
+        default="OpenCV OCR + Gemini Flash Vision",
+        description="Source of visual extraction",
+    )
+    ocr_boxes: list[OCRTextBox] = Field(
+        default_factory=list, description="Pre-extracted OCR text bounding boxes"
     )
     metadata: dict[str, Any] = Field(
         default_factory=dict, description="Additional contextual metadata"
@@ -73,9 +112,7 @@ class ChartImage(BaseModel):
     file_path: Path = Field(..., description="Path to the chart image file")
     width: int | None = Field(default=None, ge=1, description="Width in pixels")
     height: int | None = Field(default=None, ge=1, description="Height in pixels")
-    format: str | None = Field(
-        default=None, description="Image format (e.g., png, jpg, webp)"
-    )
+    format: str | None = Field(default=None, description="Image format (e.g., png, jpg, webp)")
 
     @field_validator("file_path")
     @classmethod
@@ -126,6 +163,9 @@ class ReasoningOutput(BaseModel):
     is_out_of_domain: bool = Field(
         default=False, description="True if target question cannot be answered from the chart data"
     )
+    chart_structure: ChartStructureInfo | None = Field(
+        default=None, description="Detected geometric chart structure info"
+    )
 
     model_config = {"extra": "ignore"}
 
@@ -143,6 +183,12 @@ class PipelineResult(BaseModel):
     complexity: ClassificationResult = Field(..., description="ML complexity classification metadata")
     retrieved_examples: list[dict[str, Any]] = Field(
         default_factory=list, description="Few-shot RAG context examples used"
+    )
+    validation_result: ValidationResult = Field(
+        default_factory=ValidationResult, description="Cross-validation metrics and confidence score"
+    )
+    chart_structure: ChartStructureInfo | None = Field(
+        default=None, description="Geometric computer vision structure info"
     )
     is_out_of_domain: bool = Field(
         default=False, description="True if target question cannot be answered from chart data"

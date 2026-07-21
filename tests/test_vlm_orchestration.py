@@ -168,6 +168,14 @@ class TestPipelineAgentOrchestration:
 
     def test_pipeline_with_mocked_reasoner(self, sample_image_path: Path) -> None:
         mock_reasoner = MagicMock(spec=ReasoningAgent)
+        mock_reasoner.extract_chart_data.return_value = ChartExtraction(
+            chart_type="bar",
+            data_points=[
+                ExtractedDataPoint(label="X", value=10.0),
+                ExtractedDataPoint(label="Y", value=20.0),
+            ],
+        )
+        mock_reasoner.is_out_of_domain_query.return_value = False
         mock_reasoner.analyze.return_value = ReasoningOutput(
             extracted_data=ChartExtraction(
                 chart_type="bar",
@@ -178,7 +186,6 @@ class TestPipelineAgentOrchestration:
             ),
             reasoning="Mocked reasoning logic.",
             calculation_expression="10.0 * 20.0",
-            initial_interpretation="Mock initial interpretation.",
         )
 
         pipeline = PipelineAgent(reasoning_agent=mock_reasoner)
@@ -189,4 +196,4 @@ class TestPipelineAgentOrchestration:
 
         assert result.final_answer == 200.0
         assert result.calculation_expression == "10.0 * 20.0"
-        assert result.initial_interpretation == "Mock initial interpretation."
+        assert "SCIENTIFIC GRAPHIC INTERPRETATION REPORT" in result.initial_interpretation

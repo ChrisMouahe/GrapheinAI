@@ -14,7 +14,7 @@ from src.models.chart import PipelineResult
 
 
 class PDFReportGenerator:
-    """Generates professional scientific PDF reports containing chart visual, extracted data table, interpretation narrative, and reasoning answer."""
+    """Generates professional scientific PDF reports containing chart visual, extracted data table, interpretation narrative, validation metrics, and reasoning answer."""
 
     def __init__(self) -> None:
         self.styles = getSampleStyleSheet()
@@ -76,12 +76,19 @@ class PDFReportGenerator:
 
         story = []
         img_p = Path(image_path)
+        val_res = result.validation_result
 
         # 1. Document Header
-        story.append(Paragraph("ChartQA Multimodal Scientific Reasoning Report", self.title_style))
+        story.append(Paragraph("ChartQA Research-Grade Multimodal Reasoning Report", self.title_style))
         story.append(
             Paragraph(
-                f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Engine: GrapheinAI Production System | Mode: {result.extracted_data.extraction_source}",
+                f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Engine: OpenCV CV + Gemini Flash VLM | Latency: {execution_latency:.2f}s",
+                self.body_style,
+            )
+        )
+        story.append(
+            Paragraph(
+                f"<b>Validation Confidence:</b> {val_res.overall_confidence:.1%} (OCR Acc: {val_res.ocr_accuracy:.1%} | Extraction Acc: {val_res.extraction_accuracy:.1%})",
                 self.body_style,
             )
         )
@@ -126,14 +133,15 @@ class PDFReportGenerator:
         story.append(Paragraph(f"<b>AST SafeCalculator Expression:</b> <code>{result.calculation_expression}</code>", self.body_style))
         story.append(Spacer(1, 10))
 
-        # 5. Extracted Tabular Data Table (with HITL indicator)
+        # 5. Extracted Tabular Data Table
         hitl_note = " <i>(User Modified via Human-in-the-Loop)</i>" if result.extracted_data.metadata.get("is_hitl_modified") else ""
         story.append(Paragraph(f"2. Dynamically Extracted Chart Data Table{hitl_note}", self.h2_style))
         dps = result.extracted_data.data_points
         table_data = [["Label / Category", "Value", "Confidence Score"]]
 
         for dp in dps:
-            table_data.append([str(dp.label), str(dp.value), f"{dp.confidence:.2%}"])
+            lbl_text = dp.label if dp.label is not None else "[Unreadable Label]"
+            table_data.append([str(lbl_text), str(dp.value), f"{dp.confidence:.2%}"])
 
         data_table = Table(table_data, colWidths=[240, 150, 150])
         data_table.setStyle(
@@ -152,7 +160,7 @@ class PDFReportGenerator:
         story.append(Spacer(1, 15))
 
         # 6. Automatic Scientific Graphic Interpretation
-        story.append(Paragraph("3. Automatic Scientific Graphic Interpretation", self.h2_style))
+        story.append(Paragraph("3. Automatic Scientific Graphic Interpretation (GraphInterpreter)", self.h2_style))
         interp_lines = result.initial_interpretation.split("\n")
         for line in interp_lines:
             line_str = line.strip()
@@ -167,9 +175,13 @@ class PDFReportGenerator:
 
         story.append(Spacer(1, 15))
 
-        # 7. RAG Few-Shot Context Section
+        # 7. Validation Audit & RAG Context Section
+        story.append(Paragraph("4. Validation Audit & RAG Few-Shot Context", self.h2_style))
+        for note in val_res.validation_notes:
+            story.append(Paragraph(f"• {note}", self.body_style))
+
         if result.retrieved_examples:
-            story.append(Paragraph("4. Retrieved RAG Few-Shot Context", self.h2_style))
+            story.append(Spacer(1, 5))
             for idx, ex in enumerate(result.retrieved_examples, 1):
                 story.append(
                     Paragraph(

@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
+from src.agents.graph_interpreter import GraphInterpreter
 from src.agents.pipeline_agent import PipelineAgent
 from src.agents.reasoning_agent import ReasoningAgent
 from src.models.chart import ChartExtraction, PipelineResult
@@ -38,12 +39,14 @@ class TestProductionPipelineDynamics:
 
     def test_initial_scientific_interpretation(self, bar_chart_path: Path) -> None:
         reasoner = ReasoningAgent()
+        interpreter = GraphInterpreter()
+
         ext = reasoner.extract_chart_data(bar_chart_path)
-        interp = reasoner.generate_initial_interpretation(bar_chart_path, ext)
+        interp = interpreter.interpret_chart(ext)
 
         assert isinstance(interp, str)
         assert len(interp) > 200
-        assert "Executive Summary" in interp or "Observed Variables" in interp or "Trends" in interp
+        assert "Executive Summary" in interp or "Description" in interp or "Trends" in interp
 
     def test_multi_question_dynamic_rag_and_formula_variance(self, bar_chart_path: Path) -> None:
         pipeline = PipelineAgent()
