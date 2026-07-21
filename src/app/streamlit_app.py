@@ -18,6 +18,7 @@ from src.models.exceptions import (
     PromptInjectionDetectedError,
     UIValidationError,
 )
+from src.utils.chart_detector import ChartTypeDetector
 from src.utils.pdf_generator import PDFReportGenerator
 from src.utils.security_guard import PromptInjectionGuard
 
@@ -101,6 +102,12 @@ def get_cached_classifier() -> ClassifierAgent:
 
 
 @st.cache_resource
+def get_cached_chart_detector() -> ChartTypeDetector:
+    """Caches Computer Vision geometric chart detector."""
+    return ChartTypeDetector()
+
+
+@st.cache_resource
 def get_cached_security_guard() -> PromptInjectionGuard:
     """Caches NLP security guard patterns."""
     return PromptInjectionGuard()
@@ -150,6 +157,7 @@ def main() -> None:
     # Retrieve Cached Heavy Models (ONLY models are cached)
     security_guard = get_cached_security_guard()
     classifier_agent = get_cached_classifier()
+    chart_detector = get_cached_chart_detector()
     pipeline_agent = get_cached_pipeline()
     pdf_generator = get_cached_pdf_generator()
 
@@ -243,7 +251,7 @@ def main() -> None:
             if temp_img_path and temp_img_path.exists():
                 preview_q = "What is the average value across variables?"
                 cls_result = classifier_agent.predict(preview_q, chart_type="bar")
-                structure = pipeline_agent.chart_detector.detect_chart_structure(temp_img_path)
+                structure = chart_detector.detect_chart_structure(temp_img_path)
 
                 c1, c2, c3 = st.columns(3)
                 with c1:
