@@ -3,11 +3,14 @@
 from src.models.chart import (
     ChartExtraction,
     ChartImage,
+    ChartStructureInfo,
     ClassificationResult,
     ExtractedDataPoint,
+    OCRTextBox,
     PipelineResult,
     RAGRetrievalResult,
     ReasoningOutput,
+    ValidationResult,
 )
 from src.models.exceptions import (
     ChartQAError,
@@ -41,6 +44,9 @@ __all__ = [
     "RAGRetrievalResult",
     "ReasoningOutput",
     "PipelineResult",
+    "OCRTextBox",
+    "ChartStructureInfo",
+    "ValidationResult",
     "ChartQAError",
     "SafeCalculatorError",
     "InvalidExpressionError",
