@@ -1,5 +1,6 @@
 """Production FastAPI REST Backend for ChartQA Commercial SaaS AI Web Application."""
 
+import json
 import io
 import time
 from pathlib import Path
@@ -83,16 +84,26 @@ def health_check() -> dict[str, Any]:
 
 
 @app.post("/api/extract")
-async def extract_chart(file: UploadFile = File(...)) -> dict[str, Any]:
-    """Extracts OCR text boxes, CV geometry, and initial tabular data from uploaded chart image."""
+async def extract_chart(
+    file: UploadFile | None = File(None),
+    image_filename: str | None = Form(None),
+) -> dict[str, Any]:
+    """Extracts OCR text boxes, CV geometry, and dynamic tabular data from chart image."""
     try:
-        contents = await file.read()
-        if len(contents) > 10 * 1024 * 1024:
-            raise HTTPException(status_code=400, detail="Image size exceeds 10MB limit.")
+        if file is not None:
+            contents = await file.read()
+            if len(contents) > 10 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail="Image size exceeds 10MB limit.")
 
-        img_path = RAW_DATA_DIR / f"uploaded_{file.filename}"
-        with open(img_path, "wb") as f:
-            f.write(contents)
+            img_path = RAW_DATA_DIR / f"uploaded_{file.filename}"
+            with open(img_path, "wb") as f:
+                f.write(contents)
+        elif image_filename:
+            img_path = RAW_DATA_DIR / image_filename
+            if not img_path.exists():
+                img_path = RAW_DATA_DIR / "sample_chart.png"
+        else:
+            img_path = RAW_DATA_DIR / "sample_chart.png"
 
         ocr_boxes = ocr_engine.detect_ocr_text_boxes(img_path)
         structure = chart_detector.detect_chart_structure(img_path)
@@ -113,6 +124,7 @@ async def analyze_chart(
     question: str = Form(...),
     file: UploadFile | None = File(None),
     image_filename: str | None = Form(None),
+    hitl_data_json: str | None = Form(None),
 ) -> dict[str, Any]:
     """Executes full multi-stage multimodal reasoning pipeline over chart image and target question."""
     try:
@@ -137,6 +149,43 @@ async def analyze_chart(
 
     start_t = time.time()
     result = pipeline_agent.answer(image=img_path, question=question)
+
+    # Process HITL overrides if supplied from UI data grid
+    if hitl_data_json:
+        try:
+            hitl_items = json.loads(hitl_data_json)
+            if isinstance(hitl_items, list) and len(hitl_items) > 0:
+                updated_dps = []
+                for item in hitl_items:
+                    lbl = item.get("label")
+                    val = item.get("value")
+                    conf = float(item.get("confidence", 1.0))
+                    try:
+                        val = float(val)
+                    except (ValueError, TypeError):
+                        pass
+                    updated_dps.append(ExtractedDataPoint(label=lbl, value=val, confidence=conf))
+
+                result.extracted_data.data_points = updated_dps
+                result.extracted_data.metadata["is_hitl_modified"] = True
+
+                # Recalculate expression and answer with updated HITL data
+                vals = [dp.value for dp in updated_dps if isinstance(dp.value, (int, float))]
+                if vals and not result.is_out_of_domain:
+                    q_lower = question.lower()
+                    if "total" in q_lower or "sum" in q_lower:
+                        result.calculation_expression = " + ".join(str(v) for v in vals)
+                    elif "difference" in q_lower or "diff" in q_lower:
+                        result.calculation_expression = f"{max(vals)} - {min(vals)}"
+                    else:
+                        result.calculation_expression = f"({' + '.join(str(v) for v in vals)}) / {len(vals)}"
+
+                    result.final_answer = pipeline_agent.calculator.evaluate(result.calculation_expression)
+                    result.initial_interpretation = graph_interpreter.interpret_chart(result.extracted_data)
+
+        except Exception as ex:
+            pass
+
     latency = round(time.time() - start_t, 3)
 
     res_dict = result.model_dump()
@@ -149,6 +198,7 @@ async def analyze_chart(
 async def download_pdf_report(
     question: str = Form(...),
     image_filename: str = Form("sample_chart.png"),
+    hitl_data_json: str | None = Form(None),
 ) -> Response:
     """Generates and returns downloadable official PDF report."""
     img_path = RAW_DATA_DIR / image_filename
@@ -157,6 +207,38 @@ async def download_pdf_report(
 
     start_t = time.time()
     result = pipeline_agent.answer(image=img_path, question=question)
+
+    if hitl_data_json:
+        try:
+            hitl_items = json.loads(hitl_data_json)
+            if isinstance(hitl_items, list) and len(hitl_items) > 0:
+                updated_dps = []
+                for item in hitl_items:
+                    lbl = item.get("label")
+                    val = item.get("value")
+                    conf = float(item.get("confidence", 1.0))
+                    try:
+                        val = float(val)
+                    except (ValueError, TypeError):
+                        pass
+                    updated_dps.append(ExtractedDataPoint(label=lbl, value=val, confidence=conf))
+
+                result.extracted_data.data_points = updated_dps
+                result.extracted_data.metadata["is_hitl_modified"] = True
+                vals = [dp.value for dp in updated_dps if isinstance(dp.value, (int, float))]
+                if vals and not result.is_out_of_domain:
+                    q_lower = question.lower()
+                    if "total" in q_lower or "sum" in q_lower:
+                        result.calculation_expression = " + ".join(str(v) for v in vals)
+                    elif "difference" in q_lower or "diff" in q_lower:
+                        result.calculation_expression = f"{max(vals)} - {min(vals)}"
+                    else:
+                        result.calculation_expression = f"({' + '.join(str(v) for v in vals)}) / {len(vals)}"
+                    result.final_answer = pipeline_agent.calculator.evaluate(result.calculation_expression)
+                    result.initial_interpretation = graph_interpreter.interpret_chart(result.extracted_data)
+        except Exception:
+            pass
+
     latency = round(time.time() - start_t, 3)
 
     pdf_bytes = pdf_generator.generate_pdf_bytes(

@@ -95,7 +95,7 @@
     }
   </style>
 </head>
-<body class="bg-[#0B0F19] text-gray-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+<body class="bg-[#0B0F19] text-gray-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200" onload="loadInitialImageExtraction()">
 
   <!-- Header / Navigation Bar -->
   <header class="sticky top-0 z-50 glass-panel border-b border-gray-800/80 px-6 py-3.5 flex items-center justify-between">
@@ -338,9 +338,14 @@
                 <i data-lucide="table" class="w-4 h-4 text-brand-400"></i>
                 Human-in-the-Loop (HITL) Extracted Data Grid
               </h3>
-              <button onclick="addGridRow()" class="px-3 py-1 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-lg text-xs text-gray-300 flex items-center gap-1">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Point
-              </button>
+              <div class="flex gap-2">
+                <button onclick="extractCurrentChartData()" class="px-3 py-1 bg-brand-600/30 hover:bg-brand-600/50 border border-brand-500/40 rounded-lg text-xs text-brand-300 flex items-center gap-1">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Re-Extract
+                </button>
+                <button onclick="addGridRow()" class="px-3 py-1 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-lg text-xs text-gray-300 flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Point
+                </button>
+              </div>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-gray-800">
@@ -355,16 +360,7 @@
                 </thead>
                 <tbody id="hitl-tbody" class="divide-y divide-gray-800/60 font-mono text-gray-200">
                   <tr>
-                    <td class="p-3"><input type="text" value="Category A" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white"></td>
-                    <td class="p-3"><input type="number" value="68.0" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white w-24"></td>
-                    <td class="p-3 text-accent-emerald">95.0%</td>
-                    <td class="p-3 text-right"><button onclick="removeGridRow(this)" class="text-red-400 hover:text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
-                  </tr>
-                  <tr>
-                    <td class="p-3"><input type="text" value="Category B" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white"></td>
-                    <td class="p-3"><input type="number" value="88.0" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white w-24"></td>
-                    <td class="p-3 text-accent-emerald">98.0%</td>
-                    <td class="p-3 text-right"><button onclick="removeGridRow(this)" class="text-red-400 hover:text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                    <td colspan="4" class="p-4 text-center text-gray-400">Extracting chart data points...</td>
                   </tr>
                 </tbody>
               </table>
@@ -539,7 +535,7 @@
       const tbody = document.getElementById('hitl-tbody');
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="p-3"><input type="text" value="New Category" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white"></td>
+        <td class="p-3"><input type="text" value="New Point" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white"></td>
         <td class="p-3"><input type="number" value="100.0" class="bg-transparent border border-gray-800 rounded px-2 py-1 text-xs text-white w-24"></td>
         <td class="p-3 text-accent-emerald">100.0%</td>
         <td class="p-3 text-right"><button onclick="removeGridRow(this)" class="text-red-400 hover:text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
@@ -550,6 +546,51 @@
 
     function removeGridRow(btn) {
       btn.closest('tr').remove();
+    }
+
+    function getHitlGridItems() {
+      const rows = document.querySelectorAll('#hitl-tbody tr');
+      const items = [];
+      rows.forEach(r => {
+        const inputs = r.querySelectorAll('input');
+        if (inputs.length >= 2) {
+          const lbl = inputs[0].value.trim();
+          const val = parseFloat(inputs[1].value);
+          if (!isNaN(val)) {
+            items.append ? items.push({ label: lbl || null, value: val, confidence: 1.0 }) : items.push({ label: lbl || null, value: val, confidence: 1.0 });
+          }
+        }
+      });
+      return items;
+    }
+
+    async function loadInitialImageExtraction() {
+      await extractCurrentChartData();
+    }
+
+    async function extractCurrentChartData() {
+      const formData = new FormData();
+      formData.append('image_filename', currentImageFilename);
+
+      try {
+        const res = await fetch('/api/extract', { method: 'POST', body: formData });
+        const data = await res.json();
+        
+        if (data.chart_structure) {
+          document.getElementById('cv-type-val').innerText = data.chart_structure.detected_type.toUpperCase();
+          document.getElementById('cv-conf-val').innerText = (data.chart_structure.confidence * 100).toFixed(1) + '%';
+        }
+
+        if (data.ocr_boxes) {
+          document.getElementById('cv-regions-val').innerText = data.ocr_boxes.length + ' Detected';
+        }
+
+        if (data.extracted_data && data.extracted_data.data_points) {
+          renderDataGrid(data.extracted_data.data_points);
+        }
+      } catch (err) {
+        console.warn('Initial extract error: ' + err);
+      }
     }
 
     async function handleFileSelect(e) {
@@ -572,6 +613,10 @@
           document.getElementById('cv-conf-val').innerText = (data.chart_structure.confidence * 100).toFixed(1) + '%';
         }
 
+        if (data.ocr_boxes) {
+          document.getElementById('cv-regions-val').innerText = data.ocr_boxes.length + ' Detected';
+        }
+
         if (data.extracted_data && data.extracted_data.data_points) {
           renderDataGrid(data.extracted_data.data_points);
         }
@@ -583,6 +628,10 @@
     function renderDataGrid(points) {
       const tbody = document.getElementById('hitl-tbody');
       tbody.innerHTML = '';
+      if (!points || points.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-400">No data points extracted. Click "Add Point" to add manual entries.</td></tr>';
+        return;
+      }
       points.forEach(dp => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -622,9 +671,12 @@
         await new Promise(r => setTimeout(r, 200));
       }
 
+      const hitlItems = getHitlGridItems();
+
       const formData = new FormData();
       formData.append('question', question);
       formData.append('image_filename', currentImageFilename);
+      formData.append('hitl_data_json', JSON.stringify(hitlItems));
 
       try {
         const res = await fetch('/api/analyze', { method: 'POST', body: formData });
@@ -660,9 +712,11 @@
 
     async function downloadPdfReport() {
       const question = document.getElementById('target-question').value;
+      const hitlItems = getHitlGridItems();
       const formData = new FormData();
       formData.append('question', question);
       formData.append('image_filename', currentImageFilename);
+      formData.append('hitl_data_json', JSON.stringify(hitlItems));
 
       try {
         const res = await fetch('/api/report/pdf', { method: 'POST', body: formData });
