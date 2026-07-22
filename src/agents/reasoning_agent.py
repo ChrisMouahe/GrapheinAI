@@ -68,12 +68,17 @@ class ReasoningAgent:
 
         self.ocr_engine = OCREngine()
         self.chart_detector = ChartTypeDetector()
+        self._ensure_client()
 
-        if self.api_key and HAVE_GENAI_SDK and genai is not None:
-            try:
-                self.client = genai.Client(api_key=self.api_key)
-            except Exception as e:
-                logger.warning(f"Failed to initialize Gemini Client: {e}")
+    def _ensure_client(self) -> None:
+        if self.client is None:
+            self.api_key = self.api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if self.api_key and HAVE_GENAI_SDK and genai is not None:
+                try:
+                    self.client = genai.Client(api_key=self.api_key)
+                    logger.info("Gemini Client dynamically initialized.")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize Gemini Client: {e}")
 
     def extract_chart_data(self, image: ChartImage | Path | str) -> ChartExtraction:
         """Dynamically analyzes uploaded chart image guided by OpenCV OCR bounding boxes and geometry.
@@ -84,6 +89,8 @@ class ReasoningAgent:
         Returns:
             ChartExtraction model populated dynamically.
         """
+        self._ensure_client()
+
         img_path = image.file_path if isinstance(image, ChartImage) else Path(image)
         logger.info(f"Extracting chart data for image file: '{img_path.resolve()}'")
 
@@ -163,6 +170,11 @@ class ReasoningAgent:
         retrieved_examples: list[dict[str, Any]] | None = None,
         chart_type: str = "bar",
         complexity: str = "COMPLEX",
+        statistics_text: str | None = None,
+        anomalies_text: str | None = None,
+        insights_text: str | None = None,
+        history_text: str | None = None,
+        intent: str | None = None,
     ) -> ReasoningOutput:
         """Runs OCR-guided visual analysis, RAG reasoning, and generates calculation formula."""
         img_path = image.file_path if isinstance(image, ChartImage) else Path(image)
@@ -175,7 +187,7 @@ class ReasoningAgent:
             logger.info(f"Out-of-domain query detected: '{question}'")
             return ReasoningOutput(
                 extracted_data=extraction,
-                reasoning="This question cannot be answered from the provided chart data because it asks for information outside the visual dataset scope.",
+                reasoning="Cette question ne peut pas être résolue à partir des données du graphique car elle demande des informations en dehors de son périmètre visuel.",
                 calculation_expression="UNANSWERABLE",
                 is_out_of_domain=True,
                 chart_structure=structure,
@@ -187,6 +199,11 @@ class ReasoningAgent:
             chart_type=extraction.chart_type,
             complexity=complexity,
             extraction=extraction,
+            statistics_text=statistics_text,
+            anomalies_text=anomalies_text,
+            insights_text=insights_text,
+            history_text=history_text,
+            intent=intent,
         )
 
         raw_response = self._call_vlm_vision(img_path, prompt_text, question=question)
@@ -203,26 +220,49 @@ class ReasoningAgent:
         chart_type: str = "bar",
         complexity: str = "COMPLEX",
         extraction: ChartExtraction | None = None,
+        statistics_text: str | None = None,
+        anomalies_text: str | None = None,
+        insights_text: str | None = None,
+        history_text: str | None = None,
+        intent: str | None = None,
     ) -> str:
-        """Constructs structured prompt with anti-hallucination constraints and OCR text references."""
+        """Constructs structured prompt with rich analytics context and anti-hallucination constraints."""
         prompt_parts: list[str] = [
             "### SYSTEM ROLE ###",
-            "Tu es un expert en interprétation de graphiques de niveau recherche.",
-            "Les textes et la géométrie ont déjà été extraits par OpenCV OCR. Ne les réinvente jamais.",
+            "Tu es un expert analyste de données visuelles et de graphiques (Senior AI Chart Analyst).",
+            "Ton rôle est d'analyser le graphique et d'apporter des réponses synthétiques, claires, précises et parfaitement justifiées.",
+            "Les textes et la géométrie ont déjà été extraits. Ne les réinvente jamais.",
             "",
-            "### ANTI-HALLUCINATION CONSTRAINTS ###",
+            "### ANTI-HALLUCINATION & REASONING RULES ###",
             "1. NEVER invent, hallucinate, or guess numerical values not present in the extracted chart data.",
-            "2. NEVER use default labels like 'Category A' or 'Series 1'. If a label is unreadable, output null.",
-            "3. You MUST formulate an exact arithmetic expression in 'calculation_expression'.",
-            "4. Your response MUST BE A STRICT JSON OBJECT matching the specified schema.",
+            "2. NEVER respond 'Impossible de répondre' when the extracted chart data contains relevant information.",
+            "3. Base all explanations strictly on the extracted table, computed statistics, anomalies, and insights.",
+            "4. Formulate an exact arithmetic expression in 'calculation_expression' if a math computation is requested.",
+            "5. Respond strictly with a JSON object matching the required schema.",
             "",
-            "### ML & CV CONTEXT METADATA ###",
-            f"- Detected Chart Architecture: {chart_type}",
-            f"- Query Complexity Level: {complexity}",
+            "### QUERY & INTENT METADATA ###",
+            f"- Target Question: {question}",
+            f"- Intent Classification: {intent or 'ANALYTICAL'}",
+            f"- Chart Type: {chart_type}",
+            f"- Query Complexity: {complexity}",
         ]
 
         if extraction and extraction.data_points:
-            prompt_parts.append(f"- Dynamically Extracted Chart Data: {[{dp.label: dp.value} for dp in extraction.data_points]}")
+            prompt_parts.append("\n### EXTRACTED DATA POINTS TABLE ###")
+            for dp in extraction.data_points:
+                prompt_parts.append(f"  * Category/Label: '{dp.label}' | Value: {dp.value} (conf: {dp.confidence:.2f})")
+
+        if statistics_text:
+            prompt_parts.append(f"\n### COMPUTED STATISTICAL DISTRIBUTION ###\n{statistics_text}")
+
+        if anomalies_text:
+            prompt_parts.append(f"\n### DETECTED STATISTICAL ANOMALIES ###\n{anomalies_text}")
+
+        if insights_text:
+            prompt_parts.append(f"\n### AUTOMATIC BUSINESS INSIGHTS ###\n{insights_text}")
+
+        if history_text:
+            prompt_parts.append(f"\n### CONVERSATION HISTORY ###\n{history_text}")
 
         prompt_parts.extend(["", "### FEW-SHOT RAG RETRIEVAL EXAMPLES ###"])
         if retrieved_examples:
@@ -252,8 +292,8 @@ class ReasoningAgent:
                 '    "y_label": "Y label or null",',
                 '    "data_points": [{"label": "Label or null", "value": 100.0, "confidence": 0.95}]',
                 "  },",
-                '  "reasoning": "Step-by-step logic detailing how values were formulated.",',
-                '  "calculation_expression": "(100.0 + 50.0) / 2"',
+                '  "reasoning": "Step-by-step logic detailing how values were analyzed.",',
+                '  "calculation_expression": "Expression or value formula if applicable, or summary phrase"',
                 "}",
                 "```",
             ]
@@ -261,6 +301,7 @@ class ReasoningAgent:
         return "\n".join(prompt_parts)
 
     def _call_vlm_vision(self, img_path: Path, prompt: str, question: str = "") -> str:
+        self._ensure_client()
         attempt = 0
         while attempt < self.max_retries:
             attempt += 1

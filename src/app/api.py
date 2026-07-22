@@ -67,6 +67,7 @@ class HITLDataOverride(BaseModel):
 @app.get("/api/health")
 def health_check() -> dict[str, Any]:
     """Health check endpoint indicating pipeline component status."""
+    reasoning_agent._ensure_client()
     return {
         "status": "healthy",
         "timestamp": time.time(),
@@ -125,6 +126,7 @@ async def analyze_chart(
     file: UploadFile | None = File(None),
     image_filename: str | None = Form(None),
     hitl_data_json: str | None = Form(None),
+    session_id: str | None = Form(None),
 ) -> dict[str, Any]:
     """Executes full multi-stage multimodal reasoning pipeline over chart image and target question."""
     try:
@@ -147,10 +149,8 @@ async def analyze_chart(
     if not img_path.exists():
         raise HTTPException(status_code=404, detail="Target chart image not found.")
 
-    start_t = time.time()
-    result = pipeline_agent.answer(image=img_path, question=question)
-
     # Process HITL overrides if supplied from UI data grid
+    hitl_extraction = None
     if hitl_data_json:
         try:
             hitl_items = json.loads(hitl_data_json)
@@ -166,25 +166,22 @@ async def analyze_chart(
                         pass
                     updated_dps.append(ExtractedDataPoint(label=lbl, value=val, confidence=conf))
 
-                result.extracted_data.data_points = updated_dps
-                result.extracted_data.metadata["is_hitl_modified"] = True
-
-                # Recalculate expression and answer with updated HITL data
-                vals = [dp.value for dp in updated_dps if isinstance(dp.value, (int, float))]
-                if vals and not result.is_out_of_domain:
-                    q_lower = question.lower()
-                    if "total" in q_lower or "sum" in q_lower:
-                        result.calculation_expression = " + ".join(str(v) for v in vals)
-                    elif "difference" in q_lower or "diff" in q_lower:
-                        result.calculation_expression = f"{max(vals)} - {min(vals)}"
-                    else:
-                        result.calculation_expression = f"({' + '.join(str(v) for v in vals)}) / {len(vals)}"
-
-                    result.final_answer = pipeline_agent.calculator.evaluate(result.calculation_expression)
-                    result.initial_interpretation = graph_interpreter.interpret_chart(result.extracted_data)
-
-        except Exception as ex:
+                hitl_extraction = ChartExtraction(
+                    chart_type="bar",
+                    data_points=updated_dps,
+                    extraction_source="HITL User Grid Override",
+                    metadata={"is_hitl_modified": True},
+                )
+        except Exception:
             pass
+
+    start_t = time.time()
+    result = pipeline_agent.answer(
+        image=img_path,
+        question=question,
+        session_id=session_id or img_path.stem,
+        hitl_extraction=hitl_extraction,
+    )
 
     latency = round(time.time() - start_t, 3)
 
@@ -192,6 +189,26 @@ async def analyze_chart(
     res_dict["execution_latency"] = latency
     res_dict["image_filename"] = img_path.name
     return res_dict
+
+
+@app.get("/api/chat/history")
+def get_chat_history(session_id: str) -> dict[str, Any]:
+    """Retrieves conversation history turns for a chart session."""
+    history = pipeline_agent.conversation_manager.get_history(session_id)
+    return {
+        "session_id": session_id,
+        "turns": [turn.model_dump() for turn in history],
+    }
+
+
+@app.delete("/api/chat/history")
+def clear_chat_history(session_id: str) -> dict[str, Any]:
+    """Clears conversation history turns for a chart session."""
+    pipeline_agent.conversation_manager.clear_session(session_id)
+    return {
+        "session_id": session_id,
+        "status": "cleared",
+    }
 
 
 @app.post("/api/report/pdf")

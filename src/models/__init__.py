@@ -1,15 +1,22 @@
 """Domain models and exceptions for ChartQA Multimodal Assistant."""
 
 from src.models.chart import (
+    AnomalyItem,
     ChartExtraction,
     ChartImage,
     ChartStructureInfo,
     ClassificationResult,
+    ConfidenceLevel,
+    ConversationalAnalystResult,
+    ConversationTurn,
     ExtractedDataPoint,
+    InsightItem,
     OCRTextBox,
     PipelineResult,
+    QuestionIntent,
     RAGRetrievalResult,
     ReasoningOutput,
+    StatisticalSummary,
     ValidationResult,
 )
 from src.models.exceptions import (
@@ -47,6 +54,13 @@ __all__ = [
     "OCRTextBox",
     "ChartStructureInfo",
     "ValidationResult",
+    "QuestionIntent",
+    "ConfidenceLevel",
+    "StatisticalSummary",
+    "AnomalyItem",
+    "InsightItem",
+    "ConversationTurn",
+    "ConversationalAnalystResult",
     "ChartQAError",
     "SafeCalculatorError",
     "InvalidExpressionError",

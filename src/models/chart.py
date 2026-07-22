@@ -195,3 +195,96 @@ class PipelineResult(BaseModel):
     )
 
     model_config = {"extra": "ignore"}
+
+
+from enum import Enum
+
+
+class QuestionIntent(str, Enum):
+    """Categorized question intent classes."""
+
+    LOOKUP = "LOOKUP"
+    CALCULATION = "CALCULATION"
+    COMPARISON = "COMPARISON"
+    TREND = "TREND"
+    SUMMARY = "SUMMARY"
+    STATISTICS = "STATISTICS"
+    INSIGHT = "INSIGHT"
+    ANOMALY = "ANOMALY"
+    EXPLANATION = "EXPLANATION"
+    FORECAST_REQUEST = "FORECAST_REQUEST"
+    OTHER = "OTHER"
+
+
+class ConfidenceLevel(str, Enum):
+    """Qualitative user-facing confidence rating."""
+
+    VERY_HIGH = "Très élevée"
+    HIGH = "Élevée"
+    MEDIUM = "Moyenne"
+    LOW = "Faible"
+
+
+class StatisticalSummary(BaseModel):
+    """Descriptive statistical metrics computed over extracted chart data."""
+
+    minimum: float | None = Field(default=None, description="Minimum numeric value")
+    maximum: float | None = Field(default=None, description="Maximum numeric value")
+    mean: float | None = Field(default=None, description="Arithmetic average mean")
+    median: float | None = Field(default=None, description="Median middle value")
+    std_dev: float | None = Field(default=None, description="Standard deviation")
+    variance: float | None = Field(default=None, description="Statistical variance")
+    range_amplitude: float | None = Field(default=None, description="Range (max - min)")
+    count: int = Field(default=0, description="Total number of observations")
+
+    model_config = {"extra": "ignore"}
+
+
+class AnomalyItem(BaseModel):
+    """Statistical anomaly detected in chart dataset."""
+
+    anomaly_type: str = Field(..., description="Anomaly classification (spike, drop, outlier, trend_shift)")
+    label: str | None = Field(default=None, description="Category or data point label associated")
+    value: float | int | None = Field(default=None, description="Observed anomalous value")
+    description: str = Field(..., description="Detailed description of the detected anomaly")
+    severity: str = Field(default="MEDIUM", description="Severity level (HIGH, MEDIUM, LOW)")
+    z_score: float | None = Field(default=None, description="Statistical Z-score if applicable")
+
+    model_config = {"extra": "ignore"}
+
+
+class InsightItem(BaseModel):
+    """Business insight observation grounded strictly in extracted data."""
+
+    category: str = Field(..., description="Insight category (dominance, trend, stability, variance, ratio)")
+    statement: str = Field(..., description="Business insight statement")
+    evidence: str = Field(..., description="Data-backed evidence supporting the insight")
+
+    model_config = {"extra": "ignore"}
+
+
+class ConversationTurn(BaseModel):
+    """Single turn in a chat session for a loaded chart image."""
+
+    role: str = Field(..., description="Role ('user' or 'assistant')")
+    content: str = Field(..., description="Message text content")
+    timestamp: float = Field(..., description="Unix timestamp of message")
+    intent: QuestionIntent | None = Field(default=None, description="Detected intent if user message")
+
+    model_config = {"extra": "ignore"}
+
+
+class ConversationalAnalystResult(PipelineResult):
+    """Enriched output produced by Conversational AI Chart Analyst assistant."""
+
+    intent: QuestionIntent = Field(default=QuestionIntent.OTHER, description="Detected question intent")
+    intent_confidence: float = Field(default=0.90, ge=0.0, le=1.0, description="Intent classification confidence score")
+    statistics: StatisticalSummary = Field(default_factory=StatisticalSummary, description="Descriptive statistical metrics")
+    anomalies: list[AnomalyItem] = Field(default_factory=list, description="Detected statistical anomalies")
+    insights: list[InsightItem] = Field(default_factory=list, description="Generated business insights")
+    confidence_level: ConfidenceLevel = Field(default=ConfidenceLevel.HIGH, description="Qualitative confidence rating")
+    short_answer: str = Field(default="", description="Concise direct response")
+    explanation: str = Field(default="", description="Detailed contextual explanation")
+    data_justification: str = Field(default="", description="Data-backed justification")
+    conversation_history: list[ConversationTurn] = Field(default_factory=list, description="Chat turn history for session")
+
