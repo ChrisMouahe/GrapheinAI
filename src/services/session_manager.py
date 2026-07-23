@@ -92,6 +92,14 @@ class AnalysisSessionManager:
             self._session_history[self.active_session.session_id] = self.active_session
             self._save_sessions_to_disk()
 
+    def get_session(self, session_id: str) -> AnalysisSession | None:
+        """Retrieves session by session_id from history or active session."""
+        if session_id in self._session_history:
+            return self._session_history[session_id]
+        if self.active_session and self.active_session.session_id == session_id:
+            return self.active_session
+        return None
+
     def get_session_history(self) -> list[AnalysisSession]:
         """Returns sorted list of all historical sessions (newest first)."""
         sessions = list(self._session_history.values())

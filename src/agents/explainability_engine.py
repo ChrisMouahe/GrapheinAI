@@ -99,7 +99,7 @@ class ExplainabilityEngine:
 
         # 6. Overall Confidence Score & Categorical Level
         val_res = getattr(pipeline_result, "validation_result", None)
-        conf = getattr(val_res, "confidence_score", 0.96) if val_res else 0.96
+        conf = getattr(val_res, "overall_confidence", getattr(val_res, "confidence_score", 0.96)) if val_res else 0.96
         conf_pct = int(conf * 100) if conf <= 1.0 else int(conf)
         conf_pct = min(100, max(0, conf_pct))
 

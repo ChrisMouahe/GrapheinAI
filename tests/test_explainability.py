@@ -5,7 +5,7 @@ import pytest
 
 from src.agents.explainability_engine import ExplainabilityEngine, XAIBreakdownReport
 from src.app.api import app
-from src.models.chart import ChartExtraction, ExtractedDataPoint, PipelineResult, ValidationResult
+from src.models.chart import ChartExtraction, ClassificationResult, ExtractedDataPoint, PipelineResult, ValidationResult
 
 
 @pytest.fixture
@@ -31,10 +31,17 @@ def sample_pipeline_result():
             ],
             extraction_source="OpenCV + Gemini Flash",
         ),
-        interpreted_text="Analyse des ventes : augmentation au Q2 suivie d'une stabilisation.",
+        final_answer="234.00",
         calculation_expression="sum([68.0, 88.0, 78.0]) = 234.00",
+        reasoning="Calcul du total des ventes Q1 à Q3",
+        complexity=ClassificationResult(
+            question="Quel est le total ?",
+            complexity="SIMPLE",
+            is_complex=False,
+            confidence=0.99,
+        ),
         retrieved_examples=[{"question": "Ventes totales", "answer": "234.00"}],
-        validation_result=ValidationResult(is_valid=True, confidence_score=0.96, validation_notes="AST calcul valide"),
+        validation_result=ValidationResult(is_valid=True, confidence_score=0.96, validation_notes=["AST calcul valide"]),
     )
 
 
@@ -78,17 +85,17 @@ def test_explainability_report_all_fields_populated(explainability_engine, sampl
 def test_confidence_level_mapping(explainability_engine, sample_pipeline_result):
     """Verifies mapping of confidence scores to Élevé, Moyen, and Faible."""
     # High confidence (>=90%)
-    sample_pipeline_result.validation_result.confidence_score = 0.95
+    sample_pipeline_result.validation_result.overall_confidence = 0.95
     report_high = explainability_engine.generate_xai_report(sample_pipeline_result, target_language="fr")
     assert report_high.confidence_level == "Élevé"
 
     # Medium confidence (70-89%)
-    sample_pipeline_result.validation_result.confidence_score = 0.78
+    sample_pipeline_result.validation_result.overall_confidence = 0.78
     report_med = explainability_engine.generate_xai_report(sample_pipeline_result, target_language="fr")
     assert report_med.confidence_level == "Moyen"
 
     # Low confidence (<70%)
-    sample_pipeline_result.validation_result.confidence_score = 0.55
+    sample_pipeline_result.validation_result.overall_confidence = 0.55
     report_low = explainability_engine.generate_xai_report(sample_pipeline_result, target_language="fr")
     assert report_low.confidence_level == "Faible"
 

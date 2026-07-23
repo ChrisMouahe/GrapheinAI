@@ -33,7 +33,7 @@ from src.models.admin import (
     ToggleSuspensionRequest,
     UpdateUserRoleRequest,
 )
-from src.models.chart import ChartExtraction, ChartImage, ExtractedDataPoint, PipelineResult
+from src.models.chart import ChartExtraction, ChartImage, ClassificationResult, ExtractedDataPoint, PipelineResult
 from src.models.session import AnalysisSession, SessionStatus
 from src.models.user import (
     AuthCredentials,
@@ -440,12 +440,20 @@ def get_session_explainability_report(
     if not session or not session.last_result:
         # Fallback response for missing session history
         dummy_res = PipelineResult(
+            final_answer="100.0",
             extracted_data=ChartExtraction(
                 chart_type="bar",
                 title="Sample Chart",
                 data_points=[ExtractedDataPoint(label="Var A", value=100.0)],
             ),
-            interpreted_text="Analyse des données visuelles",
+            calculation_expression="100.0",
+            reasoning="Analyse directe des données du graphique",
+            complexity=ClassificationResult(
+                question="Sample Question",
+                complexity="SIMPLE",
+                is_complex=False,
+                confidence=1.0,
+            ),
         )
         xai = explainability_engine.generate_xai_report(dummy_res, target_language=target_language)
         return xai.model_dump()
