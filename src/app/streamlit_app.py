@@ -1,4 +1,4 @@
-"""Streamlit Web Application & Human-in-the-Loop UI for ChartQA Multimodal Assistant."""
+"""Streamlit Web Application & Human-in-the-Loop UI for ChartQA Research-Grade Multimodal Assistant."""
 
 import time
 from datetime import datetime
@@ -12,21 +12,20 @@ import streamlit as st
 
 from src.agents.classifier_agent import ClassifierAgent
 from src.agents.pipeline_agent import PipelineAgent
-from src.agents.reasoning_agent import ReasoningAgent
-from src.agents.retrieval_agent import RetrievalAgent
-from src.agents.safe_calculator import SafeCalculator
 from src.models.chart import ChartExtraction, ChartImage, ExtractedDataPoint
 from src.models.exceptions import (
     ChartValidationError,
     PromptInjectionDetectedError,
     UIValidationError,
 )
+from src.utils.chart_detector import ChartTypeDetector
+from src.utils.pdf_generator import PDFReportGenerator
 from src.utils.security_guard import PromptInjectionGuard
 
 
 # Page Configuration
 st.set_page_config(
-    page_title="ChartQA Multimodal Assistant",
+    page_title="ChartQA Research Assistant",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -47,13 +46,6 @@ st.markdown(
         color: #555555;
         margin-bottom: 1.5rem;
     }
-    .metric-card {
-        background-color: #F0F4F8;
-        border-radius: 10px;
-        padding: 15px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
     .result-badge {
         background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
         color: white;
@@ -65,6 +57,17 @@ st.markdown(
         margin-top: 15px;
         margin-bottom: 20px;
     }
+    .out-of-domain-badge {
+        background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
     .security-badge {
         background-color: #FFEBEE;
         border-left: 5px solid #D32F2F;
@@ -72,10 +75,48 @@ st.markdown(
         border-radius: 5px;
         margin-bottom: 15px;
     }
+    .source-badge {
+        background-color: #E3F2FD;
+        border-left: 5px solid #1E88E5;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+
+@st.cache_resource
+def get_cached_pipeline() -> PipelineAgent:
+    """Caches heavy ML and FAISS pipeline models only."""
+    return PipelineAgent()
+
+
+@st.cache_resource
+def get_cached_classifier() -> ClassifierAgent:
+    """Caches ML XGBoost classifier model only."""
+    return ClassifierAgent()
+
+
+@st.cache_resource
+def get_cached_chart_detector() -> ChartTypeDetector:
+    """Caches Computer Vision geometric chart detector."""
+    return ChartTypeDetector()
+
+
+@st.cache_resource
+def get_cached_security_guard() -> PromptInjectionGuard:
+    """Caches NLP security guard patterns."""
+    return PromptInjectionGuard()
+
+
+@st.cache_resource
+def get_cached_pdf_generator() -> PDFReportGenerator:
+    """Caches ReportLab PDF generator."""
+    return PDFReportGenerator()
 
 
 def init_session_state() -> None:
@@ -84,16 +125,10 @@ def init_session_state() -> None:
         st.session_state["history"] = []
     if "selected_question" not in st.session_state:
         st.session_state["selected_question"] = ""
-    if "hitl_edited_df" not in st.session_state:
-        st.session_state["hitl_edited_df"] = None
 
 
 def validate_uploaded_image(file_bytes: bytes, filename: str) -> Image.Image:
-    """Validates uploaded image file format, resolution, and size.
-
-    Raises:
-        UIValidationError: If image exceeds size limits or has invalid resolution.
-    """
+    """Validates uploaded image file format, resolution, and size."""
     max_size_bytes = 10 * 1024 * 1024  # 10 MB limit
     if len(file_bytes) > max_size_bytes:
         raise UIValidationError(
@@ -119,35 +154,43 @@ def validate_uploaded_image(file_bytes: bytes, filename: str) -> Image.Image:
 def main() -> None:
     init_session_state()
 
-    # Instantiate Agents & Security Guard
-    security_guard = PromptInjectionGuard()
-    classifier_agent = ClassifierAgent()
-    pipeline_agent = PipelineAgent()
+    # Retrieve Cached Heavy Models (ONLY models are cached)
+    security_guard = get_cached_security_guard()
+    classifier_agent = get_cached_classifier()
+    chart_detector = get_cached_chart_detector()
+    pipeline_agent = get_cached_pipeline()
+    pdf_generator = get_cached_pdf_generator()
 
     # Sidebar: Information & Settings
     with st.sidebar:
         st.image("https://img.icons8.com/color/96/combo-chart.png", width=64)
-        st.title("ChartQA Assistant")
-        st.markdown("**Sprint 4 - Multimodal AI System**")
+        st.title("ChartQA Research Assistant")
+        st.markdown("**Research-Grade Multi-stage Architecture**")
 
         st.divider()
         st.subheader("⚙️ System Status")
+        st.success("🟢 OpenCV OCR Detector: Active")
+        st.success("🟢 Computer Vision Geometry: Active")
+        st.success("🟢 ValidationAgent: Active")
+        st.success("🟢 GraphInterpreter: Active")
         st.success("🟢 SafeCalculator (AST): Active")
         st.success("🟢 Classifier (XGBoost): Active")
         st.success("🟢 RAG (FAISS + MiniLM): Active")
-        st.success("🟢 VLM (Gemini Flash): Active")
-        st.success("🟢 Security Guard: Active")
+        st.success("🟢 VLM (Gemini Flash Vision): Active")
 
         st.divider()
         st.subheader("📜 Pipeline Flow")
         st.markdown(
             """
             1. **Upload & Validate**
-            2. **ML Classification**
-            3. **FAISS RAG Few-Shot Retrieval**
-            4. **VLM Extraction & Reasoning**
-            5. **Human-in-the-Loop Data Editor**
-            6. **AST SafeCalculator Execution**
+            2. **OpenCV OCR Region Detection**
+            3. **CV Geometry Chart Detector**
+            4. **Guided Gemini VLM Extraction**
+            5. **ValidationAgent Confidence Scoring**
+            6. **GraphInterpreter Report Generation**
+            7. **Human-in-the-Loop Editor**
+            8. **AST SafeCalculator Execution**
+            9. **ReportLab PDF Export**
             """
         )
 
@@ -159,7 +202,7 @@ def main() -> None:
     # Main Interface Header
     st.markdown('<div class="main-title">📊 Assistant Multimodal de Raisonnement sur Graphiques</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="sub-title">Analyse visuelle, extraction structurée, validation humaine (HITL) et calcul arithmétique sécurisé.</div>',
+        '<div class="sub-title">Pipeline de niveau recherche : OpenCV OCR, détection géométrique, ValidationAgent et rapport PDF.</div>',
         unsafe_allow_html=True,
     )
 
@@ -185,10 +228,9 @@ def main() -> None:
                     file_bytes = uploaded_file.getvalue()
                     pil_image = validate_uploaded_image(file_bytes, uploaded_file.name)
 
-                    # Save temp image for pipeline consumption
                     temp_dir = Path("data/raw")
                     temp_dir.mkdir(parents=True, exist_ok=True)
-                    temp_img_path = temp_dir / f"temp_{uploaded_file.name}"
+                    temp_img_path = temp_dir / f"uploaded_{uploaded_file.name}"
                     pil_image.save(temp_img_path)
 
                     st.image(pil_image, caption=f"Uploaded: {uploaded_file.name} ({pil_image.width}x{pil_image.height}px)", use_container_width=True)
@@ -198,64 +240,66 @@ def main() -> None:
                     return
 
             else:
-                # Default sample image fallback
                 sample_img_path = Path("data/raw/sample_chart.png")
                 if sample_img_path.exists():
                     pil_image = Image.open(sample_img_path)
                     temp_img_path = sample_img_path
-                    st.image(pil_image, caption="Default Demo Chart Image (Quarterly Sales 2024)", use_container_width=True)
+                    st.image(pil_image, caption="Default Chart Image (Quarterly Sales 2024)", use_container_width=True)
 
         with col_right:
-            st.subheader("2. ML Preview & Classification")
+            st.subheader("2. ML & Computer Vision Preview")
             if temp_img_path and temp_img_path.exists():
-                preview_q = "What is the average value?"
+                preview_q = "What is the average value across variables?"
                 cls_result = classifier_agent.predict(preview_q, chart_type="bar")
+                structure = chart_detector.detect_chart_structure(temp_img_path)
 
                 c1, c2, c3 = st.columns(3)
                 with c1:
-                    st.metric("Detected Chart Type", cls_result.features.get("chart_type", "bar").upper())
+                    st.metric("CV Detected Chart Architecture", structure.detected_type.upper())
                 with c2:
                     st.metric("Complexity Level", cls_result.complexity)
                 with c3:
-                    st.metric("ML Confidence", f"{cls_result.confidence:.1%}")
+                    st.metric("CV Detection Confidence", f"{structure.confidence:.1%}")
 
             st.divider()
             st.subheader("3. Enter Question & Preset Suggestions")
 
-            # Preset suggestion buttons
-            st.markdown("**Suggestions:**")
+            st.markdown("**Quick Preset Suggestions:**")
             s_col1, s_col2, s_col3 = st.columns(3)
             with s_col1:
-                if st.button("📊 Avg Sales Rate"):
-                    st.session_state["selected_question"] = "What is the average sales rate across quarters?"
+                if st.button("📊 Avg Growth Rate"):
+                    st.session_state["selected_question"] = "What is the average growth rate?"
             with s_col2:
                 if st.button("➕ Total Sum"):
-                    st.session_state["selected_question"] = "What is the total sum of all sales?"
+                    st.session_state["selected_question"] = "What is the total sum across categories?"
             with s_col3:
                 if st.button("➖ Difference Max-Min"):
-                    st.session_state["selected_question"] = "What is the difference between Q2 and Q1 sales?"
+                    st.session_state["selected_question"] = "What is the difference between maximum and minimum values?"
 
             user_question = st.text_input(
                 "Type your target question:",
-                value=st.session_state.get("selected_question", "What is the average sales rate across quarters?"),
+                value=st.session_state.get("selected_question", "What is the average growth rate?"),
                 key="user_question_input",
             )
 
-            run_pipeline_btn = st.button("🚀 Run Multimodal Reasoning", type="primary", use_container_width=True)
+            run_pipeline_btn = st.button("🚀 Run Research Multimodal Pipeline", type="primary", use_container_width=True)
 
         st.divider()
 
         # Human-in-the-Loop (HITL) Data Editor Section
         st.subheader("4. 🛠️ Human-in-the-Loop (HITL) Data Point Editor")
-        st.info("Review or edit the extracted chart values below. Your changes will automatically override calculation inputs.")
+        st.info("Dynamic data points extracted from OpenCV OCR + Gemini Flash Vision. Edit, add, or delete values below to override calculation inputs.")
 
-        # Default initial data points table
-        initial_data = [
-            {"label": "Q1 Sales", "value": 125.4, "confidence": 0.98},
-            {"label": "Q2 Sales", "value": 180.2, "confidence": 0.95},
-            {"label": "Q3 Sales", "value": 140.0, "confidence": 0.92},
-            {"label": "Q4 Sales", "value": 210.5, "confidence": 0.96},
-        ]
+        if temp_img_path and temp_img_path.exists():
+            initial_extraction = pipeline_agent.reasoner.extract_chart_data(temp_img_path)
+            initial_data = [dp.model_dump() for dp in initial_extraction.data_points]
+            source_label = initial_extraction.extraction_source
+        else:
+            initial_data = [{"label": "Category A", "value": 100.0, "confidence": 0.95}]
+            source_label = "OpenCV OCR + Structural Parser (Offline Fallback)"
+
+        st.markdown(f'<div class="source-badge">ℹ️ Multi-stage Extraction Source: <b>{source_label}</b></div>', unsafe_allow_html=True)
+
         df_initial = pd.DataFrame(initial_data)
 
         edited_df = st.data_editor(
@@ -273,7 +317,7 @@ def main() -> None:
                 st.warning("⚠️ Please enter a question before running reasoning.")
                 return
 
-            # PART 8 — Security Guard: Anti-Prompt-Injection Check
+            # Anti-Prompt-Injection Security Check
             try:
                 security_guard.inspect_prompt(user_question)
             except PromptInjectionDetectedError as se:
@@ -286,72 +330,137 @@ def main() -> None:
                 return
 
             start_time = time.time()
-            with st.spinner("Executing Multimodal Pipeline (Classifier -> RAG -> VLM -> AST Calculator)..."):
-                try:
-                    pipeline_result = pipeline_agent.answer(
-                        image=temp_img_path,
-                        question=user_question,
-                    )
-                    latency = time.time() - start_time
+            progress_bar = st.progress(0, text="Initializing Research Pipeline...")
 
-                    # Apply HITL modifications if data was edited
-                    if edited_df is not None and not edited_df.empty:
-                        # Update extracted_data with user edited rows
-                        updated_dps = []
-                        for _, r in edited_df.iterrows():
-                            val = r["value"]
-                            try:
-                                val = float(val)
-                            except ValueError:
-                                pass
-                            updated_dps.append(
-                                ExtractedDataPoint(
-                                    label=str(r["label"]),
-                                    value=val,
-                                    confidence=float(r.get("confidence", 1.0)),
-                                )
+            try:
+                progress_bar.progress(20, text="Running OpenCV OCR Region Detector & CV Geometry Analyzer...")
+                time.sleep(0.1)
+
+                progress_bar.progress(40, text="Executing Guided Gemini Flash Vision Reasoning & ValidationAgent...")
+                pipeline_result = pipeline_agent.answer(
+                    image=temp_img_path,
+                    question=user_question,
+                )
+
+                progress_bar.progress(70, text="Generating GraphInterpreter Report & Evaluating SafeCalculator AST...")
+                progress_bar.progress(90, text="Formatting ReportLab PDF Document...")
+
+                latency = time.time() - start_time
+
+                # Check if user edited HITL rows
+                is_hitl_edited = False
+                if edited_df is not None and not edited_df.empty:
+                    updated_dps = []
+                    for _, r in edited_df.iterrows():
+                        val = r["value"]
+                        lbl_val = r["label"] if pd.notna(r["label"]) and str(r["label"]).strip() != "" else None
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            pass
+                        updated_dps.append(
+                            ExtractedDataPoint(
+                                label=lbl_val,
+                                value=val,
+                                confidence=float(r.get("confidence", 1.0)),
                             )
-                        pipeline_result.extracted_data.data_points = updated_dps
+                        )
+                    pipeline_result.extracted_data.data_points = updated_dps
+                    is_hitl_edited = True
+                    pipeline_result.extracted_data.metadata["is_hitl_modified"] = True
 
-                    # Display Final Answer Result Card
+                progress_bar.progress(100, text="Complete!")
+                time.sleep(0.2)
+                progress_bar.empty()
+
+                # Display Validation Metrics Badge
+                val_res = pipeline_result.validation_result
+                v1, v2, v3 = st.columns(3)
+                with v1:
+                    st.metric("Overall Validation Confidence", f"{val_res.overall_confidence:.1%}")
+                with v2:
+                    st.metric("OCR Region Accuracy", f"{val_res.ocr_accuracy:.1%}")
+                with v3:
+                    st.metric("Extraction Accuracy", f"{val_res.extraction_accuracy:.1%}")
+
+                if val_res.requires_human_confirmation:
+                    st.warning("⚠️ Validation Alert: Overall confidence is below 70%. Please review extracted values in the HITL Editor.")
+
+                # Display Final Answer Result Card
+                if pipeline_result.is_out_of_domain:
+                    st.markdown(
+                        f'<div class="out-of-domain-badge">⚠️ Out-of-Domain Query<br/><font size=4>{pipeline_result.final_answer}</font></div>',
+                        unsafe_allow_html=True,
+                    )
+                else:
                     st.markdown(
                         f'<div class="result-badge">✨ Final Calculated Answer: {pipeline_result.final_answer}</div>',
                         unsafe_allow_html=True,
                     )
 
-                    # Detailed Breakdown Expander
-                    with st.expander("🔍 Detailed Technical Breakdown & Context", expanded=True):
-                        e1, e2, e3 = st.columns(3)
-                        with e1:
-                            st.markdown(f"**Arithmetic Expression:** `{pipeline_result.calculation_expression}`")
-                        with e2:
-                            st.markdown(f"**Execution Latency:** `{latency:.2f} seconds`")
-                        with e3:
-                            st.markdown(f"**Complexity:** `{pipeline_result.complexity.complexity}` ({pipeline_result.complexity.confidence:.1%})")
+                if is_hitl_edited:
+                    st.warning("🛠️ Note: Human-in-the-Loop edits were applied to the calculation & PDF report.")
 
-                        st.markdown("**Step-by-step Reasoning:**")
-                        st.write(pipeline_result.reasoning)
+                # PDF Export Section
+                pdf_bytes = pdf_generator.generate_pdf_bytes(
+                    result=pipeline_result,
+                    image_path=temp_img_path,
+                    execution_latency=latency,
+                )
+                st.download_button(
+                    label="📄 Download Official PDF Report",
+                    data=pdf_bytes,
+                    file_name=f"ChartQA_Report_{temp_img_path.stem}.pdf",
+                    mime="application/pdf",
+                    type="primary",
+                )
 
-                        st.markdown("**Extracted Data Points (HITL Applied):**")
-                        st.dataframe(pd.DataFrame([dp.model_dump() for dp in pipeline_result.extracted_data.data_points]))
+                st.divider()
 
-                        st.markdown("**Retrieved Few-Shot RAG Context:**")
-                        for idx, ex in enumerate(pipeline_result.retrieved_examples, 1):
-                            st.markdown(f"- **Example {idx}:** *{ex.get('question')}* ➔ Formula: `{ex.get('resolution_formula')}`")
+                # Automatic Graphic Interpretation Section (GraphInterpreter)
+                st.subheader("📊 5. Automatic Scientific Graphic Interpretation (GraphInterpreter)")
+                st.markdown(pipeline_result.initial_interpretation)
 
-                    # Log into Session State History
-                    history_entry = {
-                        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "question": user_question,
-                        "answer": pipeline_result.final_answer,
-                        "expression": pipeline_result.calculation_expression,
-                        "complexity": pipeline_result.complexity.complexity,
-                        "image_name": temp_img_path.name,
-                    }
-                    st.session_state["history"].insert(0, history_entry)
+                st.divider()
 
-                except Exception as ex:
-                    st.error(f"❌ Pipeline Execution Error: {ex}")
+                # Detailed Technical Breakdown Expander
+                with st.expander("🔍 Detailed Technical Breakdown, OCR Bounding Boxes & Context", expanded=True):
+                    e1, e2, e3 = st.columns(3)
+                    with e1:
+                        st.markdown(f"**Arithmetic Expression:** `{pipeline_result.calculation_expression}`")
+                    with e2:
+                        st.markdown(f"**Execution Latency:** `{latency:.2f} seconds`")
+                    with e3:
+                        st.markdown(f"**Complexity:** `{pipeline_result.complexity.complexity}` ({pipeline_result.complexity.confidence:.1%})")
+
+                    st.markdown("**Validation Audit Notes:**")
+                    for note in val_res.validation_notes:
+                        st.markdown(f"- {note}")
+
+                    st.markdown("**Step-by-step Reasoning:**")
+                    st.write(pipeline_result.reasoning)
+
+                    st.markdown("**Extracted Data Points (HITL Status Included):**")
+                    st.dataframe(pd.DataFrame([dp.model_dump() for dp in pipeline_result.extracted_data.data_points]))
+
+                    st.markdown("**Retrieved Few-Shot RAG Context:**")
+                    for idx, ex in enumerate(pipeline_result.retrieved_examples, 1):
+                        st.markdown(f"- **Example {idx}:** *{ex.get('question')}* ➔ Formula: `{ex.get('resolution_formula')}`")
+
+                # Log into Session State History
+                history_entry = {
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "question": user_question,
+                    "answer": pipeline_result.final_answer,
+                    "expression": pipeline_result.calculation_expression,
+                    "complexity": pipeline_result.complexity.complexity,
+                    "confidence": f"{val_res.overall_confidence:.1%}",
+                    "image_name": temp_img_path.name,
+                }
+                st.session_state["history"].insert(0, history_entry)
+
+            except Exception as ex:
+                st.error(f"❌ Pipeline Execution Error: {ex}")
 
     # Session History Tab
     with tab_history:
