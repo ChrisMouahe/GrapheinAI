@@ -41,7 +41,7 @@ def sample_pipeline_result():
             confidence=0.99,
         ),
         retrieved_examples=[{"question": "Ventes totales", "answer": "234.00"}],
-        validation_result=ValidationResult(is_valid=True, confidence_score=0.96, validation_notes=["AST calcul valide"]),
+        validation_result=ValidationResult(ocr_accuracy=0.95, extraction_accuracy=0.98, overall_confidence=0.96, validation_notes=["AST calcul valide"]),
     )
 
 
