@@ -121,6 +121,7 @@ chart_intelligence = ChartIntelligenceEngine()
 pdf_generator = PDFReportGenerator()
 cache_manager = CacheManager()
 session_manager = AnalysisSessionManager(cache_manager=cache_manager)
+supabase_service = SupabaseService()
 recommendation_engine = RecommendationEngine()
 admin_service = EnterpriseAdminService(supabase_service=supabase_service)
 
