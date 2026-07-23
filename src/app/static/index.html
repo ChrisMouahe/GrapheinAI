@@ -605,6 +605,52 @@
                 </div>
               </div>
 
+              <!-- Explainability Engine XAI Panel Card -->
+              <div class="pro-card" id="xai-explainability-card" style="padding: 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                  <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="eye" style="width: 18px; height: 18px; color: var(--accent);"></i> Explicabilité & Transparence (XAI)
+                  </h3>
+                  <div style="display: flex; gap: 8px;">
+                    <span id="xai-conf-badge" class="badge-emerald" style="font-size: 11px;">Score: 96% | Niveau: Élevé</span>
+                  </div>
+                </div>
+
+                <div id="xai-explainability-content" style="font-size: 13px; color: var(--text-primary);">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+                      <span style="font-size: 11px; color: var(--text-secondary); display: block;">Modèle Gemini</span>
+                      <strong id="xai-model" style="font-size: 12px; color: var(--primary);">Gemini Flash 1.5 Vision</strong>
+                    </div>
+                    <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+                      <span style="font-size: 11px; color: var(--text-secondary); display: block;">Temps d'Exécution</span>
+                      <strong id="xai-latency" style="font-size: 12px; color: var(--accent);">0.85 s</strong>
+                    </div>
+                    <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+                      <span style="font-size: 11px; color: var(--text-secondary); display: block;">Confiance Globale</span>
+                      <strong id="xai-score" style="font-size: 12px; color: var(--success);">96 % (Élevé)</strong>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 12px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Sources d'Information Utilisées:</span>
+                    <div id="xai-sources-list" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                      <span class="badge-blue" style="font-size: 10px;">Gemini Flash 1.5 Vision VLM</span>
+                      <span class="badge-blue" style="font-size: 10px;">OpenCV OCR Extractor</span>
+                      <span class="badge-blue" style="font-size: 10px;">SafeCalculator AST</span>
+                      <span class="badge-blue" style="font-size: 10px;">FAISS Vector Store</span>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom: 12px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Calcul AST Évalué:</span>
+                    <code id="xai-ast-formula" style="display: block; background: var(--bg-canvas); padding: 8px; border-radius: 4px; border: 1px solid var(--border); font-size: 12px; margin-top: 4px; color: var(--primary);">
+                      sum([68.0, 88.0, 78.0]) = 234.00
+                    </code>
+                  </div>
+                </div>
+              </div>
+
               <!-- Threaded Comments & Activity Feed Card -->
               <div class="pro-card" style="padding: 24px;">
                 <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
