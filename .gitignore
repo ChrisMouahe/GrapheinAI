@@ -43,3 +43,8 @@ data/processed/plots/
 data/raw/crops/
 data/sessions/
 models/cache/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
