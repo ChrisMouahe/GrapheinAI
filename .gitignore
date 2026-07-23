@@ -40,3 +40,4 @@ coverage.xml
 
 # Data & Output Artifacts
 data/processed/plots/
+models/cache/

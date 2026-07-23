@@ -86,3 +86,48 @@ class ChartImage(BaseModel):
         return exists
 
     model_config = {"extra": "ignore"}
+
+
+class ClassificationResult(BaseModel):
+    """Represents the output of the question complexity classifier."""
+
+    question: str = Field(..., description="Target question text")
+    complexity: str = Field(..., description="Complexity classification ('SIMPLE' or 'COMPLEX')")
+    is_complex: bool = Field(..., description="True if question is COMPLEX, False if SIMPLE")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Prediction probability confidence")
+    features: dict[str, Any] = Field(default_factory=dict, description="Engineered features used for prediction")
+
+    model_config = {"extra": "ignore"}
+
+
+class RAGRetrievalResult(BaseModel):
+    """Represents top-k vector retrieval output from RAG pipeline."""
+
+    query: str = Field(..., description="User search query")
+    top_k: int = Field(..., ge=1, description="Number of results requested")
+    results: list[dict[str, Any]] = Field(default_factory=list, description="Retrieved top-k items with scores")
+
+    model_config = {"extra": "ignore"}
+
+
+class ReasoningOutput(BaseModel):
+    """Represents structured JSON output produced by Gemini Flash Vision ReasoningAgent."""
+
+    extracted_data: ChartExtraction = Field(..., description="Extracted chart data points and metadata")
+    reasoning: str = Field(..., description="Step-by-step reasoning explaining the logic")
+    calculation_expression: str = Field(..., description="Arithmetic expression to be evaluated by SafeCalculator")
+
+    model_config = {"extra": "ignore"}
+
+
+class PipelineResult(BaseModel):
+    """Represents the final output of the master PipelineAgent multimodal reasoning orchestrator."""
+
+    final_answer: float | int | str = Field(..., description="Final calculated answer")
+    extracted_data: ChartExtraction = Field(..., description="Extracted chart data points")
+    calculation_expression: str = Field(..., description="Arithmetic expression evaluated by SafeCalculator")
+    reasoning: str = Field(..., description="Step-by-step reasoning text")
+    complexity: ClassificationResult = Field(..., description="ML complexity classification metadata")
+    retrieved_examples: list[dict[str, Any]] = Field(default_factory=list, description="Few-shot RAG context examples used")
+
+    model_config = {"extra": "ignore"}

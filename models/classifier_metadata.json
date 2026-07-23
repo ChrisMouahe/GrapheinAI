@@ -1,0 +1,95 @@
+{
+  "model_type": "XGBoost",
+  "feature_names": [
+    "has_kw_difference",
+    "has_kw_diff",
+    "has_kw_average",
+    "has_kw_avg",
+    "has_kw_mean",
+    "has_kw_sum",
+    "has_kw_total",
+    "has_kw_ratio",
+    "has_kw_percentage",
+    "has_kw_percent",
+    "has_kw_pct",
+    "has_kw_growth",
+    "has_kw_highest",
+    "has_kw_lowest",
+    "has_kw_max",
+    "has_kw_maximum",
+    "has_kw_min",
+    "has_kw_minimum",
+    "has_kw_compare",
+    "has_kw_compared",
+    "has_kw_increase",
+    "has_kw_decrease",
+    "has_kw_change",
+    "has_kw_rate",
+    "has_kw_more",
+    "has_kw_less",
+    "has_kw_multiplied",
+    "has_kw_divided",
+    "question_len",
+    "num_tokens",
+    "has_math_keyword",
+    "keyword_count",
+    "num_digits",
+    "is_question_mark",
+    "avg_word_len",
+    "chart_type_bar",
+    "chart_type_line",
+    "chart_type_pie",
+    "chart_type_scatter"
+  ],
+  "metrics": {
+    "accuracy": 0.5,
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1_score": 0.6666666666666666,
+    "confusion_matrix": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  "all_results": {
+    "RandomForest": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    "XGBoost": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    "winner": "XGBoost"
+  }
+}

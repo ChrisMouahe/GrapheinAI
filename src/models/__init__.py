@@ -1,6 +1,14 @@
 """Domain models and exceptions for ChartQA Multimodal Assistant."""
 
-from src.models.chart import ChartExtraction, ChartImage, ExtractedDataPoint
+from src.models.chart import (
+    ChartExtraction,
+    ChartImage,
+    ClassificationResult,
+    ExtractedDataPoint,
+    PipelineResult,
+    RAGRetrievalResult,
+    ReasoningOutput,
+)
 from src.models.exceptions import (
     ChartQAError,
     ChartValidationError,
@@ -8,15 +16,31 @@ from src.models.exceptions import (
     DataFileNotFoundError,
     DataPreprocessingError,
     DivisionByZeroCalcError,
+    EmbeddingGenerationError,
+    FeatureEngineeringError,
     ForbiddenASTNodeError,
     InvalidExpressionError,
+    InvalidVLMOutputError,
+    MLModelError,
+    ModelNotFoundError,
+    PipelineError,
+    PromptInjectionDetectedError,
+    RAGPipelineError,
     SafeCalculatorError,
+    SecurityGuardError,
+    UIValidationError,
+    VectorSearchError,
+    VLMReasoningError,
 )
 
 __all__ = [
     "ChartImage",
     "ChartExtraction",
     "ExtractedDataPoint",
+    "ClassificationResult",
+    "RAGRetrievalResult",
+    "ReasoningOutput",
+    "PipelineResult",
     "ChartQAError",
     "SafeCalculatorError",
     "InvalidExpressionError",
@@ -26,4 +50,16 @@ __all__ = [
     "DataFileNotFoundError",
     "DataPreprocessingError",
     "ChartValidationError",
+    "FeatureEngineeringError",
+    "MLModelError",
+    "ModelNotFoundError",
+    "EmbeddingGenerationError",
+    "RAGPipelineError",
+    "VectorSearchError",
+    "VLMReasoningError",
+    "InvalidVLMOutputError",
+    "PipelineError",
+    "SecurityGuardError",
+    "PromptInjectionDetectedError",
+    "UIValidationError",
 ]

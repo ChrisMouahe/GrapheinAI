@@ -56,3 +56,75 @@ class ChartValidationError(ChartQAError):
     """Raised when chart data validation fails."""
 
     pass
+
+
+class FeatureEngineeringError(ChartQAError):
+    """Raised when feature extraction fails."""
+
+    pass
+
+
+class MLModelError(ChartQAError):
+    """Base exception for ML classifier errors."""
+
+    pass
+
+
+class ModelNotFoundError(MLModelError):
+    """Raised when a trained model artifact is not found."""
+
+    pass
+
+
+class EmbeddingGenerationError(ChartQAError):
+    """Raised when embedding generation fails."""
+
+    pass
+
+
+class RAGPipelineError(ChartQAError):
+    """Base exception for RAG pipeline errors."""
+
+    pass
+
+
+class VectorSearchError(RAGPipelineError):
+    """Raised when FAISS vector search fails."""
+
+    pass
+
+
+class VLMReasoningError(ChartQAError):
+    """Base exception for VLM Reasoning Agent errors."""
+
+    pass
+
+
+class InvalidVLMOutputError(VLMReasoningError):
+    """Raised when VLM output fails JSON validation or Pydantic parsing."""
+
+    pass
+
+
+class PipelineError(ChartQAError):
+    """Raised when the master orchestration pipeline encounters an unrecoverable error."""
+
+    pass
+
+
+class SecurityGuardError(ChartQAError):
+    """Base exception for security guard errors."""
+
+    pass
+
+
+class PromptInjectionDetectedError(SecurityGuardError):
+    """Raised when a prompt injection attempt is detected in user input."""
+
+    pass
+
+
+class UIValidationError(ChartQAError):
+    """Raised when user input or file upload fails UI validation."""
+
+    pass
