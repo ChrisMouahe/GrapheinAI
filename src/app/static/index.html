@@ -332,6 +332,11 @@
             <span>Monitoring & SRE</span>
           </button>
 
+          <button id="nav-performance" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('performance')">
+            <i data-lucide="zap" style="width: 18px; height: 18px;"></i>
+            <span>Performance Dashboard</span>
+          </button>
+
           <button id="nav-docs" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="window.open('/docs', '_blank')">
             <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
             <span data-i18n="nav.docs">Documentation API</span>
@@ -762,6 +767,61 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+        <!-- PERFORMANCE DASHBOARD TAB (Admin Only) -->
+        <div id="tab-performance-content" class="fade-in-up hidden">
+          <div class="pro-card" style="padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="zap" style="width: 22px; height: 22px; color: var(--accent);"></i> Enterprise Performance Engine Dashboard
+              </h3>
+              <button class="pro-btn-secondary" onclick="flushPerformanceCache()"><i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i> Vider le Cache</button>
+            </div>
+
+            <!-- Resource metrics 4 cards -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+              <div class="pro-card" style="padding: 16px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Mémoire (RAM)</span>
+                <h3 style="font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 4px;" id="perf-ram">142.5 MB</h3>
+              </div>
+              <div class="pro-card" style="padding: 16px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Utilisation CPU</span>
+                <h3 style="font-size: 22px; font-weight: 800; color: var(--accent); margin-top: 4px;" id="perf-cpu">4.5 %</h3>
+              </div>
+              <div class="pro-card" style="padding: 16px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Nombre d'Analyses</span>
+                <h3 style="font-size: 22px; font-weight: 800; color: var(--success); margin-top: 4px;" id="perf-total-count">142</h3>
+              </div>
+              <div class="pro-card" style="padding: 16px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Hit Ratio Cache</span>
+                <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);" id="perf-cache-ratio">88.5 %</h3>
+              </div>
+            </div>
+
+            <!-- Stage-by-Stage Latencies Breakdown -->
+            <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">Temps de Réponse par Étape de Pipeline</h4>
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+              <div style="padding: 14px; background: var(--bg-canvas); border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-secondary); display: block;">Temps OCR</span>
+                <strong id="perf-t-ocr" style="font-size: 18px; color: var(--primary);">0.150 s</strong>
+              </div>
+              <div style="padding: 14px; background: var(--bg-canvas); border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-secondary); display: block;">Temps Gemini</span>
+                <strong id="perf-t-gemini" style="font-size: 18px; color: var(--accent);">0.485 s</strong>
+              </div>
+              <div style="padding: 14px; background: var(--bg-canvas); border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-secondary); display: block;">Temps FAISS</span>
+                <strong id="perf-t-faiss" style="font-size: 18px; color: var(--success);">0.035 s</strong>
+              </div>
+              <div style="padding: 14px; background: var(--bg-canvas); border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-secondary); display: block;">Temps AST</span>
+                <strong id="perf-t-ast" style="font-size: 18px; color: var(--text-primary);">0.008 s</strong>
+              </div>
+              <div style="padding: 14px; background: var(--bg-canvas); border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 12px; color: var(--text-secondary); display: block;">Temps PDF</span>
+                <strong id="perf-t-pdf" style="font-size: 18px; color: var(--info);">0.230 s</strong>
+              </div>
             </div>
           </div>
         </div>
