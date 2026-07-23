@@ -266,3 +266,116 @@ body {
   color: var(--danger);
   border: 1px solid var(--danger-subtle);
 }
+
+/* ====================================================================
+   PRODUCT POLISH: SKELETON LOADING, TOOLTIPS, ANIMATIONS & RESPONSIVE
+   ==================================================================== */
+
+/* 1. Skeleton Loading Pulse Animation */
+.skeleton-box {
+  display: inline-block;
+  height: 1.25rem;
+  width: 100%;
+  background: linear-gradient(90deg, var(--bg-surface-secondary) 25%, var(--border) 50%, var(--bg-surface-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  border-radius: 0.375rem;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 2. Custom Tooltip System */
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background-color: var(--text-primary);
+  color: var(--bg-surface);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+}
+
+[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 3. Micro-Animations & Elevation Transitions */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.scale-in {
+  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 4. Empty State Containers */
+.empty-state-card {
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: 0.75rem;
+  background-color: var(--bg-surface);
+}
+
+.empty-state-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem auto;
+  color: var(--text-muted);
+}
+
+/* 5. Responsive Design Breakpoints */
+@media (max-width: 1024px) {
+  aside {
+    width: 220px !important;
+  }
+  div[style*="margin-left: 260px"] {
+    margin-left: 220px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  aside {
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  aside.mobile-open {
+    transform: translateX(0);
+  }
+  div[style*="margin-left: 260px"], div[style*="margin-left: 220px"] {
+    margin-left: 0 !important;
+  }
+}
+

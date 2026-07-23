@@ -274,6 +274,33 @@
     </div>
   </div>
 
+  <!-- INTERACTIVE ONBOARDING TOUR MODAL -->
+  <div id="onboarding-modal-backdrop" class="hidden" style="position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(6px); z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="pro-card scale-in" style="width: 100%; max-width: 540px; padding: 32px; position: relative;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: var(--primary-subtle); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+          <i data-lucide="compass" style="width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Guided Product Tour</span>
+          <h2 style="font-size: 20px; font-weight: 800; color: var(--text-primary);" id="tour-step-title">Bienvenue dans GraphEin AI</h2>
+        </div>
+      </div>
+
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;" id="tour-step-desc">
+        Découvrez notre plateforme d'intelligence graphique Enterprise. Suivez ces 3 étapes simples pour analyser vos données visuelles.
+      </p>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px;">
+        <span style="font-size: 12px; color: var(--text-muted);" id="tour-step-indicator">Étape 1 sur 3</span>
+        <div style="display: flex; gap: 8px;">
+          <button class="pro-btn-ghost" onclick="closeTourModal()" style="font-size: 13px;">Passer</button>
+          <button class="pro-btn-primary" onclick="nextTourStep()" style="font-size: 13px;" id="tour-next-btn">Suivant →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- ==================== 2. PROTECTED ENTERPRISE APP WORKSPACE ==================== -->
   <div id="app-workspace" class="hidden" style="display: flex; min-height: 100vh; background: var(--bg-canvas);">
@@ -298,22 +325,22 @@
 
       <!-- Main Navigation Items -->
       <nav style="padding: 20px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px;">
-        <button id="nav-dashboard" class="pro-btn-ghost active" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('dashboard')">
+        <button id="nav-dashboard" class="pro-btn-ghost active" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('dashboard')" data-tooltip="Vue d'ensemble de vos analyses">
           <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
           <span data-i18n="nav.dashboard">Tableau de Bord</span>
         </button>
 
-        <button id="nav-analysis" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('analysis')">
+        <button id="nav-analysis" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('analysis')" data-tooltip="Studio d'analyse graphique VLM & AST">
           <i data-lucide="line-chart" style="width: 18px; height: 18px;"></i>
           <span data-i18n="nav.analysis">Studio d'Analyse</span>
         </button>
 
-        <button id="nav-history" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('history')">
+        <button id="nav-history" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('history')" data-tooltip="Historique des sessions d'analyse">
           <i data-lucide="history" style="width: 18px; height: 18px;"></i>
           <span data-i18n="nav.history">Historique Privé</span>
         </button>
 
-        <button id="nav-reports" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('reports')">
+        <button id="nav-reports" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('reports')" data-tooltip="Export de rapports PDF officiels">
           <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
           <span data-i18n="nav.reports">Rapports PDF</span>
         </button>
@@ -835,6 +862,51 @@
     // Global Frontend State & Auth Controller
     let currentUser = null;
     let currentAuthToken = localStorage.getItem('graphein_auth_token') || null;
+
+    // Onboarding Tour Controller
+    let tourCurrentStep = 0;
+    const tourSteps = [
+      {
+        title: "1. Chargement & Extracteur Visuel",
+        desc: "Importez vos graphiques (Bar, Line, Pie, Scatter) et laissez Gemini Flash Vision et OpenCV extraire instantanément les points de données."
+      },
+      {
+        title: "2. Grille de Données HITL (Human-in-the-Loop)",
+        desc: "Vérifiez et modifiez les valeurs extraites en temps réel dans une grille Notion/Airtable avec tri dynamique et export CSV."
+      },
+      {
+        title: "3. Raisonnement AST & Rapports PDF",
+        desc: "Posez des questions en langage naturel pour exécuter des calculs mathématiques SafeCalculator et exportez un rapport PDF officiel."
+      }
+    ];
+
+    function startOnboardingTour() {
+      tourCurrentStep = 0;
+      updateTourStepView();
+      document.getElementById('onboarding-modal-backdrop').classList.remove('hidden');
+    }
+
+    function updateTourStepView() {
+      const step = tourSteps[tourCurrentStep];
+      document.getElementById('tour-step-title').innerText = step.title;
+      document.getElementById('tour-step-desc').innerText = step.desc;
+      document.getElementById('tour-step-indicator').innerText = `Étape ${tourCurrentStep + 1} sur ${tourSteps.length}`;
+      document.getElementById('tour-next-btn').innerText = (tourCurrentStep === tourSteps.length - 1) ? "Terminer 🎉" : "Suivant →";
+    }
+
+    function nextTourStep() {
+      if (tourCurrentStep < tourSteps.length - 1) {
+        tourCurrentStep++;
+        updateTourStepView();
+      } else {
+        closeTourModal();
+      }
+    }
+
+    function closeTourModal() {
+      document.getElementById('onboarding-modal-backdrop').classList.add('hidden');
+      localStorage.setItem('graphein_tour_completed', 'true');
+    }
 
     // Language Controller
     function changeLanguage(lang) {
