@@ -322,6 +322,11 @@
         <div id="admin-menu-section" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
           <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; padding: 0 12px; display: block; margin-bottom: 8px;">ADMINISTRATION</span>
 
+          <button id="nav-admin-console" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('admin-console')">
+            <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+            <span>Console Admin Enterprise</span>
+          </button>
+
           <button id="nav-monitoring" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('monitoring')">
             <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
             <span>Monitoring & SRE</span>
@@ -655,6 +660,63 @@
 [INFO] [API] Server started on port 8088
 [INFO] [TASK_QUEUE] Task queue initialized with 4 workers
             </pre>
+          </div>
+        <!-- ENTERPRISE ADMIN CONSOLE TAB (Admin Only) -->
+        <div id="tab-admin-console-content" class="fade-in-up hidden">
+          <div class="pro-card" style="padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="shield-check" style="width: 22px; height: 22px; color: var(--primary);"></i> Console d'Administration Enterprise
+              </h3>
+              <div style="display: flex; gap: 8px;">
+                <button class="pro-btn-secondary" onclick="exportAdminBackup()"><i data-lucide="download" style="width: 14px; height: 14px;"></i> Sauvegarder JSON</button>
+                <button class="pro-btn-primary" onclick="generateApiKeyModal()"><i data-lucide="key" style="width: 14px; height: 14px;"></i> Nouvelle Clé API</button>
+              </div>
+            </div>
+
+            <!-- Admin Sub-tabs Navigation -->
+            <div style="display: flex; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
+              <button class="pro-btn-ghost active" onclick="switchAdminSubTab('users')" id="admin-subtab-users">Utilisateurs & Rôles</button>
+              <button class="pro-btn-ghost" onclick="switchAdminSubTab('apikeys')" id="admin-subtab-apikeys">Clés API & Quotas</button>
+              <button class="pro-btn-ghost" onclick="switchAdminSubTab('consumption')" id="admin-subtab-consumption">Consommation IA Gemini</button>
+              <button class="pro-btn-ghost" onclick="switchAdminSubTab('settings')" id="admin-subtab-settings">Paramètres Système</button>
+            </div>
+
+            <!-- Subtab 1: Users & Roles Table -->
+            <div id="admin-panel-users">
+              <table class="pro-table" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>Utilisateur</th>
+                    <th>E-mail</th>
+                    <th>Secteur</th>
+                    <th>Rôle SaaS</th>
+                    <th>Statut Compte</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-tbody">
+                  <tr>
+                    <td><b>System Administrator</b></td>
+                    <td>admin@graphein.ai</td>
+                    <td>Finance</td>
+                    <td><span class="badge-blue">admin</span></td>
+                    <td><span class="badge-emerald">Actif</span></td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td><b>Demo User</b></td>
+                    <td>demo@graphein.ai</td>
+                    <td>Marketing</td>
+                    <td><span class="badge-blue">editor</span></td>
+                    <td><span class="badge-emerald">Actif</span></td>
+                    <td>
+                      <button class="pro-btn-ghost" style="padding: 4px 8px;" onclick="toggleUserSuspension('demo_user_123', true)">Suspendre</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 

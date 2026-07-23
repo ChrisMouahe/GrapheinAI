@@ -23,6 +23,16 @@ from src.agents.recommendation_engine import RecommendationEngine
 from src.agents.retrieval_agent import RetrievalAgent
 from src.agents.safe_calculator import SafeCalculator
 from src.agents.validation_agent import ValidationAgent
+from src.models.admin import (
+    AdminConsumptionReport,
+    ApiKey,
+    BackupPayload,
+    CreateApiKeyRequest,
+    SystemQuota,
+    SystemSettings,
+    ToggleSuspensionRequest,
+    UpdateUserRoleRequest,
+)
 from src.models.chart import ChartExtraction, ChartImage, ExtractedDataPoint, PipelineResult
 from src.models.session import AnalysisSession, SessionStatus
 from src.models.user import (
@@ -42,6 +52,7 @@ from src.models.workspace import (
     ShareLinkRequest,
     Workspace,
 )
+from src.services.admin_service import EnterpriseAdminService
 from src.services.cache_manager import CacheManager
 from src.services.collaboration_service import CollaborationService
 from src.services.email_service import EmailService
@@ -93,6 +104,7 @@ task_queue_manager = TaskQueueManager()
 explainability_engine = ExplainabilityEngine()
 confidence_calculator = ConfidenceCalculator()
 data_anomaly_detector = DataAnomalyDetector()
+admin_service = EnterpriseAdminService()
 
 ocr_engine = OCREngine()
 chart_detector = ChartTypeDetector()
@@ -105,6 +117,7 @@ supabase_service = SupabaseService()
 recommendation_engine = RecommendationEngine()
 email_service = EmailService()
 collaboration_service = CollaborationService(email_service=email_service)
+admin_service = EnterpriseAdminService(supabase_service=supabase_service)
 
 # Global Agent Instances
 pipeline_agent = PipelineAgent(chart_intelligence=chart_intelligence)
@@ -156,6 +169,11 @@ def get_current_user(authorization: str | None = Header(None)) -> UserProfile:
             status_code=401,
             detail="Accès non autorisé. Veuillez vous connecter à votre compte GrapheinAI.",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+    if getattr(user, "is_suspended", False):
+        raise HTTPException(
+            status_code=403,
+            detail="Compte suspendu par l'administrateur. Veuillez contacter le support.",
         )
     return user
 
@@ -268,14 +286,10 @@ def update_user_profile(
 
 
 @app.get("/api/admin/users")
-def admin_get_users(admin_user: UserProfile = Depends(require_admin)) -> dict[str, Any]:
-    """Admin-only endpoint retrieving system user monitoring metrics."""
-    return {
-        "admin": admin_user.name,
-        "role": admin_user.role,
-        "status": "System operational",
-        "user_count": len(supabase_service._mock_users),
-    }
+def admin_get_users(admin_user: UserProfile = Depends(require_admin)) -> list[dict[str, Any]]:
+    """Admin-only endpoint listing all registered user profiles."""
+    users = admin_service.list_all_users()
+    return [u.model_dump() for u in users]
 
 
 # --------------------------------------------------------------------
@@ -1064,6 +1078,129 @@ def get_admin_system_logs(
 ) -> list[dict[str, Any]]:
     """Returns in-memory structured logs for Admin SRE log viewer."""
     return structured_logger.get_admin_logs(limit=limit, level_filter=level)
+
+
+# ====================================================================
+# ENTERPRISE ADMINISTRATION CONSOLE ENDPOINTS (Admin Only)
+# ====================================================================
+
+@app.put("/api/admin/users/{user_id}/role")
+def update_user_role_admin_endpoint(
+    user_id: str,
+    req: UpdateUserRoleRequest,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Updates user role ('admin', 'editor', 'commenter', 'viewer')."""
+    updated_user = admin_service.update_user_role(user_id, req.role)
+    structured_logger.info("ADMIN", f"Role updated for '{user_id}' to '{req.role}'", admin=admin_user.id)
+    return updated_user.model_dump()
+
+
+@app.put("/api/admin/users/{user_id}/suspend")
+def toggle_user_suspension_admin_endpoint(
+    user_id: str,
+    req: ToggleSuspensionRequest,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Toggles user account suspension status."""
+    updated_user = admin_service.set_user_suspension(user_id, req.is_suspended)
+    structured_logger.info("ADMIN", f"User '{user_id}' suspension set to {req.is_suspended}", admin=admin_user.id)
+    return updated_user.model_dump()
+
+
+@app.delete("/api/admin/users/{user_id}")
+def delete_user_admin_endpoint(
+    user_id: str,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Deletes a user account."""
+    success = admin_service.delete_user(user_id)
+    structured_logger.info("ADMIN", f"Deleted user '{user_id}'", admin=admin_user.id)
+    return {"success": success, "user_id": user_id}
+
+
+@app.get("/api/admin/apikeys")
+def list_api_keys_admin_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> list[dict[str, Any]]:
+    """Lists all Enterprise API keys."""
+    keys = admin_service.list_api_keys()
+    return [k.model_dump() for k in keys]
+
+
+@app.post("/api/admin/apikeys")
+def generate_api_key_admin_endpoint(
+    req: CreateApiKeyRequest,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Generates a new Enterprise API key (gk_live_...)."""
+    key_item, raw_secret = admin_service.generate_api_key(
+        user_id=admin_user.id,
+        name=req.name,
+        monthly_quota=req.monthly_quota,
+    )
+    structured_logger.info("ADMIN", f"Generated API Key '{key_item.id}'", admin=admin_user.id)
+    res = key_item.model_dump()
+    res["raw_secret_key"] = raw_secret
+    return res
+
+
+@app.delete("/api/admin/apikeys/{key_id}")
+def revoke_api_key_admin_endpoint(
+    key_id: str,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Revokes an API Key."""
+    success = admin_service.revoke_api_key(key_id)
+    return {"success": success, "key_id": key_id}
+
+
+@app.get("/api/admin/settings")
+def get_system_settings_admin_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Gets system settings & feature flags."""
+    return admin_service.get_system_settings().model_dump()
+
+
+@app.put("/api/admin/settings")
+def update_system_settings_admin_endpoint(
+    settings: SystemSettings,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Updates system settings & feature flags."""
+    updated = admin_service.update_system_settings(settings)
+    return updated.model_dump()
+
+
+@app.get("/api/admin/consumption")
+def get_admin_consumption_report_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Gets Gemini token & analysis metrics consumption report."""
+    report = admin_service.get_consumption_report()
+    return report.model_dump()
+
+
+@app.get("/api/admin/backup")
+def export_system_backup_admin_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Exports a complete system JSON snapshot backup."""
+    backup = admin_service.create_system_backup()
+    structured_logger.info("ADMIN", "Exported system backup snapshot", admin=admin_user.id)
+    return backup.model_dump()
+
+
+@app.post("/api/admin/restore")
+def restore_system_backup_admin_endpoint(
+    backup: BackupPayload,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Restores system state from JSON backup payload."""
+    success = admin_service.restore_system_backup(backup)
+    structured_logger.info("ADMIN", f"Restored system backup: {success}", admin=admin_user.id)
+    return {"success": success}
 
 
 # Serve static single-page web app at root

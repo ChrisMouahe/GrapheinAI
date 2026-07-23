@@ -276,6 +276,7 @@ class SupabaseService:
                 langue=u_data.get("langue", "fr"),
                 pays=u_data.get("pays", "France"),
                 role=u_data.get("role", "standard_user"),
+                is_suspended=u_data.get("is_suspended", False),
                 date_inscription=u_data.get("date_inscription", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
                 derniere_connexion=u_data.get("derniere_connexion", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
                 total_analyses=total_analyses,
