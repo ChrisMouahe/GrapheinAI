@@ -51,11 +51,12 @@ from src.models.workspace import (
     ShareAnalysisRequest,
     ShareLinkRequest,
     Workspace,
+    WorkspaceMember,
 )
+from src.services.email import EmailService, NotificationService
 from src.services.admin_service import EnterpriseAdminService
 from src.services.cache_manager import CacheManager
 from src.services.collaboration_service import CollaborationService
-from src.services.email_service import EmailService
 from src.services.observability_service import ObservabilityService
 from src.services.performance_monitor import PerformanceMonitor, PerformanceStageMetrics
 from src.services.queue_manager import EnterpriseQueueManager
@@ -124,6 +125,10 @@ session_manager = AnalysisSessionManager(cache_manager=cache_manager)
 supabase_service = SupabaseService()
 recommendation_engine = RecommendationEngine()
 admin_service = EnterpriseAdminService(supabase_service=supabase_service)
+
+# Enterprise Email Platform Instances
+email_service = EmailService()
+notification_service = NotificationService(email_service=email_service)
 
 # Enterprise Performance Engine Instances
 performance_monitor = PerformanceMonitor()
@@ -1291,6 +1296,119 @@ def flush_performance_cache_endpoint(
     cache_manager.clear_all()
     structured_logger.info("PERFORMANCE", "Flushed all multi-tier performance caches", user=current_user.id)
     return {"status": "success", "message": "Tous les caches de performance ont été réinitialisés avec succès."}
+
+
+# ====================================================================
+# ENTERPRISE EMAIL PLATFORM & INVITATION ENDPOINTS
+# ====================================================================
+
+class SendInvitationPayload(BaseModel):
+    workspace_id: str = Field(default="default_workspace")
+    invitee_email: str = Field(...)
+    role: str = Field(default="editor")
+
+class SwitchProviderPayload(BaseModel):
+    provider_name: str = Field(..., description="Target provider ('maildev', 'resend', 'brevo', 'smtp')")
+
+@app.post("/api/invitations/send")
+def send_workspace_invitation_endpoint(
+    payload: SendInvitationPayload,
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Issues a signed JWT workspace invitation and dispatches invitation email."""
+    inv_record = email_service.invitation_manager.create_invitation(
+        inviter_user_id=current_user.id,
+        workspace_id=payload.workspace_id,
+        invitee_email=payload.invitee_email,
+        role=payload.role,
+    )
+    job = email_service.sendWorkspaceInvitation(
+        to_email=payload.invitee_email,
+        inviter_name=current_user.name or current_user.email,
+        workspace_name=payload.workspace_id,
+        invitation_token=inv_record.token,
+        role=payload.role,
+        lang=current_user.langue or "fr",
+    )
+    return {
+        "status": "success",
+        "invitation_id": inv_record.invitation_id,
+        "job_id": job.job_id,
+        "token": inv_record.token,
+        "message": f"Invitation envoyée avec succès à {payload.invitee_email}",
+    }
+
+
+@app.get("/api/invitations/verify")
+def verify_invitation_token_endpoint(token: str) -> dict[str, Any]:
+    """Verifies and previews a signed invitation JWT token."""
+    try:
+        token_payload = email_service.token_service.verify_token(token, expected_action="workspace_invite")
+        return {
+            "valid": True,
+            "email": token_payload.email,
+            "workspace_id": token_payload.workspace_id,
+            "role": token_payload.role,
+            "expires_at": token_payload.exp,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/invitations/accept")
+def accept_invitation_token_endpoint(
+    token: str = Form(...),
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Validates invitation token, joins workspace, and revokes token to prevent replay."""
+    try:
+        result = email_service.invitation_manager.verify_and_accept_invitation(token, accepting_user_id=current_user.id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/admin/email/metrics")
+def get_email_admin_metrics_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Retrieves real-time email dispatch metrics, latency, success rate, and active provider."""
+    return email_service.queue.get_metrics()
+
+
+@app.get("/api/admin/email/logs")
+def get_email_admin_logs_endpoint(
+    admin_user: UserProfile = Depends(require_admin),
+) -> list[dict[str, Any]]:
+    """Retrieves recent email dispatches log for Admin Console monitoring."""
+    jobs = email_service.queue.get_all_jobs()
+    return [j.model_dump() for j in jobs]
+
+
+@app.post("/api/admin/email/retry/{job_id}")
+def retry_failed_email_job_endpoint(
+    job_id: str,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Retries a failed email dispatch job."""
+    success = email_service.queue.retry_job(job_id)
+    if not success:
+        raise HTTPException(status_code=400, detail="Impossible de réétendre ce job d'email (introuvable ou non échoué).")
+    return {"status": "success", "message": f"Job d'email {job_id} relancé."}
+
+
+@app.post("/api/admin/email/provider")
+def switch_email_provider_admin_endpoint(
+    payload: SwitchProviderPayload,
+    admin_user: UserProfile = Depends(require_admin),
+) -> dict[str, Any]:
+    """Dynamically switches active email provider ('maildev', 'resend', 'brevo', 'smtp')."""
+    email_service.set_provider(payload.provider_name)
+    return {
+        "status": "success",
+        "provider": email_service.provider.provider_name,
+        "message": f"Fournisseur d'emails changé vers {email_service.provider.provider_name}",
+    }
 
 
 # ====================================================================
