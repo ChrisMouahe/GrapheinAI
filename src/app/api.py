@@ -126,9 +126,10 @@ supabase_service = SupabaseService()
 recommendation_engine = RecommendationEngine()
 admin_service = EnterpriseAdminService(supabase_service=supabase_service)
 
-# Enterprise Email Platform Instances
+# Enterprise Email Platform & Collaboration Instances
 email_service = EmailService()
 notification_service = NotificationService(email_service=email_service)
+collaboration_service = CollaborationService(email_service=email_service)
 
 # Enterprise Performance Engine Instances
 performance_monitor = PerformanceMonitor()
@@ -795,14 +796,17 @@ def list_user_workspaces(
     return [w.model_dump() for w in workspaces]
 
 
+class CreateWorkspacePayload(BaseModel):
+    name: str = Field(...)
+    description: str = Field(default="")
+
 @app.post("/api/workspaces")
 def create_user_workspace(
-    name: str = Form(...),
-    description: str = Form(""),
+    payload: CreateWorkspacePayload,
     current_user: UserProfile = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Creates a new enterprise workspace."""
-    ws = collaboration_service.create_workspace(name=name, owner=current_user, description=description)
+    ws = collaboration_service.create_workspace(name=payload.name, owner=current_user, description=payload.description)
     return ws.model_dump()
 
 
@@ -827,18 +831,15 @@ def add_workspace_member_endpoint(
     # Check if target user account exists
     target_profile = supabase_service.get_profile_by_email(email)
     if not target_profile:
-        # User account does not exist -> Create invitation and send email via MailDev
         signed_link = collaboration_service.create_signed_share_link(
             actor=current_user,
             workspace_id=workspace_id,
             role=role,
         )
-        collaboration_service.email_service.send_invitation_email(
-            recipient_email=email,
-            inviter_name=current_user.name,
-            resource_name="Workspace",
-            share_url=signed_link.share_url,
-            expires_at=signed_link.expires_at,
+        collaboration_service.email_service.sendWorkspaceInvitation(
+            to_email=email,
+            inviter_name=current_user.name or current_user.email,
+            workspace_name=workspace_id,
             role=role,
         )
         return {
@@ -857,6 +858,40 @@ def add_workspace_member_endpoint(
         "status": "added",
         "member": member.model_dump(),
     }
+
+
+class WorkspaceSharePayload(BaseModel):
+    email: str = Field(...)
+    role: str = Field(default="editor")
+
+@app.post("/api/workspaces/{workspace_id}/share")
+def share_workspace_alias_endpoint(
+    workspace_id: str,
+    payload: WorkspaceSharePayload,
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Shares workspace with collaborator via JSON payload."""
+    return add_workspace_member_endpoint(workspace_id=workspace_id, email=payload.email, role=payload.role, current_user=current_user)
+
+
+class WorkspaceCommentPayload(BaseModel):
+    comment_text: str = Field(...)
+    parent_id: str | None = Field(default=None)
+
+@app.post("/api/workspaces/{workspace_id}/comments")
+def add_workspace_comment_alias_endpoint(
+    workspace_id: str,
+    payload: WorkspaceCommentPayload,
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Adds comment to workspace via JSON payload."""
+    comment = collaboration_service.add_comment(
+        analysis_id=workspace_id,
+        author=current_user,
+        text=payload.comment_text,
+        parent_id=payload.parent_id,
+    )
+    return comment.model_dump()
 
 
 @app.delete("/api/workspaces/{workspace_id}/members/{user_id}")
@@ -891,12 +926,10 @@ def share_analysis_endpoint(
             analysis_id=session_id,
             role=role,
         )
-        collaboration_service.email_service.send_invitation_email(
-            recipient_email=email,
-            inviter_name=current_user.name,
-            resource_name=f"Analyse {session_id}",
-            share_url=signed_link.share_url,
-            expires_at=signed_link.expires_at,
+        collaboration_service.email_service.sendCollaboratorInvitation(
+            to_email=email,
+            inviter_name=current_user.name or current_user.email,
+            workspace_name=session_id,
             role=role,
         )
         return {
