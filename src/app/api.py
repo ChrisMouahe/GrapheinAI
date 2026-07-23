@@ -1268,6 +1268,14 @@ def get_system_settings_admin_endpoint(
     return admin_service.get_system_settings().model_dump()
 
 
+@app.get("/api/gemini/metrics")
+def get_gemini_optimization_metrics_endpoint(
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Returns Gemini SRE Optimization, Token & Quota metrics."""
+    return reasoning_agent.gemini_service.quota_manager.get_report().model_dump()
+
+
 @app.put("/api/admin/settings")
 def update_system_settings_admin_endpoint(
     settings: SystemSettings,
