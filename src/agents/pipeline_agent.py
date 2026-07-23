@@ -22,8 +22,10 @@ from src.models.chart import (
     QuestionIntent,
 )
 from src.models.exceptions import PipelineError
+from src.models.user import UserProfile
 from src.utils.anomaly_detector import AnomalyDetector
 from src.utils.chart_detector import ChartTypeDetector
+from src.utils.chart_intelligence_engine import ChartIntelligenceEngine
 from src.utils.ocr_engine import OCREngine
 from src.utils.stat_calculator import StatisticalEngine
 
@@ -31,7 +33,7 @@ logger = logging.getLogger("PipelineAgent")
 
 
 class PipelineAgent:
-    """Master Orchestrator linking Intent Classifier, Statistical Engine, Anomaly Detector, Insight Agent, Conversation Manager, FAISS Retrieval, Gemini Vision, and SafeCalculator."""
+    """Master Orchestrator linking Intent Classifier, Statistical Engine, Anomaly Detector, Insight Agent, Conversation Manager, FAISS Retrieval, Gemini Vision, ChartIntelligenceEngine, and SafeCalculator."""
 
     def __init__(
         self,
@@ -44,6 +46,7 @@ class PipelineAgent:
         intent_classifier: QuestionIntentClassifier | None = None,
         insight_agent: InsightAgent | None = None,
         conversation_manager: ConversationManager | None = None,
+        chart_intelligence: ChartIntelligenceEngine | None = None,
     ) -> None:
         self.classifier = classifier_agent or ClassifierAgent()
         self.retriever = retrieval_agent or RetrievalAgent()
@@ -58,6 +61,7 @@ class PipelineAgent:
 
         self.ocr_engine = OCREngine()
         self.chart_detector = ChartTypeDetector()
+        self.chart_intelligence = chart_intelligence or ChartIntelligenceEngine()
 
     def answer(
         self,
@@ -65,10 +69,16 @@ class PipelineAgent:
         question: str,
         session_id: str | None = None,
         hitl_extraction: ChartExtraction | None = None,
+        target_language: str | None = None,
+        user_profile: UserProfile | None = None,
     ) -> ConversationalAnalystResult:
         """Executes full end-to-end research-grade conversational reasoning pipeline."""
         if not question or not question.strip():
             raise PipelineError("Question string cannot be empty.")
+
+        from src.i18n.language_manager import LanguageManager
+        i18n_mgr = LanguageManager()
+        target_lang = target_language if target_language in ["fr", "en"] else i18n_mgr.detect_language(question)
 
         if isinstance(image, ChartImage):
             chart_img = image
@@ -77,19 +87,26 @@ class PipelineAgent:
             chart_img = ChartImage(id=img_p.stem, file_path=img_p)
 
         sid = session_id or chart_img.id
-        logger.info(f"Pipeline processing image: '{chart_img.file_path.resolve()}' | Session: '{sid}' | Question: '{question}'")
+        logger.info(f"Pipeline processing image: '{chart_img.file_path.resolve()}' | Session: '{sid}' | Question: '{question}' | Lang: '{target_lang}'")
 
         try:
-            # 1. Classify Intent & Preprocess Image Structure
+            # 1. Classify Intent & Preprocess Image Structure with ChartIntelligenceEngine
             intent, intent_conf = self.intent_classifier.classify(question)
             ocr_boxes = self.ocr_engine.detect_ocr_text_boxes(chart_img.file_path)
             structure_info = self.chart_detector.detect_chart_structure(chart_img.file_path)
+
+            # Execute ChartIntelligenceEngine BEFORE VLM Vision
+            chart_metadata = self.chart_intelligence.analyze_image(chart_img.file_path, ocr_boxes)
 
             # 2. Extract or reuse HITL chart data
             if hitl_extraction and hitl_extraction.data_points:
                 extraction = hitl_extraction
             else:
-                extraction = self.reasoner.extract_chart_data(chart_img.file_path)
+                extraction = self.reasoner.extract_chart_data(chart_img.file_path, metadata=chart_metadata)
+
+            # Reconcile Computer Vision metadata with Gemini VLM output
+            vlm_type = extraction.chart_type if extraction else None
+            chart_metadata = self.chart_intelligence.reconcile_with_vlm(chart_metadata, vlm_type, vlm_confidence=0.92)
 
             # 3. Compute Analytics: Statistics, Anomalies, Insights
             stats = StatisticalEngine.compute_summary(extraction)
@@ -122,23 +139,25 @@ class PipelineAgent:
                     insights_text=insights_text,
                     history_text=history_text,
                     intent=intent.value,
+                    target_language=target_lang,
+                    user_profile=user_profile,
                 )
                 calc_expr = reasoning_out.calculation_expression
                 if calc_expr == "UNANSWERABLE" or reasoning_out.is_out_of_domain:
-                    final_answer = "Cette question ne peut pas être calculée à partir des données du graphique."
+                    final_answer = "This question cannot be calculated from the chart data." if target_lang == "en" else "Cette question ne peut pas être calculée à partir des données du graphique."
                 else:
                     final_answer = self.calculator.evaluate(calc_expr)
 
-                short_ans = f"Résultat du calcul : {final_answer}"
-                explanation = f"Calcul basé sur la formule : {calc_expr}."
-                data_just = f"Formule évaluée de manière déterministe via SafeCalculator AST sur les données du graphique ({len(extraction.data_points)} points)."
+                short_ans = f"Calculation result: {final_answer}" if target_lang == "en" else f"Résultat du calcul : {final_answer}"
+                explanation = f"Formula: {calc_expr}." if target_lang == "en" else f"Calcul basé sur la formule : {calc_expr}."
+                data_just = f"Deterministic AST SafeCalculator evaluation ({len(extraction.data_points)} points)." if target_lang == "en" else f"Formule évaluée de manière déterministe via SafeCalculator AST sur les données du graphique ({len(extraction.data_points)} points)."
 
             elif intent == QuestionIntent.STATISTICS:
                 calc_expr = f"mean={stats.mean}, min={stats.minimum}, max={stats.maximum}, std={stats.std_dev}"
-                final_answer = f"Moyenne: {stats.mean}, Min: {stats.minimum}, Max: {stats.maximum}, Écart-type: {stats.std_dev}"
-                short_ans = f"Moyenne de {stats.mean} (Min: {stats.minimum}, Max: {stats.maximum})."
-                explanation = f"Distribution statistique calculée sur {stats.count} observations. Écart-type de {stats.std_dev} et amplitude de {stats.range_amplitude}."
-                data_just = f"Calculs statistiques exacts effectués en Python : {stats_text}."
+                final_answer = f"Mean: {stats.mean}, Min: {stats.minimum}, Max: {stats.maximum}, StdDev: {stats.std_dev}" if target_lang == "en" else f"Moyenne: {stats.mean}, Min: {stats.minimum}, Max: {stats.maximum}, Écart-type: {stats.std_dev}"
+                short_ans = f"Mean of {stats.mean} (Min: {stats.minimum}, Max: {stats.maximum})." if target_lang == "en" else f"Moyenne de {stats.mean} (Min: {stats.minimum}, Max: {stats.maximum})."
+                explanation = f"Statistical distribution over {stats.count} observations." if target_lang == "en" else f"Distribution statistique calculée sur {stats.count} observations. Écart-type de {stats.std_dev} et amplitude de {stats.range_amplitude}."
+                data_just = f"Exact Python statistical calculations: {stats_text}." if target_lang == "en" else f"Calculs statistiques exacts effectués en Python : {stats_text}."
                 reasoning_out = self.reasoner.analyze(
                     image=chart_img,
                     question=question,
@@ -150,6 +169,8 @@ class PipelineAgent:
                     insights_text=insights_text,
                     history_text=history_text,
                     intent=intent.value,
+                    target_language=target_lang,
+                    user_profile=user_profile,
                 )
 
             else:
@@ -164,6 +185,8 @@ class PipelineAgent:
                     insights_text=insights_text,
                     history_text=history_text,
                     intent=intent.value,
+                    target_language=target_lang,
+                    user_profile=user_profile,
                 )
                 calc_expr = reasoning_out.calculation_expression
                 if calc_expr and calc_expr != "UNANSWERABLE":
@@ -174,17 +197,21 @@ class PipelineAgent:
                 else:
                     final_answer = reasoning_out.reasoning
 
-                short_ans = str(final_answer).split(".")[0] + "." if isinstance(final_answer, str) and final_answer else f"Résultat: {final_answer}"
+                short_ans = str(final_answer).split(".")[0] + "." if isinstance(final_answer, str) and final_answer else f"Result: {final_answer}"
                 explanation = reasoning_out.reasoning
-                data_just = f"Analyse guidée par vision Gemini et appuyée par les données extraites ({len(extraction.data_points)} catégories)."
+                data_just = f"Gemini vision analysis grounded in extracted chart data ({len(extraction.data_points)} categories)." if target_lang == "en" else f"Analyse guidée par vision Gemini et appuyée par les données extraites ({len(extraction.data_points)} catégories)."
 
-            # 7. ValidationAgent & Scientific Interpretation
+            # 7. ValidationAgent Validation
             validation_res = self.validator.validate_extraction(
                 extraction=extraction,
                 structure_info=structure_info,
                 ocr_boxes=ocr_boxes,
             )
-            initial_interp = self.graph_interpreter.interpret_chart(extraction)
+            initial_interp = (
+                "Click 'Generate Interpretation' to produce the scientific narrative report."
+                if target_lang == "en"
+                else "Cliquez sur 'Générer une interprétation' pour produire le rapport scientifique."
+            )
 
             # Determine Confidence Rating
             if validation_res.overall_confidence >= 0.85:
@@ -211,6 +238,7 @@ class PipelineAgent:
                 retrieved_examples=retrieved_examples,
                 validation_result=validation_res,
                 chart_structure=structure_info,
+                chart_metadata=chart_metadata,
                 is_out_of_domain=reasoning_out.is_out_of_domain,
                 intent=intent,
                 intent_confidence=intent_conf,

@@ -196,4 +196,4 @@ class TestPipelineAgentOrchestration:
 
         assert result.final_answer == 200.0
         assert result.calculation_expression == "10.0 * 20.0"
-        assert "SCIENTIFIC GRAPHIC INTERPRETATION REPORT" in result.initial_interpretation
+        assert "Generate Interpretation" in result.initial_interpretation or "Générer une interprétation" in result.initial_interpretation

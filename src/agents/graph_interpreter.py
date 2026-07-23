@@ -1,35 +1,61 @@
-"""Independent GraphInterpreter Agent generating scientific narrative reports strictly from validated ChartExtraction models."""
+"""Independent GraphInterpreter Agent generating multi-lingual personalized scientific narrative reports."""
 
 import logging
 from typing import Any
 
 from src.models.chart import ChartExtraction
+from src.models.user import UserProfile
+from src.agents.recommendation_engine import PersonalizedRecommendations, RecommendationEngine
 
 logger = logging.getLogger("GraphInterpreter")
 
 
 class GraphInterpreter:
-    """Agent responsible for producing a ~1-page professional scientific narrative report from validated ChartExtraction tabular data without receiving the raw image."""
+    """Agent producing professional scientific narrative reports tailored to UserProfile and PersonalizedRecommendations."""
 
-    def interpret_chart(self, extraction: ChartExtraction) -> str:
-        """Generates an independent scientific narrative analysis report based on structured chart data.
+    def __init__(self) -> None:
+        self.recommendation_engine = RecommendationEngine()
+
+    def interpret_chart(
+        self,
+        extraction: ChartExtraction,
+        target_language: str = "fr",
+        user_profile: UserProfile | None = None,
+        recommendations: PersonalizedRecommendations | None = None,
+    ) -> str:
+        """Generates a personalized scientific narrative analysis report based on structured chart data and user profile.
 
         Args:
             extraction: Validated ChartExtraction model.
+            target_language: Target output language ("fr" or "en").
+            user_profile: UserProfile model for personalization.
+            recommendations: Optional pre-computed PersonalizedRecommendations.
 
         Returns:
-            Markdown formatted scientific narrative report string.
+            Markdown formatted personalized scientific narrative report string.
         """
-        logger.info(f"GraphInterpreter analyzing extracted data for chart: '{extraction.title or 'Statistical Analysis'}'")
+        lang = target_language.lower() if target_language in ["fr", "en"] else "fr"
+        is_en = lang == "en"
 
-        dps = extraction.data_points
+        title = extraction.title or ("Analyse Statistique du Graphique" if not is_en else "Statistical Chart Analysis")
         c_type = extraction.chart_type.upper()
-        title = extraction.title or "Statistical Chart Analysis"
+        logger.info(f"GraphInterpreter analyzing chart: '{title}' [lang={lang}]")
 
+        # Compute recommendations if not supplied
+        recs = recommendations or self.recommendation_engine.generate_recommendations(
+            extraction=extraction,
+            user_profile=user_profile,
+            target_language=lang,
+        )
+
+        dps = extraction.data_points or []
         vals = [float(dp.value) for dp in dps if isinstance(dp.value, (int, float))]
 
         if not vals:
-            return f"### SCIENTIFIC GRAPHIC INTERPRETATION REPORT\n**Chart Architecture:** `{c_type}`\n\nNo valid numerical data points available for statistical analysis."
+            if not is_en:
+                return f"### RAPPORT D'INTERPRÉTATION AI BUSINESS ANALYST\n**Architecture du Graphique:** `{c_type}`\n\nAucune donnée numérique valide disponible pour l'analyse."
+            else:
+                return f"### AI BUSINESS ANALYST INTERPRETATION REPORT\n**Chart Architecture:** `{c_type}`\n\nNo valid numerical data points available for statistical analysis."
 
         max_val = max(vals)
         min_val = min(vals)
@@ -40,46 +66,124 @@ class GraphInterpreter:
         max_label = next((dp.label for dp in dps if dp.value == max_val and dp.label is not None), "N/A")
         min_label = next((dp.label for dp in dps if dp.value == min_val and dp.label is not None), "N/A")
 
-        report_lines: list[str] = [
-            "### AUTOMATIC SCIENTIFIC GRAPHIC INTERPRETATION REPORT",
-            f"**Chart Architecture:** `{c_type}` | **Extraction Mode:** `{extraction.extraction_source}`",
-            "",
-            "#### 1. Description & Context Architecture",
-            f"The analyzed dataset represents a `{c_type}` structure entitled *\"{title}\"*.",
-            f"Primary X-Axis Variable: `{extraction.x_label or 'Categories'}` | Secondary Y-Axis Variable: `{extraction.y_label or 'Magnitude'}`.",
-            f"The dataset consists of **{len(dps)} distinct observed data points**.",
-            "",
-            "#### 2. Represented Variables & Quantitative Breakdown",
-        ]
+        job_str = (user_profile.fonction if user_profile else "Analyste / Décideur").strip() or "Analyste"
+        sect_str = (user_profile.secteur_activite if user_profile else "Finance").strip() or "Finance"
 
-        for dp in dps:
-            lbl_str = dp.label if dp.label is not None else "[Unreadable Label]"
-            report_lines.append(f"- **{lbl_str}:** `{dp.value}` (Extraction Confidence: {dp.confidence:.2%})")
-
-        report_lines.extend(
-            [
+        if not is_en:
+            report_lines = [
+                f"# RAPPORT DE SYNTHÈSE AI BUSINESS ANALYST - {title.upper()}",
+                f"**Poste Cible:** `{job_str}` | **Secteur:** `{sect_str}` | **Architecture:** `{c_type}`",
                 "",
-                "#### 3. Key Trends & Statistical Distribution",
-                f"- **Calculated Mean Magnitude:** `{avg_val:.2f} units`",
-                f"- **Cumulative Total Sum:** `{sum_val:.2f} units`",
-                f"- **Statistical Variance Delta:** `{delta_val:.2f} units`",
+                "---",
                 "",
-                "#### 4. Peak Maximum",
-                f"The maximum recorded magnitude occurs at category **{max_label}** with a peak value of **{max_val:.2f} units**.",
+                "### 1. RÉSUMÉ EXÉCUTIF ET CADRAGE STRATÉGIQUE",
+                recs.executive_summary,
                 "",
-                "#### 5. Minimum Threshold",
-                f"The minimum recorded magnitude occurs at category **{min_label}** with a threshold value of **{min_val:.2f} units**.",
-                "",
-                "#### 6. Important Variances & Spread Analysis",
-                f"The relative spread between peak maximum ({max_val:.2f}) and minimum threshold ({min_val:.2f}) represents an absolute variation ratio of **{(max_val / min_val if min_val != 0 else 0):.2f}x**.",
-                "",
-                "#### 7. Structural Anomalies & Distribution Profile",
-                f"Data distribution presents a stable variance profile across observed metrics.",
-                "",
-                "#### 8. Executive Summary & Strategic Insights",
-                f"The quantitative extraction confirms valid statistical distribution across `{extraction.x_label or 'observed categories'}`. "
-                "This structured data provides authoritative inputs for automated mathematical reasoning and decision support systems.",
+                "### 2. DÉCOMPOSITION QUANTITATIVE ET FAITS OBSERVÉS",
             ]
-        )
+            for dp in dps:
+                lbl = dp.label or "[Illisible]"
+                report_lines.append(f"- **{lbl}:** `{dp.value}` (Confiance d'extraction: {dp.confidence:.2%})")
+
+            report_lines.extend([
+                "",
+                "### 3. TENDANCES ET STATISTIQUES CLÉS",
+                f"- **Moyenne du portefeuille / secteur:** `{avg_val:.2f} unités`",
+                f"- **Cumul total observé:** `{sum_val:.2f} unités`",
+                f"- **Pic maximum:** `{max_val:.2f}` (Catégorie: *{max_label}*)",
+                f"- **Seuil minimum:** `{min_val:.2f}` (Catégorie: *{min_label}*)",
+                f"- **Écart d'amplitude (Max - Min):** `{delta_val:.2f} unités`",
+                "",
+                "### 4. RISQUES ET ANOMALIES IDENTIFIÉS",
+            ])
+            for r in recs.risks:
+                report_lines.append(f"- ⚠️ **{r}**")
+
+            report_lines.extend([
+                "",
+                "### 5. OPPORTUNITÉS DE CROISSANCE & DE RENTABILITÉ",
+            ])
+            for o in recs.opportunities:
+                report_lines.append(f"- 🚀 **{o}**")
+
+            report_lines.extend([
+                "",
+                "### 6. RECOMMANDATIONS PRIORITAIRES ET JUSTIFICATION",
+            ])
+            for rec in recs.priority_recommendations:
+                report_lines.append(f"#### [{rec.priority.upper()}] {rec.title}")
+                report_lines.append(f"{rec.description}")
+                report_lines.append(f"_Rationale:_ {rec.rationale}")
+                report_lines.append("")
+
+            report_lines.extend([
+                "### 7. PLAN D'ACTION ET PROCHAINES ÉTAPES",
+            ])
+            for step in recs.action_plan:
+                report_lines.append(f"{step.step_number}. **{step.action}** (Impact attendu: *{step.expected_impact}*, Responsable: *{step.owner}*)")
+
+            report_lines.extend([
+                "",
+                "---",
+                f"_*Garde-fou et Déclaration d'Authenticité:* {recs.disclaimer}_",
+            ])
+        else:
+            report_lines = [
+                f"# AI BUSINESS ANALYST REPORT - {title.upper()}",
+                f"**Target Role:** `{job_str}` | **Industry Sector:** `{sect_str}` | **Architecture:** `{c_type}`",
+                "",
+                "---",
+                "",
+                "### 1. EXECUTIVE SUMMARY & STRATEGIC BRIEFING",
+                recs.executive_summary,
+                "",
+                "### 2. QUANTITATIVE BREAKDOWN & OBSERVED DATA",
+            ]
+            for dp in dps:
+                lbl = dp.label or "[Unreadable]"
+                report_lines.append(f"- **{lbl}:** `{dp.value}` (Extraction Confidence: {dp.confidence:.2%})")
+
+            report_lines.extend([
+                "",
+                "### 3. STATISTICAL TRENDS & KEY METRICS",
+                f"- **Sector / Portfolio Mean:** `{avg_val:.2f} units`",
+                f"- **Total Cumulative Sum:** `{sum_val:.2f} units`",
+                f"- **Maximum Peak:** `{max_val:.2f}` (Category: *{max_label}*)",
+                f"- **Minimum Floor:** `{min_val:.2f}` (Category: *{min_label}*)",
+                f"- **Range Amplitude Gap:** `{delta_val:.2f} units`",
+                "",
+                "### 4. IDENTIFIED RISKS & ANOMALIES",
+            ])
+            for r in recs.risks:
+                report_lines.append(f"- ⚠️ **{r}**")
+
+            report_lines.extend([
+                "",
+                "### 5. GROWTH & PROFITABILITY OPPORTUNITIES",
+            ])
+            for o in recs.opportunities:
+                report_lines.append(f"- 🚀 **{o}**")
+
+            report_lines.extend([
+                "",
+                "### 6. PRIORITY RECOMMENDATIONS & RATIONALE",
+            ])
+            for rec in recs.priority_recommendations:
+                report_lines.append(f"#### [{rec.priority.upper()}] {rec.title}")
+                report_lines.append(f"{rec.description}")
+                report_lines.append(f"_Rationale:_ {rec.rationale}")
+                report_lines.append("")
+
+            report_lines.extend([
+                "### 7. ACTION PLAN & NEXT STEPS",
+            ])
+            for step in recs.action_plan:
+                report_lines.append(f"{step.step_number}. **{step.action}** (Expected Impact: *{step.expected_impact}*, Owner: *{step.owner}*)")
+
+            report_lines.extend([
+                "",
+                "---",
+                f"_*Guardrail Rationale Statement:* {recs.disclaimer}_",
+            ])
 
         return "\n".join(report_lines)

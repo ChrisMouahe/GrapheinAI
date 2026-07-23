@@ -40,4 +40,6 @@ coverage.xml
 
 # Data & Output Artifacts
 data/processed/plots/
+data/raw/crops/
+data/sessions/
 models/cache/

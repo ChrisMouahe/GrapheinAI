@@ -190,6 +190,9 @@ class PipelineResult(BaseModel):
     chart_structure: ChartStructureInfo | None = Field(
         default=None, description="Geometric computer vision structure info"
     )
+    chart_metadata: Any | None = Field(
+        default=None, description="Rich metadata from ChartIntelligenceEngine"
+    )
     is_out_of_domain: bool = Field(
         default=False, description="True if target question cannot be answered from chart data"
     )

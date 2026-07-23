@@ -81,7 +81,8 @@ class ChartTypeDetector:
             )
 
             # Contour analysis for vertical bars vs continuous line polylines
-            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours = cnts[0] if len(cnts) == 2 else cnts[1]
             bar_count = 0
             horizontal_bar_count = 0
 
@@ -95,7 +96,7 @@ class ChartTypeDetector:
                     horizontal_bar_count += 1
 
             # Determine chart type by geometric rules
-            if circles is not None and len(circles[0]) > 0:
+            if circles is not None and circles.size > 0:
                 c_type = "pie"
                 conf = 0.96
             elif horizontal_bar_count >= 3 and horizontal_bar_count > bar_count:

@@ -1,0 +1,142 @@
+{
+  "app": {
+    "title": "GrapheinAI",
+    "subtitle": "Scientific Chart Analysis & Enterprise Analytics SaaS Platform"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "analysis": "Analysis Studio",
+    "history": "History",
+    "reports": "PDF Reports",
+    "stats": "SaaS Analytics",
+    "settings": "Settings",
+    "docs": "API Documentation",
+    "profile": "My Profile",
+    "analyze_btn": "New Analysis",
+    "login": "Sign In"
+  },
+  "landing": {
+    "hero_tag": "Visual AI & Enterprise Analytics",
+    "title": "Enterprise Visual Chart Intelligence SaaS",
+    "subtitle": "Extract, analyze, and interpret visual data with Gemini Flash Vision, OpenCV, and deterministic AST calculation.",
+    "login_btn": "Sign In",
+    "signup_btn": "Create Account",
+    "feature1_title": "Multi-Tenant AI Profiling",
+    "feature1_desc": "Business sector and expertise level automatically injected into Gemini Flash Vision prompts.",
+    "feature2_title": "Supabase RLS Security",
+    "feature2_desc": "Strict PostgreSQL Row Level Security policy enforcing tenant isolation.",
+    "feature3_title": "Notion / Airtable Grid",
+    "feature3_desc": "Interactive HITL editing, dynamic column sorting, and instant CSV metric export."
+  },
+  "dashboard": {
+    "title": "Enterprise Analytics Overview",
+    "total_analyses": "Total Analyses",
+    "questions_asked": "Questions Asked",
+    "avg_latency": "Average Latency",
+    "avg_confidence": "Average Confidence",
+    "pdf_reports": "PDF Reports",
+    "recent_title": "Recent Private Analysis Sessions",
+    "quick_analyze": "Start Chart Analysis"
+  },
+  "datagrid": {
+    "title": "Interactive Data Grid (HITL DataGrid)",
+    "search_placeholder": "Search label or value...",
+    "export_csv": "Export CSV",
+    "add_row": "Add Data Point",
+    "reextract": "Re-extract",
+    "col_label": "Label / Category",
+    "col_value": "Numerical Value",
+    "col_confidence": "Confidence",
+    "col_actions": "Actions"
+  },
+  "auth": {
+    "login_title": "Sign In to your SaaS Workspace",
+    "signup_title": "Create Enterprise Account",
+    "email": "Business Email Address",
+    "password": "Password",
+    "password_confirm": "Confirm Password",
+    "nom": "Last Name",
+    "prenom": "First Name",
+    "entreprise": "Company / Organization",
+    "secteur_activite": "Activity Sector",
+    "secteur_autre": "Specify your industry sector...",
+    "fonction": "Job Title / Function",
+    "niveau_expertise": "Analytics Expertise Level",
+    "annees_experience": "Years of Experience",
+    "terms": "I accept the Terms of Service and Privacy Policy.",
+    "forgot_password": "Forgot Password?",
+    "remember_me": "Remember Me",
+    "sign_in_btn": "Sign In",
+    "sign_up_btn": "Create Enterprise Account",
+    "no_account": "Don't have an account? Sign up",
+    "already_account": "Already have an account? Sign in",
+    "logout_success": "Session logged out and context cleared.",
+    "forgot_title": "Reset Password",
+    "forgot_desc": "Enter your email address to receive reset instructions.",
+    "send_reset": "Send Instructions"
+  },
+  "profile": {
+    "title": "User Profile & AI Personalization",
+    "member_since": "Member since",
+    "total_analyses": "Total Analyses",
+    "total_pdfs": "PDF Reports Generated",
+    "edit_title": "Edit Professional Profile",
+    "save_changes": "Save Profile",
+    "logout_btn": "Log Out",
+    "role": "SaaS Role",
+    "company": "Company",
+    "sector": "Sector",
+    "function": "Job Title",
+    "experience": "Experience",
+    "expertise": "Expertise Level"
+  },
+  "status": {
+    "no_chart": "No chart loaded",
+    "extracting": "Extracting...",
+    "analyzed": "Analysis complete",
+    "interpreted": "Interpretation ready",
+    "conversation_active": "Active conversation"
+  },
+  "alerts": {
+    "upload_confirm": "Uploading a new chart will start a new session and clear current analysis. Continue?",
+    "reextract_success": "Re-extraction completed successfully! Data and statistics updated."
+  },
+  "buttons": {
+    "generate_interpretation": "Generate Interpretation",
+    "reopen_session": "Reopen Analysis"
+  },
+  "hero": {
+    "badge": "AST Security Engine & Scientific Validation Active",
+    "title_part1": "Transform Your Charts into ",
+    "title_gradient": "Actionable Insights",
+    "description": "Multi-stage computer vision platform powered by OpenCV OCR region parsing, geometric classification, Gemini Flash VLM reasoning, and AST SafeCalculator deterministic computation.",
+    "start_studio": "Launch Analysis Studio",
+    "openapi_doc": "OpenAPI Docs"
+  },
+  "capabilities": {
+    "ocr_title": "OpenCV OCR Region Segmenter",
+    "ocr_desc": "Detects bounding boxes [x, y, w, h] of title, X/Y axes, tick marks, and legends before VLM processing.",
+    "validation_title": "Cross-Agent Validation Score",
+    "validation_desc": "Cross-validates OCR boxes, visual geometry, and VLM with weighted confidence metrics and HITL alerts.",
+    "interpreter_title": "GraphInterpreter Narrative Report",
+    "interpreter_desc": "Generates a full 1-page scientific report (Description, Variables, Trends, Max, Min, Anomalies, Synthesis)."
+  },
+  "stepper": {
+    "step1": "Upload & Preview",
+    "step2": "OCR & CV Geometry",
+    "step3": "HITL Data Grid",
+    "step4": "AI Reasoning & Report"
+  },
+  "steps": {
+    "step1_title": "Step 1: Upload Chart Image",
+    "step1_drop": "Drop your chart file here or click to browse",
+    "step1_hint": "Supported formats: PNG, JPG, WEBP. Max size: 10 MB.",
+    "step2_title": "Step 2: OCR Inspection & CV Geometry",
+    "step2_desc": "Segmentation of visual regions and axis detection.",
+    "step3_title": "Step 3: HITL Validation & Data Grid",
+    "step4_title": "Step 4: AI Multi-Agent Reasoning & Report",
+    "ask_placeholder": "Ask a question about this chart...",
+    "btn_send": "Analyze with AI",
+    "download_pdf": "Download PDF Report"
+  }
+}
