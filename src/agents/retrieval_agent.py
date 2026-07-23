@@ -47,3 +47,11 @@ class RetrievalAgent:
             top_k=top_k,
             results=results,
         )
+
+    def reset_index(self) -> None:
+        """Flushes in-memory FAISS index context for isolated session execution."""
+        if hasattr(self.pipeline, "index") and self.pipeline.index is not None:
+            try:
+                self.pipeline.index.reset()
+            except Exception:
+                pass

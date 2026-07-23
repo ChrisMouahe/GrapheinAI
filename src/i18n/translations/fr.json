@@ -1,0 +1,142 @@
+{
+  "app": {
+    "title": "GrapheinAI",
+    "subtitle": "Plateforme SaaS d'Analyse de Graphiques Scientifiques & Enterprise Analytics"
+  },
+  "nav": {
+    "dashboard": "Tableau de Bord",
+    "analysis": "Studio d'Analyse",
+    "history": "Historique",
+    "reports": "Rapports PDF",
+    "stats": "Statistiques SaaS",
+    "settings": "Paramètres",
+    "docs": "Documentation API",
+    "profile": "Mon Profil",
+    "analyze_btn": "Nouvelle Analyse",
+    "login": "Se Connecter"
+  },
+  "landing": {
+    "hero_tag": "IA Visuelle & Analytics d'Entreprise",
+    "title": "Plateforme SaaS d'Intelligence Graphique Enterprise",
+    "subtitle": "Analysez, extrayez et interprétez vos données visuelles avec Gemini Flash Vision, OpenCV et un calcul AST déterministe.",
+    "login_btn": "Se Connecter",
+    "signup_btn": "Créer un Compte",
+    "feature1_title": "Multi-Tenant & Profiling IA",
+    "feature1_desc": "Contexte métier et niveau d'expertise injectés automatiquement dans les invites Gemini Flash Vision.",
+    "feature2_title": "Sécurité RLS Supabase",
+    "feature2_desc": "Protection stricte au niveau des lignes PostgreSQL et isolation totale des données d'entreprise.",
+    "feature3_title": "Grille Notion / Airtable",
+    "feature3_desc": "Édition interactive HITL, tri dynamique et export CSV instantané des métriques."
+  },
+  "dashboard": {
+    "title": "Vue d'Ensemble Enterprise Analytics",
+    "total_analyses": "Analyses Totales",
+    "questions_asked": "Questions Posées",
+    "avg_latency": "Temps Moyen",
+    "avg_confidence": "Précision Moyenne",
+    "pdf_reports": "Rapports PDF",
+    "recent_title": "Dernières Sessions d'Analyse Privées",
+    "quick_analyze": "Lancer une Analyse de Graphique"
+  },
+  "datagrid": {
+    "title": "Grille de Données Interactive (HITL DataGrid)",
+    "search_placeholder": "Rechercher une étiquette ou valeur...",
+    "export_csv": "Exporter en CSV",
+    "add_row": "Ajouter un Point",
+    "reextract": "Ré-extraire",
+    "col_label": "Étiquette / Catégorie",
+    "col_value": "Valeur Numérique",
+    "col_confidence": "Confiance",
+    "col_actions": "Actions"
+  },
+  "auth": {
+    "login_title": "Connexion à votre Espace SaaS",
+    "signup_title": "Création de Compte Enterprise",
+    "email": "Adresse E-mail Professionnelle",
+    "password": "Mot de passe",
+    "password_confirm": "Confirmation du mot de passe",
+    "nom": "Nom",
+    "prenom": "Prénom",
+    "entreprise": "Entreprise / Organisation",
+    "secteur_activite": "Secteur d'Activité",
+    "secteur_autre": "Précisez votre secteur d'activité...",
+    "fonction": "Poste / Fonction",
+    "niveau_expertise": "Niveau d'Expertise en Analytics",
+    "annees_experience": "Années d'Expérience Professionnelle",
+    "terms": "J'accepte les Conditions Générales d'Utilisation et de Confidentialité.",
+    "forgot_password": "Mot de passe oublié ?",
+    "remember_me": "Se souvenir de moi",
+    "sign_in_btn": "Se Connecter",
+    "sign_up_btn": "Créer mon Compte Enterprise",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "already_account": "Déjà un compte ? Se connecter",
+    "logout_success": "Session déconnectée et contexte réinitialisé.",
+    "forgot_title": "Réinitialisation du mot de passe",
+    "forgot_desc": "Saisissez votre e-mail pour recevoir le lien de réinitialisation.",
+    "send_reset": "Envoyer les instructions"
+  },
+  "profile": {
+    "title": "Profil Utilisateur & Personnalisation IA",
+    "member_since": "Membre depuis",
+    "total_analyses": "Analyses Réalisées",
+    "total_pdfs": "Rapports PDF Générés",
+    "edit_title": "Modifier mon Profil Professionnel",
+    "save_changes": "Enregistrer le Profil",
+    "logout_btn": "Se Déconnecter",
+    "role": "Rôle SaaS",
+    "company": "Entreprise",
+    "sector": "Secteur",
+    "function": "Fonction",
+    "experience": "Expérience",
+    "expertise": "Niveau d'Expertise"
+  },
+  "status": {
+    "no_chart": "Aucun graphique chargé",
+    "extracting": "Extraction en cours...",
+    "analyzed": "Analyse terminée",
+    "interpreted": "Interprétation disponible",
+    "conversation_active": "Conversation active"
+  },
+  "alerts": {
+    "upload_confirm": "Le chargement d'un nouveau graphique créera une nouvelle session et effacera l'analyse en cours. Voulez-vous continuer ?",
+    "reextract_success": "Ré-extraction effectuée avec succès ! Les données et les statistiques ont été mises à jour."
+  },
+  "buttons": {
+    "generate_interpretation": "Générer une interprétation",
+    "reopen_session": "Rouvrir l'analyse"
+  },
+  "hero": {
+    "badge": "Moteur de Sécurité AST & Validation Scientifique Actif",
+    "title_part1": "Transformez vos Graphiques en ",
+    "title_gradient": "Perspectives Décisives",
+    "description": "Plateforme de vision par ordinateur multiniveau propulsée par le découpage de zones de texte OCR OpenCV, la classification géométrique de graphiques, le raisonnement VLM Gemini Flash et le calcul déterministe AST SafeCalculator.",
+    "start_studio": "Lancer le Studio d'Analyse",
+    "openapi_doc": "Documentation OpenAPI"
+  },
+  "capabilities": {
+    "ocr_title": "Segmentateur de Régions OCR OpenCV",
+    "ocr_desc": "Détecte les boîtes englobantes [x, y, w, h] du titre, des axes X/Y, des graduations et légendes avant transmission au VLM.",
+    "validation_title": "Score de Validation Cross-Agents",
+    "validation_desc": "Inter-valide les boîtes OCR, la géométrie visuelle et le VLM avec des métriques de confiance pondérées et alertes HITL.",
+    "interpreter_title": "Rapport Narratif GraphInterpreter",
+    "interpreter_desc": "Génère un rapport scientifique complet de 1 page (Description, Variables, Tendances, Max, Min, Anomalies, Synthèse)."
+  },
+  "stepper": {
+    "step1": "Téléversement & Aperçu",
+    "step2": "OCR & Géométrie CV",
+    "step3": "Grille de Données HITL",
+    "step4": "Raisonnement AI & Rapport"
+  },
+  "steps": {
+    "step1_title": "Étape 1 : Téléverser l'Image du Graphique",
+    "step1_drop": "Déposez votre fichier ici ou cliquez pour parcourir",
+    "step1_hint": "Formats acceptés : PNG, JPG, WEBP. Taille max : 10 MB.",
+    "step2_title": "Étape 2 : Inspection OCR & Géométrie CV",
+    "step2_desc": "Segmentation des régions visuelles et détection des graduations.",
+    "step3_title": "Étape 3 : Validation & Grille de Données HITL",
+    "step4_title": "Étape 4 : Raisonnement AI Multi-Agents & Rapport",
+    "ask_placeholder": "Posez une question sur ce graphique...",
+    "btn_send": "Analyser avec l'IA",
+    "download_pdf": "Télécharger le Rapport PDF"
+  }
+}

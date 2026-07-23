@@ -77,7 +77,7 @@ class TestBenchmarkAccuracyAndPerformance:
         ext = reasoner.extract_chart_data(bar_chart_path)
 
         interpreter = GraphInterpreter()
-        report = interpreter.interpret_chart(ext)
+        report = interpreter.interpret_chart(ext, target_language="en")
 
         assert isinstance(report, str)
         assert "SCIENTIFIC GRAPHIC INTERPRETATION REPORT" in report

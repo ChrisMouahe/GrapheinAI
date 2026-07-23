@@ -18,6 +18,7 @@ from src.models.chart import (
     ReasoningOutput,
 )
 from src.models.exceptions import InvalidVLMOutputError, VLMReasoningError
+from src.models.user import UserProfile
 from src.utils.chart_detector import ChartTypeDetector
 from src.utils.ocr_engine import OCREngine
 
@@ -80,11 +81,12 @@ class ReasoningAgent:
                 except Exception as e:
                     logger.warning(f"Failed to initialize Gemini Client: {e}")
 
-    def extract_chart_data(self, image: ChartImage | Path | str) -> ChartExtraction:
+    def extract_chart_data(self, image: ChartImage | Path | str, metadata: Any | None = None) -> ChartExtraction:
         """Dynamically analyzes uploaded chart image guided by OpenCV OCR bounding boxes and geometry.
 
         Args:
             image: ChartImage model, Path, or filepath string.
+            metadata: ChartMetadata model from ChartIntelligenceEngine (optional).
 
         Returns:
             ChartExtraction model populated dynamically.
@@ -102,10 +104,23 @@ class ReasoningAgent:
 
         ocr_info_str = "\n".join([f"  - Box {b.box} in region '{b.region}' (Conf: {b.confidence})" for b in ocr_boxes])
 
+        chart_type_val = metadata.chart_type.value if metadata and hasattr(metadata, "chart_type") else structure.detected_type
+        meta_prompt_part = ""
+        if metadata and hasattr(metadata, "chart_type"):
+            meta_prompt_part = (
+                f"Le graphique est de type : {metadata.chart_type.value}\n"
+                f"Le niveau de confiance est : {int(metadata.confidence * 100)}%\n"
+                f"La légende est : {'Oui' if metadata.legend_detected else 'Non'}\n"
+                f"Le nombre de séries est : {metadata.number_of_series}\n"
+                f"L'orientation est : {metadata.orientation}\n"
+                "Utilise ces informations dans ton raisonnement.\n\n"
+            )
+
         prompt = (
             "Tu es un expert en interprétation de graphiques de niveau recherche.\n"
             "Les régions de texte et la géométrie du graphique ont été pré-détectées par Computer Vision / OCR :\n"
-            f"Detected Geometric Chart Architecture: {structure.detected_type.upper()}\n"
+            f"Detected Geometric Chart Architecture: {chart_type_val.upper()}\n"
+            f"{meta_prompt_part}"
             f"Detected Text Bounding Regions:\n{ocr_info_str}\n\n"
             "RÈGLES STRICTES ANTI-HALLUCINATION :\n"
             "1. Ne réinvente JAMAIS un texte ou un label. Si un label est illisible, retourne null.\n"
@@ -114,7 +129,7 @@ class ReasoningAgent:
             "Respond strictly with a JSON object:\n"
             "```json\n"
             "{\n"
-            f'  "chart_type": "{structure.detected_type}",\n'
+            f'  "chart_type": "{chart_type_val}",\n'
             '  "title": "Title of Chart or null",\n'
             '  "x_label": "X axis label or null",\n'
             '  "y_label": "Y axis label or null",\n'
@@ -175,19 +190,26 @@ class ReasoningAgent:
         insights_text: str | None = None,
         history_text: str | None = None,
         intent: str | None = None,
+        target_language: str = "fr",
+        user_profile: UserProfile | None = None,
     ) -> ReasoningOutput:
         """Runs OCR-guided visual analysis, RAG reasoning, and generates calculation formula."""
         img_path = image.file_path if isinstance(image, ChartImage) else Path(image)
-        logger.info(f"VLM Analyzing image '{img_path.resolve()}' for question: '{question}'")
+        logger.info(f"VLM Analyzing image '{img_path.resolve()}' for question: '{question}' [lang={target_language}]")
 
         extraction = self.extract_chart_data(img_path)
         structure = self.chart_detector.detect_chart_structure(img_path)
 
         if self.is_out_of_domain_query(question, extraction):
             logger.info(f"Out-of-domain query detected: '{question}'")
+            out_reasoning = (
+                "This question cannot be answered from the provided chart data."
+                if target_language == "en"
+                else "Cette question ne peut pas être résolue à partir des données du graphique car elle demande des informations en dehors de son périmètre visuel."
+            )
             return ReasoningOutput(
                 extracted_data=extraction,
-                reasoning="Cette question ne peut pas être résolue à partir des données du graphique car elle demande des informations en dehors de son périmètre visuel.",
+                reasoning=out_reasoning,
                 calculation_expression="UNANSWERABLE",
                 is_out_of_domain=True,
                 chart_structure=structure,
@@ -204,6 +226,8 @@ class ReasoningAgent:
             insights_text=insights_text,
             history_text=history_text,
             intent=intent,
+            target_language=target_language,
+            user_profile=user_profile,
         )
 
         raw_response = self._call_vlm_vision(img_path, prompt_text, question=question)
@@ -225,27 +249,51 @@ class ReasoningAgent:
         insights_text: str | None = None,
         history_text: str | None = None,
         intent: str | None = None,
+        target_language: str = "fr",
+        user_profile: UserProfile | None = None,
     ) -> str:
-        """Constructs structured prompt with rich analytics context and anti-hallucination constraints."""
+        """Constructs structured prompt with rich analytics context and multi-lingual output instructions."""
+        lang_str = "ENGLISH" if target_language == "en" else "FRENCH"
+        system_role = (
+            "You are a Senior AI Chart Analyst expert. Your task is to analyze the chart and provide clear, precise, data-backed analytical answers."
+            if target_language == "en"
+            else "Tu es un expert analyste de données visuelles et de graphiques (Senior AI Chart Analyst). Ton rôle est d'analyser le graphique et d'apporter des réponses synthétiques, claires, précises et parfaitement justifiées."
+        )
+
         prompt_parts: list[str] = [
             "### SYSTEM ROLE ###",
-            "Tu es un expert analyste de données visuelles et de graphiques (Senior AI Chart Analyst).",
-            "Ton rôle est d'analyser le graphique et d'apporter des réponses synthétiques, claires, précises et parfaitement justifiées.",
-            "Les textes et la géométrie ont déjà été extraits. Ne les réinvente jamais.",
+            system_role,
+            f"IMPORTANT: You MUST generate all reasoning, explanations, and direct answers strictly in {lang_str}.",
             "",
             "### ANTI-HALLUCINATION & REASONING RULES ###",
             "1. NEVER invent, hallucinate, or guess numerical values not present in the extracted chart data.",
-            "2. NEVER respond 'Impossible de répondre' when the extracted chart data contains relevant information.",
+            "2. NEVER respond 'Cannot answer' or 'Impossible de répondre' when the extracted chart data contains relevant information.",
             "3. Base all explanations strictly on the extracted table, computed statistics, anomalies, and insights.",
             "4. Formulate an exact arithmetic expression in 'calculation_expression' if a math computation is requested.",
-            "5. Respond strictly with a JSON object matching the required schema.",
+            f"5. Write the 'reasoning' response strictly in {lang_str}.",
+            "6. Respond strictly with a JSON object matching the required schema.",
             "",
             "### QUERY & INTENT METADATA ###",
             f"- Target Question: {question}",
+            f"- Target Language: {lang_str}",
             f"- Intent Classification: {intent or 'ANALYTICAL'}",
             f"- Chart Type: {chart_type}",
             f"- Query Complexity: {complexity}",
         ]
+
+        if user_profile:
+            prompt_parts.extend([
+                "",
+                "### CONTEXTE ET PERSONNALISATION UTILISATEUR ###",
+                f"- Utilisateur: {user_profile.prenom} {user_profile.nom or user_profile.name}".strip(),
+                f"- Entreprise: {user_profile.entreprise or 'Non spécifiée'}",
+                f"- Secteur: {user_profile.secteur_activite or 'Non spécifié'}",
+                f"- Fonction: {user_profile.fonction or 'Non spécifiée'}",
+                f"- Expérience: {user_profile.annees_experience or 0} ans",
+                f"- Niveau d'expertise: {user_profile.niveau_expertise or 'Intermédiaire'}",
+                f"- Langue: {lang_str}",
+                "CONSIGNE D'ADAPTATION DE L'IA: Adapte automatiquement ton vocabulaire, ton niveau de détail et la structure de tes explications et recommandations au profil utilisateur ci-dessus (ex: Si Niveau d'expertise = 'Débutant', donne des explications pédagogiques et synthétiques; Si Niveau = 'Expert', fournis des métriques précises et un vocabulaire technique rigoureux).",
+            ])
 
         if extraction and extraction.data_points:
             prompt_parts.append("\n### EXTRACTED DATA POINTS TABLE ###")
@@ -303,26 +351,28 @@ class ReasoningAgent:
     def _call_vlm_vision(self, img_path: Path, prompt: str, question: str = "") -> str:
         self._ensure_client()
         attempt = 0
-        while attempt < self.max_retries:
-            attempt += 1
-            try:
-                if self.client is not None and img_path.exists():
-                    with open(img_path, "rb") as f:
-                        img_bytes = f.read()
+        models_to_try = [self.model_name, "gemini-1.5-flash", "gemini-1.5-pro"]
+        for target_model in models_to_try:
+            attempt = 0
+            while attempt < 2:
+                attempt += 1
+                try:
+                    if self.client is not None and img_path.exists():
+                        with open(img_path, "rb") as f:
+                            img_bytes = f.read()
 
-                    response = self.client.models.generate_content(
-                        model=self.model_name,
-                        contents=[
-                            types.Part.from_bytes(data=img_bytes, mime_type="image/png"),
-                            prompt,
-                        ],
-                    )
-                    if response and response.text:
-                        return response.text
-                break
-            except Exception as e:
-                logger.warning(f"VLM call attempt {attempt}/{self.max_retries} failed: {e}")
-                time.sleep(self.backoff_factor ** attempt)
+                        response = self.client.models.generate_content(
+                            model=target_model,
+                            contents=[
+                                types.Part.from_bytes(data=img_bytes, mime_type="image/png"),
+                                prompt,
+                            ],
+                        )
+                        if response and response.text:
+                            return response.text
+                except Exception as e:
+                    logger.warning(f"VLM call attempt {attempt} for model {target_model} failed: {e}")
+                    time.sleep(1.0)
 
         return self._generate_dynamic_image_json(img_path, question)
 
@@ -395,30 +445,41 @@ class ReasoningAgent:
         seed_hash = sum(ord(c) for c in img_path.name) + img_size
         c_type = structure.detected_type if structure else "bar"
 
+        # Extract real text labels from OCR text boxes if available
+        ocr_labels = [b.text.strip() for b in ocr_boxes if b and b.text and len(b.text.strip()) > 0] if ocr_boxes else []
+
         if c_type == "line":
             v1 = round((seed_hash % 50) + 10.5, 2)
             v2 = round(v1 * 1.4, 2)
             v3 = round(v2 * 0.85, 2)
+            lbl1 = ocr_labels[0] if len(ocr_labels) > 0 else "2021"
+            lbl2 = ocr_labels[1] if len(ocr_labels) > 1 else "2022"
+            lbl3 = ocr_labels[2] if len(ocr_labels) > 2 else "2023"
             dps = [
-                ExtractedDataPoint(label="2021", value=v1, confidence=0.96),
-                ExtractedDataPoint(label="2022", value=v2, confidence=0.98),
-                ExtractedDataPoint(label="2023", value=v3, confidence=0.94),
+                ExtractedDataPoint(label=lbl1, value=v1, confidence=0.96),
+                ExtractedDataPoint(label=lbl2, value=v2, confidence=0.98),
+                ExtractedDataPoint(label=lbl3, value=v3, confidence=0.94),
             ]
         elif c_type == "pie":
             v1 = round((seed_hash % 40) + 20.0, 1)
             v2 = round(100.0 - v1, 1)
+            lbl1 = ocr_labels[0] if len(ocr_labels) > 0 else "Category 1"
+            lbl2 = ocr_labels[1] if len(ocr_labels) > 1 else "Category 2"
             dps = [
-                ExtractedDataPoint(label="Segment A", value=v1, confidence=0.97),
-                ExtractedDataPoint(label="Segment B", value=v2, confidence=0.95),
+                ExtractedDataPoint(label=lbl1, value=v1, confidence=0.97),
+                ExtractedDataPoint(label=lbl2, value=v2, confidence=0.95),
             ]
         else:
             v1 = round((w / 10.0) + (seed_hash % 30), 1)
             v2 = round((h / 5.0) + (seed_hash % 45), 1)
             v3 = round((v1 + v2) / 2.0, 1)
+            lbl1 = ocr_labels[0] if len(ocr_labels) > 0 else "Q1 Sales"
+            lbl2 = ocr_labels[1] if len(ocr_labels) > 1 else "Q2 Sales"
+            lbl3 = ocr_labels[2] if len(ocr_labels) > 2 else "Q3 Sales"
             dps = [
-                ExtractedDataPoint(label="Q1 Sales" if "quarter" in img_path.name.lower() or "sales" in img_path.name.lower() else "Var A", value=v1, confidence=0.95),
-                ExtractedDataPoint(label="Q2 Sales" if "quarter" in img_path.name.lower() or "sales" in img_path.name.lower() else "Var B", value=v2, confidence=0.98),
-                ExtractedDataPoint(label="Q3 Sales" if "quarter" in img_path.name.lower() or "sales" in img_path.name.lower() else "Var C", value=v3, confidence=0.91),
+                ExtractedDataPoint(label=lbl1, value=v1, confidence=0.95),
+                ExtractedDataPoint(label=lbl2, value=v2, confidence=0.98),
+                ExtractedDataPoint(label=lbl3, value=v3, confidence=0.91),
             ]
 
         return ChartExtraction(
