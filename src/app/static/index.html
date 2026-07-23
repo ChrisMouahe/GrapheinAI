@@ -308,76 +308,81 @@
     <!-- Fixed Sidebar Navigation -->
     <aside style="width: 260px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;">
       
-      <!-- Brand Logo Header -->
-      <div style="height: 72px; padding: 0 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border);">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="8" fill="var(--primary)"/>
-          <circle cx="10" cy="22" r="3" fill="#FFFFFF"/>
-          <circle cx="16" cy="12" r="3" fill="#FFFFFF"/>
-          <circle cx="22" cy="18" r="3" fill="#FFFFFF"/>
-          <path d="M10 22L16 12L22 18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div>
-          <span style="font-size: 18px; font-weight: 800; tracking: -0.5px; color: var(--text-primary); display: block; line-height: 1.1;">Graphein<span style="color: var(--primary);">AI</span></span>
-          <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px;">ENTERPRISE SAAS</span>
+      <!-- Brand Logo Header with Sidebar Collapse Toggle -->
+      <div style="height: 72px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="var(--primary)"/>
+            <circle cx="10" cy="22" r="3" fill="#FFFFFF"/>
+            <circle cx="16" cy="12" r="3" fill="#FFFFFF"/>
+            <circle cx="22" cy="18" r="3" fill="#FFFFFF"/>
+            <path d="M10 22L16 12L22 18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="sidebar-label">
+            <span style="font-size: 18px; font-weight: 800; tracking: -0.5px; color: var(--text-primary); display: block; line-height: 1.1;">Graphein<span style="color: var(--primary);">AI</span></span>
+            <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px;">ENTERPRISE SAAS</span>
+          </div>
         </div>
+        <button id="sidebar-toggle-btn" class="pro-btn-ghost" onclick="toggleSidebar()" data-tooltip="Afficher/Masquer le menu" style="padding: 6px;">
+          <i data-lucide="panel-left-close" style="width: 18px; height: 18px;"></i>
+        </button>
       </div>
 
       <!-- Main Navigation Items -->
       <nav style="padding: 20px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px;">
         <button id="nav-dashboard" class="pro-btn-ghost active" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('dashboard')" data-tooltip="Vue d'ensemble de vos analyses">
           <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
-          <span data-i18n="nav.dashboard">Tableau de Bord</span>
+          <span class="sidebar-label" data-i18n="nav.dashboard">Tableau de Bord</span>
         </button>
 
         <button id="nav-analysis" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('analysis')" data-tooltip="Studio d'analyse graphique VLM & AST">
           <i data-lucide="line-chart" style="width: 18px; height: 18px;"></i>
-          <span data-i18n="nav.analysis">Studio d'Analyse</span>
+          <span class="sidebar-label" data-i18n="nav.analysis">Studio d'Analyse</span>
         </button>
 
         <button id="nav-history" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('history')" data-tooltip="Historique des sessions d'analyse">
           <i data-lucide="history" style="width: 18px; height: 18px;"></i>
-          <span data-i18n="nav.history">Historique Privé</span>
+          <span class="sidebar-label" data-i18n="nav.history">Historique Privé</span>
         </button>
 
         <button id="nav-reports" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('reports')" data-tooltip="Export de rapports PDF officiels">
           <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
-          <span data-i18n="nav.reports">Rapports PDF</span>
+          <span class="sidebar-label" data-i18n="nav.reports">Rapports PDF</span>
         </button>
 
         <!-- ROLE-BASED ADMIN ONLY NAVIGATION ITEMS (Hidden for Standard Users / Guests / Collaborators) -->
         <div id="admin-menu-section" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
-          <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; padding: 0 12px; display: block; margin-bottom: 8px;">ADMINISTRATION</span>
+          <span class="sidebar-label" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; padding: 0 12px; display: block; margin-bottom: 8px;">ADMINISTRATION</span>
 
           <button id="nav-admin-console" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('admin-console')">
             <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
-            <span>Console Admin Enterprise</span>
+            <span class="sidebar-label">Console Admin Enterprise</span>
           </button>
 
           <button id="nav-monitoring" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('monitoring')">
             <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
-            <span>Monitoring & SRE</span>
+            <span class="sidebar-label">Monitoring & SRE</span>
           </button>
 
           <button id="nav-performance" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="switchTab('performance')">
             <i data-lucide="zap" style="width: 18px; height: 18px;"></i>
-            <span>Performance Dashboard</span>
+            <span class="sidebar-label">Performance Dashboard</span>
           </button>
 
           <button id="nav-docs" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="window.open('/docs', '_blank')">
             <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
-            <span data-i18n="nav.docs">Documentation API</span>
+            <span class="sidebar-label" data-i18n="nav.docs">Documentation API</span>
           </button>
         </div>
       </nav>
 
       <!-- Sidebar User Profile Footer -->
       <div style="padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface);">
-        <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="openUserProfileModal()" data-tooltip="Afficher mon profil utilisateur">
           <div id="user-avatar-circle" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #FFF; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px;">
             DU
           </div>
-          <div style="flex: 1; min-width: 0;">
+          <div class="sidebar-label" style="flex: 1; min-width: 0;">
             <span id="user-display-name" style="font-size: 13px; font-weight: 700; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">
               Demo User
             </span>
@@ -385,7 +390,7 @@
               Admin
             </span>
           </div>
-          <button class="pro-btn-ghost" onclick="handleLogout()" title="Déconnexion" style="padding: 6px;">
+          <button class="pro-btn-ghost" onclick="event.stopPropagation(); handleLogout()" title="Déconnexion" style="padding: 6px;">
             <i data-lucide="log-out" style="width: 18px; height: 18px; color: var(--danger);"></i>
           </button>
         </div>
@@ -515,13 +520,12 @@
               </thead>
               <tbody id="dashboard-sessions-tbody">
                 <tr>
-                  <td><code>sess_demo_01</code></td>
-                  <td>sample_chart.png</td>
-                  <td><span class="badge-blue">Bar Chart</span></td>
-                  <td>3 questions</td>
-                  <td><span class="badge-emerald">98 %</span></td>
-                  <td>Aujourd'hui, 11:20</td>
-                  <td><button class="pro-btn-ghost" style="padding: 4px 8px;" onclick="switchTab('analysis')">Rouvrir</button></td>
+                  <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                      <i data-lucide="folder-open" style="width: 32px; height: 32px; color: var(--text-muted);"></i>
+                      <span>Aucune session d'analyse enregistrée. Importez un graphique pour commencer.</span>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -908,18 +912,73 @@
       localStorage.setItem('graphein_tour_completed', 'true');
     }
 
-    // Language Controller
+    // Sidebar Collapse / Expand Controller
+    function toggleSidebar() {
+      const aside = document.querySelector('aside');
+      const mainContent = document.querySelector('main');
+      if (aside) {
+        aside.classList.toggle('sidebar-collapsed');
+        const isCollapsed = aside.classList.contains('sidebar-collapsed');
+        localStorage.setItem('graphein_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+      }
+    }
+
+    // User Profile Modal Controller
+    function openUserProfileModal() {
+      if (!currentUser) return;
+      document.getElementById('modal-user-name').innerText = currentUser.name || (currentUser.prenom + ' ' + currentUser.nom);
+      document.getElementById('modal-user-email').innerText = currentUser.email || '';
+      document.getElementById('modal-user-role').innerText = (currentUser.role || 'standard_user').toUpperCase();
+      document.getElementById('modal-user-company').innerText = currentUser.entreprise || 'Non spécifié';
+      document.getElementById('modal-user-function').innerText = currentUser.fonction || 'Non spécifiée';
+      document.getElementById('modal-user-sector').innerText = currentUser.secteur_activite || 'Finance';
+      document.getElementById('modal-user-expertise').innerText = `${currentUser.niveau_expertise || 'Intermédiaire'} (${currentUser.annees_experience || 0} ans)`;
+      document.getElementById('modal-user-total-analyses').innerText = currentUser.total_analyses || 0;
+      document.getElementById('modal-user-country').innerText = `${currentUser.pays || 'France'} (${(currentUser.langue || 'fr').toUpperCase()})`;
+      
+      const initials = ((currentUser.prenom || '')[0] || 'D') + ((currentUser.nom || '')[0] || 'U');
+      document.getElementById('modal-user-avatar').innerText = initials.toUpperCase();
+
+      document.getElementById('user-profile-modal-backdrop').classList.remove('hidden');
+    }
+
+    function closeUserProfileModal() {
+      document.getElementById('user-profile-modal-backdrop').classList.add('hidden');
+    }
+
+    // Comprehensive Language Controller
     function changeLanguage(lang) {
       document.querySelectorAll('#landing-lang-select, #workspace-lang-select').forEach(s => s.value = lang);
       fetch('/i18n/' + lang + '.json')
         .then(res => res.json())
         .then(dict => {
+          // Translate text content
           document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             const parts = key.split('.');
             let val = dict;
             for (const p of parts) { if (val) val = val[p]; }
-            if (val) el.innerText = val;
+            if (val && typeof val === 'string') el.innerText = val;
+          });
+          // Translate tooltips
+          document.querySelectorAll('[data-tooltip]').forEach(el => {
+            const key = el.getAttribute('data-i18n-tooltip');
+            if (key) {
+              const parts = key.split('.');
+              let val = dict;
+              for (const p of parts) { if (val) val = val[p]; }
+              if (val && typeof val === 'string') el.setAttribute('data-tooltip', val);
+            }
+          });
+          // Translate placeholders
+          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (key) {
+              const parts = key.split('.');
+              let val = dict;
+              for (const p of parts) { if (val) val = val[p]; }
+              if (val && typeof val === 'string') el.setAttribute('placeholder', val);
+            }
           });
         }).catch(err => console.log('i18n load fallback:', err));
     }
@@ -990,6 +1049,12 @@
       const fonction = document.getElementById('signup-fonction').value;
       const niveau_expertise = document.getElementById('signup-expertise').value;
       const annees_experience = parseInt(document.getElementById('signup-experience').value) || 0;
+
+      const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+      if (!pwdRegex.test(password)) {
+        alert("Sécurité du mot de passe : Le mot de passe doit contenir au moins 6 caractères, une lettre majuscule, une lettre minuscule et un chiffre.");
+        return;
+      }
 
       fetch('/api/auth/signup', {
         method: 'POST',
@@ -1074,15 +1139,29 @@
     // Workspace Navigation Tabs
     function switchTab(tabName) {
       document.querySelectorAll('[id^="nav-"]').forEach(btn => btn.classList.remove('active'));
-      document.getElementById('nav-' + tabName)?.classList.add('active');
+      const activeBtn = document.getElementById('nav-' + tabName);
+      if (activeBtn) activeBtn.classList.add('active');
 
-      document.getElementById('tab-dashboard-content').classList.add('hidden');
-      document.getElementById('tab-analysis-content').classList.add('hidden');
-      document.getElementById('tab-history-content').classList.add('hidden');
+      const tabs = [
+        'tab-dashboard-content',
+        'tab-analysis-content',
+        'tab-history-content',
+        'tab-reports-content',
+        'tab-admin-console-content',
+        'tab-monitoring-content',
+        'tab-performance-content'
+      ];
+      tabs.forEach(tId => {
+        const el = document.getElementById(tId);
+        if (el) el.classList.add('hidden');
+      });
 
-      if (tabName === 'analysis') document.getElementById('tab-analysis-content').classList.remove('hidden');
-      else if (tabName === 'history') document.getElementById('tab-history-content').classList.remove('hidden');
-      else document.getElementById('tab-dashboard-content').classList.remove('hidden');
+      const targetEl = document.getElementById('tab-' + tabName + '-content');
+      if (targetEl) {
+        targetEl.classList.remove('hidden');
+      } else {
+        document.getElementById('tab-dashboard-content')?.classList.remove('hidden');
+      }
     }
 
     // Analysis Question Submission
@@ -1369,6 +1448,56 @@
           </div>
         </div>
       </form>
+    </div>
+  <!-- LOGGED IN USER PROFILE MODAL -->
+  <div id="user-profile-modal-backdrop" class="hidden" style="position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1200; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="pro-card scale-in" style="width: 100%; max-width: 500px; padding: 28px; position: relative;">
+      <button onclick="closeUserProfileModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--text-secondary);">
+        <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+      </button>
+
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+        <div id="modal-user-avatar" style="width: 52px; height: 52px; border-radius: 50%; background: var(--primary); color: #FFF; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+          DU
+        </div>
+        <div>
+          <h3 id="modal-user-name" style="font-size: 18px; font-weight: 800; color: var(--text-primary);">Demo User</h3>
+          <span id="modal-user-role" class="badge-blue" style="font-size: 11px;">admin</span>
+          <span id="modal-user-email" style="font-size: 12px; color: var(--text-secondary); display: block; margin-top: 2px;">demo@graphein.ai</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Entreprise</span>
+          <strong id="modal-user-company" style="font-size: 13px;">Graphein Corp</strong>
+        </div>
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Fonction</span>
+          <strong id="modal-user-function" style="font-size: 13px;">Data Analyst</strong>
+        </div>
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Secteur d'Activité</span>
+          <strong id="modal-user-sector" style="font-size: 13px;">Finance</strong>
+        </div>
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Niveau d'Expertise</span>
+          <strong id="modal-user-expertise" style="font-size: 13px;">Expert</strong>
+        </div>
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Analyses Effectuées</span>
+          <strong id="modal-user-total-analyses" style="font-size: 13px; color: var(--primary);">14</strong>
+        </div>
+        <div style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
+          <span style="font-size: 11px; color: var(--text-secondary); display: block;">Pays & Langue</span>
+          <strong id="modal-user-country" style="font-size: 13px;">France (FR)</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="pro-btn-secondary" onclick="closeUserProfileModal()">Fermer</button>
+        <button class="pro-btn-primary" onclick="handleLogout()">Se Déconnecter</button>
+      </div>
     </div>
   </div>
 </body>

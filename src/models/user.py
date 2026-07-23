@@ -1,7 +1,7 @@
 """Enterprise User and authentication Pydantic v2 data models for GrapheinAI."""
 
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class UserProfile(BaseModel):
@@ -60,6 +60,18 @@ class SignupRequest(BaseModel):
     annees_experience: int = Field(default=0, description="Years of professional experience")
     pays: str = Field(default="France", description="Country")
     language: str = Field(default="fr", description="Preferred UI language")
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_complexity(cls, v: str) -> str:
+        import re
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("Le mot de passe doit contenir au moins une lettre majuscule.")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("Le mot de passe doit contenir au moins une lettre minuscule.")
+        if not re.search(r"\d", v):
+            raise ValueError("Le mot de passe doit contenir au moins un chiffre.")
+        return v
 
 
 class AuthResponse(BaseModel):

@@ -22,36 +22,49 @@
   }
 
   function updateThemeIcon(theme) {
-    const iconEl = document.getElementById('theme-icon');
-    if (iconEl) {
-      if (theme === 'dark') {
-        iconEl.setAttribute('data-lucide', 'sun');
-      } else {
-        iconEl.setAttribute('data-lucide', 'moon');
-      }
-      if (window.lucide && window.lucide.createIcons) {
-        window.lucide.createIcons();
-      }
-    }
+    const isDark = theme === 'dark';
+
+    // Topbar header icons
+    const sunIcon = document.getElementById('theme-icon-sun');
+    const moonIcon = document.getElementById('theme-icon-moon');
+    if (sunIcon) sunIcon.style.display = isDark ? 'inline-block' : 'none';
+    if (moonIcon) moonIcon.style.display = isDark ? 'none' : 'inline-block';
+
+    // Landing navbar icons
+    const landingSun = document.getElementById('landing-theme-icon-sun');
+    const landingMoon = document.getElementById('landing-theme-icon-moon');
+    if (landingSun) landingSun.style.display = isDark ? 'inline-block' : 'none';
+    if (landingMoon) landingMoon.style.display = isDark ? 'none' : 'inline-block';
   }
 
-  window.initTheme = function () {
+  const initTheme = function () {
     const currentTheme = getStoredTheme();
     applyTheme(currentTheme);
   };
 
-  window.toggleTheme = function () {
+  const toggleTheme = function () {
     const currentTheme = getStoredTheme();
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     applyTheme(newTheme);
   };
 
-  window.setTheme = function (themeName) {
+  const setTheme = function (themeName) {
     if (themeName === 'dark' || themeName === 'light') {
       applyTheme(themeName);
     }
   };
 
+  // Register on window object
+  window.initTheme = initTheme;
+  window.toggleTheme = toggleTheme;
+  window.setTheme = setTheme;
+  window.ThemeManager = {
+    initTheme,
+    toggleTheme,
+    setTheme,
+    applyTheme,
+  };
+
   // Run initial theme application immediately
-  window.initTheme();
+  initTheme();
 })();

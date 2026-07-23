@@ -1292,6 +1292,20 @@ def flush_performance_cache_endpoint(
     return {"status": "success", "message": "Tous les caches de performance ont été réinitialisés avec succès."}
 
 
+# ====================================================================
+# INTERNATIONALIZATION (i18n) ENDPOINTS
+# ====================================================================
+
+@app.get("/i18n/{lang}.json")
+def get_i18n_translation_file(lang: str) -> Response:
+    """Returns the translation JSON dictionary for fr or en."""
+    lang_code = lang.lower() if lang in ["fr", "en"] else "fr"
+    file_path = Path("src/i18n/translations") / f"{lang_code}.json"
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"Translation file '{lang_code}.json' not found.")
+    return Response(content=file_path.read_text(encoding="utf-8"), media_type="application/json")
+
+
 # Serve static single-page web app at root
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
 

@@ -181,6 +181,15 @@ body {
   color: var(--text-primary);
 }
 
+.pro-btn-ghost.active {
+  background-color: var(--primary-subtle);
+  color: var(--primary);
+  font-weight: 700;
+  border-left: 3px solid var(--primary);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .pro-btn-danger {
   background-color: var(--danger-subtle);
   color: var(--danger);

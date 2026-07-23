@@ -76,7 +76,7 @@ class SupabaseService:
 
         if not isinstance(req, SignupRequest):
             mail = email or "user@graphein.ai"
-            pwd = password or "password123"
+            pwd = password or "Password123"
             disp = name or mail.split("@")[0].capitalize()
             req = SignupRequest(
                 nom="",
