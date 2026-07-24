@@ -22,6 +22,7 @@ class UserProfile(BaseModel):
     langue: str = Field(default="fr", description="Preferred UI language ('fr' or 'en')")
     pays: str | None = Field(default="France", description="Country of residence")
     role: str = Field(default="standard_user", description="SaaS role ('admin', 'standard_user', 'guest', 'collaborator')")
+    is_suspended: bool = Field(default=False, description="True if user account is suspended by Admin")
     date_inscription: str = Field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"), description="Member signup timestamp")
     derniere_connexion: str = Field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"), description="Last login timestamp")
     total_analyses: int = Field(default=0, description="Total private chart analysis sessions performed")

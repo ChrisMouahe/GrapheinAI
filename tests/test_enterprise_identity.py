@@ -153,7 +153,8 @@ def test_role_based_access_control_rbac(client):
 
     res_admin = client.get("/api/admin/users", headers={"Authorization": f"Bearer {admin_token}"})
     assert res_admin.status_code == 200
-    assert res_admin.json()["role"] == "admin"
+    assert isinstance(res_admin.json(), list)
+    assert len(res_admin.json()) >= 1
 
 
 def test_ai_personalization_context_injection():

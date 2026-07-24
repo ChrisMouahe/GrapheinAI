@@ -308,6 +308,53 @@ CREATE TABLE IF NOT EXISTS public.chart_relationships (
 ALTER TABLE public.chart_relationships ENABLE ROW LEVEL SECURITY;
 
 -- --------------------------------------------------------------------
+-- 17. API Keys Table
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.api_keys (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    key_prefix VARCHAR(20) NOT NULL,
+    key_hash VARCHAR(128) NOT NULL,
+    monthly_quota INT DEFAULT 500,
+    usage_count INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE
+);
+
+ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
+
+-- --------------------------------------------------------------------
+-- 18. System Settings Table
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.system_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    maintenance_mode BOOLEAN DEFAULT FALSE,
+    allow_user_signups BOOLEAN DEFAULT TRUE,
+    default_user_role VARCHAR(20) DEFAULT 'viewer',
+    gemini_monthly_token_budget INT DEFAULT 5000000,
+    gemini_consumed_tokens INT DEFAULT 124500,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.system_settings ENABLE ROW LEVEL SECURITY;
+
+-- --------------------------------------------------------------------
+-- 19. System Quotas Table
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.system_quotas (
+    tier_name VARCHAR(50) PRIMARY KEY,
+    max_analyses_per_month INT DEFAULT 100,
+    max_file_size_mb INT DEFAULT 20,
+    max_workspaces INT DEFAULT 5,
+    allow_multi_chart BOOLEAN DEFAULT TRUE,
+    allow_api_keys BOOLEAN DEFAULT TRUE
+);
+
+ALTER TABLE public.system_quotas ENABLE ROW LEVEL SECURITY;
+
+-- --------------------------------------------------------------------
 -- Supabase Storage Buckets & Policies
 -- --------------------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public) 
