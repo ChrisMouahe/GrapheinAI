@@ -350,6 +350,11 @@
           <span class="sidebar-label" data-i18n="nav.reports">Rapports PDF</span>
         </button>
 
+        <button id="nav-settings" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="openSettingsControlModal('profile')" data-tooltip="Paramètres & Configuration">
+          <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+          <span class="sidebar-label">Paramètres</span>
+        </button>
+
         <!-- ROLE-BASED ADMIN ONLY NAVIGATION ITEMS (Hidden for Standard Users / Guests / Collaborators) -->
         <div id="admin-menu-section" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
           <span class="sidebar-label" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; padding: 0 12px; display: block; margin-bottom: 8px;">ADMINISTRATION</span>
@@ -378,8 +383,8 @@
 
       <!-- Sidebar User Profile Footer -->
       <div style="padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface);">
-        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="openUserProfileModal()" data-tooltip="Afficher mon profil utilisateur">
-          <div id="user-avatar-circle" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #FFF; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="openSettingsControlModal('profile')" data-tooltip="Mon Profil & Paramètres">
+          <div id="user-avatar-circle" class="hover-lift" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: #FFF; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; box-shadow: var(--shadow-sm);">
             DU
           </div>
           <div class="sidebar-label" style="flex: 1; min-width: 0;">
@@ -390,7 +395,7 @@
               Admin
             </span>
           </div>
-          <button class="pro-btn-ghost" onclick="event.stopPropagation(); handleLogout()" title="Déconnexion" style="padding: 6px;">
+          <button class="pro-btn-ghost sidebar-label" onclick="event.stopPropagation(); handleLogout()" title="Déconnexion" style="padding: 6px;">
             <i data-lucide="log-out" style="width: 18px; height: 18px; color: var(--danger);"></i>
           </button>
         </div>
@@ -418,12 +423,6 @@
             </select>
           </div>
 
-          <!-- Dynamic User Profile Personalization Badge -->
-          <div id="user-context-badge" class="badge-blue" style="font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
-            <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
-            <span id="user-context-text">IA Personnalisée : Immobilière de construction | Intermédiaire</span>
-          </div>
-
           <!-- Notification Bell -->
           <div style="position: relative;">
             <button class="pro-btn-ghost" onclick="toggleNotificationsMenu()" title="Notifications Centre" style="position: relative;">
@@ -447,11 +446,6 @@
               </div>
             </div>
           </div>
-
-          <!-- ⚙️ Paramètres Button -->
-          <button class="pro-btn-secondary" onclick="openSettingsControlModal('profile')" style="display: flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600;">
-            <i data-lucide="settings" style="width: 16px; height: 16px;"></i> ⚙️ Paramètres
-          </button>
         </div>
       </header>
 
@@ -639,9 +633,12 @@
                       </tr>
                     </thead>
                     <tbody id="datagrid-tbody">
-                      <tr><td>Var A</td><td>120.5</td><td><span class="badge-emerald">0.96</span></td></tr>
-                      <tr><td>Var B</td><td>85.0</td><td><span class="badge-emerald">0.94</span></td></tr>
-                      <tr><td>Var C</td><td>145.2</td><td><span class="badge-emerald">0.98</span></td></tr>
+                      <tr>
+                        <td colspan="3" style="text-align: center; padding: 24px; color: var(--text-secondary);">
+                          <i data-lucide="table" style="width: 24px; height: 24px; margin-bottom: 8px; color: var(--text-muted); display: block; margin-left: auto; margin-right: auto;"></i>
+                          <span>Aucune donnée extraite. Téléversez un graphique pour afficher la grille.</span>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -1549,7 +1546,15 @@
       const tbody = document.getElementById('datagrid-tbody');
       if (!tbody) return;
       if (!dataPoints || dataPoints.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:16px; color:var(--text-secondary);">Aucune donnée extraite.</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 24px; color: var(--text-secondary);">
+              <i data-lucide="table" style="width: 24px; height: 24px; margin-bottom: 8px; color: var(--text-muted); display: block; margin-left: auto; margin-right: auto;"></i>
+              <span>Aucune donnée extraite. Téléversez un graphique pour afficher la grille.</span>
+            </td>
+          </tr>
+        `;
+        if (window.lucide) lucide.createIcons();
         return;
       }
       let html = '';
@@ -1566,6 +1571,7 @@
         `;
       });
       tbody.innerHTML = html;
+      if (window.lucide) lucide.createIcons();
     }
 
     // 2. Permanent 5-Step Stepper Update Handler

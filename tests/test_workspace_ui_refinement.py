@@ -53,9 +53,9 @@ def test_ui_index_html_stepper_and_settings_modal_structure():
     assert 'openSettingsControlModal' in content
     assert 'switchSettingsTab' in content
 
-    # 5. Header Settings gear button & user context text badge
+    # 5. Settings button in sidebar and modal functions
     assert 'openSettingsControlModal' in content
-    assert 'id="user-context-text"' in content
+    assert 'id="nav-settings"' in content
 
 
 def test_design_system_css_saas_classes():

@@ -401,10 +401,11 @@ body {
 }
 
 /* 7. Permanent Horizontal 5-Step SaaS Workflow Stepper */
-.saas-stepper-horizontal {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.saas-stepper, .saas-stepper-horizontal {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -413,12 +414,15 @@ body {
   box-shadow: var(--shadow-sm);
   width: 100%;
   box-sizing: border-box;
+  gap: 12px;
+  overflow-x: auto;
 }
 
-.saas-stepper-horizontal .step-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.saas-stepper .step-item, .saas-stepper-horizontal .step-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
@@ -427,48 +431,47 @@ body {
   flex-shrink: 0;
 }
 
-.saas-stepper-horizontal .step-number {
+.saas-stepper .step-number, .saas-stepper-horizontal .step-number {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: var(--bg-surface-secondary);
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   font-size: 12px;
   font-weight: 700;
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
-.saas-stepper-horizontal .step-item.active {
+.saas-stepper .step-item.active, .saas-stepper-horizontal .step-item.active {
   color: var(--primary);
 }
 
-.saas-stepper-horizontal .step-item.active .step-number {
+.saas-stepper .step-item.active .step-number, .saas-stepper-horizontal .step-item.active .step-number {
   background: var(--primary);
   color: #FFFFFF;
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
 }
 
-.saas-stepper-horizontal .step-item.completed {
+.saas-stepper .step-item.completed, .saas-stepper-horizontal .step-item.completed {
   color: var(--success);
 }
 
-.saas-stepper-horizontal .step-item.completed .step-number {
+.saas-stepper .step-item.completed .step-number, .saas-stepper-horizontal .step-item.completed .step-number {
   background: var(--success);
   color: #FFFFFF;
 }
 
-.saas-stepper-horizontal .step-line {
+.saas-stepper .step-line, .saas-stepper-horizontal .step-line, .step-divider {
   flex: 1;
   height: 2px;
   background: var(--border);
-  margin: 0 16px;
-  min-width: 20px;
+  margin: 0 12px;
+  min-width: 16px;
   border-radius: 2px;
-  transition: background 0.2s ease;
 }
 
 /* 8. Dynamic Analysis Progress Bar */
