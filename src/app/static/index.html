@@ -1720,11 +1720,6 @@
       if (submenu && submenu.classList.contains('hidden')) {
         window.toggleSettingsSubmenu();
       }
-
-      document.querySelectorAll('.settings-subitem-btn').forEach(btn => btn.classList.remove('active'));
-      const activeSubitem = document.getElementById(`subitem-${tabName}`);
-      if (activeSubitem) activeSubitem.classList.add('active');
-
       window.openSettingsControlModal(tabName);
     };
 
@@ -1764,13 +1759,26 @@
     };
 
     window.switchSettingsTab = function(tabName) {
+      console.log('[activeTab]:', tabName);
+
+      // 1. Sync modal inner sidebar tabs
       document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
       const activeBtn = document.getElementById(`settings-btn-${tabName}`);
       if (activeBtn) activeBtn.classList.add('active');
 
+      // 2. Sync main left sidebar sub-items
+      document.querySelectorAll('.settings-subitem-btn').forEach(btn => btn.classList.remove('active'));
+      const activeSubitem = document.getElementById(`subitem-${tabName}`);
+      if (activeSubitem) activeSubitem.classList.add('active');
+
+      // 3. Toggle content pane visibility
       document.querySelectorAll('.settings-pane').forEach(pane => pane.classList.add('hidden'));
       const activePane = document.getElementById(`settings-pane-${tabName}`);
-      if (activePane) activePane.classList.remove('hidden');
+      if (activePane) {
+        activePane.classList.remove('hidden');
+      } else {
+        console.warn(`[switchSettingsTab] Target pane #settings-pane-${tabName} not found.`);
+      }
     };
 
     window.handleSettingsProfileSubmit = function(e) {
