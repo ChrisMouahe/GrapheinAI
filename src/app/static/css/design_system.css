@@ -400,32 +400,36 @@ body {
   transform: scale(1.1);
 }
 
-/* 7. Permanent 5-Step SaaS Workflow Stepper */
-.saas-stepper {
+/* 7. Permanent Horizontal 5-Step SaaS Workflow Stepper */
+.saas-stepper-horizontal {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 14px 20px;
+  padding: 16px 24px;
   margin-bottom: 24px;
   box-shadow: var(--shadow-sm);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.step-item {
+.saas-stepper-horizontal .step-item {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
+  white-space: nowrap;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.step-number {
-  width: 26px;
-  height: 26px;
+.saas-stepper-horizontal .step-number {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--bg-surface-secondary);
   color: var(--text-muted);
@@ -434,31 +438,37 @@ body {
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.step-item.active {
+.saas-stepper-horizontal .step-item.active {
   color: var(--primary);
 }
-.step-item.active .step-number {
+
+.saas-stepper-horizontal .step-item.active .step-number {
   background: var(--primary);
   color: #FFFFFF;
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
 }
 
-.step-item.completed {
+.saas-stepper-horizontal .step-item.completed {
   color: var(--success);
 }
-.step-item.completed .step-number {
+
+.saas-stepper-horizontal .step-item.completed .step-number {
   background: var(--success);
   color: #FFFFFF;
 }
 
-.step-divider {
+.saas-stepper-horizontal .step-line {
   flex: 1;
   height: 2px;
   background: var(--border);
-  margin: 0 12px;
+  margin: 0 16px;
+  min-width: 20px;
   border-radius: 2px;
+  transition: background 0.2s ease;
 }
 
 /* 8. Dynamic Analysis Progress Bar */
@@ -489,26 +499,42 @@ body {
 }
 
 /* 9. Comprehensive Settings Control Center Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
 .settings-modal-dialog {
-  width: 820px;
+  width: 860px;
   max-width: 95vw;
+  max-height: 90vh;
   background: var(--bg-surface);
   border-radius: 16px;
   border: 1px solid var(--border-strong);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
   display: flex;
   overflow: hidden;
-  height: 580px;
+  height: 600px;
+  transition: all 0.25s ease;
 }
 
 .settings-sidebar {
-  width: 220px;
+  width: 230px;
+  flex-shrink: 0;
   background: var(--bg-canvas);
   border-right: 1px solid var(--border);
   padding: 20px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .settings-tab-btn {
@@ -547,12 +573,16 @@ body {
 
 /* 10. Responsive Breakpoints (Desktop, Laptop, Tablet, Mobile) */
 @media (max-width: 1024px) {
-  .saas-stepper {
-    flex-wrap: wrap;
-    gap: 8px;
+  .saas-stepper-horizontal {
+    overflow-x: auto;
+    padding: 12px 16px;
   }
-  .step-divider {
-    display: none;
+  .saas-stepper-horizontal .step-label {
+    font-size: 12px;
+  }
+  .saas-stepper-horizontal .step-line {
+    margin: 0 8px;
+    min-width: 12px;
   }
 }
 
@@ -560,12 +590,19 @@ body {
   .settings-modal-dialog {
     flex-direction: column;
     height: auto;
-    max-height: 90vh;
+    max-height: 92vh;
   }
   .settings-sidebar {
     width: 100%;
     flex-direction: row;
     overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+  }
+  .settings-tab-btn {
+    white-space: nowrap;
+    width: auto;
   }
 }
 

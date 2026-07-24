@@ -458,31 +458,31 @@
       <!-- Dynamic Views Container -->
       <main style="padding: 32px; flex: 1;">
         
-        <!-- Permanent 5-Step SaaS Workflow Stepper -->
-        <div class="saas-stepper" id="workflow-stepper">
+        <!-- Permanent Horizontal 5-Step SaaS Workflow Stepper -->
+        <div class="saas-stepper-horizontal" id="workflow-stepper">
           <div class="step-item active" id="step-1-item">
             <div class="step-number" id="step-1-num">1</div>
-            <span>① Importer un graphique</span>
+            <span class="step-label">Importer un graphique</span>
           </div>
-          <div class="step-divider"></div>
+          <div class="step-line"></div>
           <div class="step-item" id="step-2-item">
             <div class="step-number" id="step-2-num">2</div>
-            <span>② Vérifier les données</span>
+            <span class="step-label">Vérifier les données</span>
           </div>
-          <div class="step-divider"></div>
+          <div class="step-line"></div>
           <div class="step-item" id="step-3-item">
             <div class="step-number" id="step-3-num">3</div>
-            <span>③ Interprétation IA</span>
+            <span class="step-label">Interprétation IA</span>
           </div>
-          <div class="step-divider"></div>
+          <div class="step-line"></div>
           <div class="step-item" id="step-4-item">
             <div class="step-number" id="step-4-num">4</div>
-            <span>④ Questions Chat</span>
+            <span class="step-label">Questions Chat</span>
           </div>
-          <div class="step-divider"></div>
+          <div class="step-line"></div>
           <div class="step-item" id="step-5-item">
             <div class="step-number" id="step-5-num">5</div>
-            <span>⑤ Télécharger le rapport</span>
+            <span class="step-label">Télécharger le rapport</span>
           </div>
         </div>
 
@@ -1676,20 +1676,42 @@
     }
 
     // 5. Settings Control Center Modal Handlers
-    function openSettingsControlModal(activeTab) {
+    window.openSettingsControlModal = function(activeTab) {
       const modal = document.getElementById('settings-control-modal');
       if (modal) {
         modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+
+        if (currentUser) {
+          const nameInput = document.getElementById('settings-edit-name');
+          const companyInput = document.getElementById('settings-edit-company');
+          const funcInput = document.getElementById('settings-edit-function');
+          const sectorInput = document.getElementById('settings-edit-sector');
+          const expInput = document.getElementById('settings-edit-expertise');
+          const yrsInput = document.getElementById('settings-edit-years');
+
+          if (nameInput) nameInput.value = currentUser.name || ((currentUser.prenom || '') + ' ' + (currentUser.nom || '')).trim();
+          if (companyInput) companyInput.value = currentUser.entreprise || '';
+          if (funcInput) funcInput.value = currentUser.fonction || '';
+          if (sectorInput && currentUser.secteur_activite) sectorInput.value = currentUser.secteur_activite;
+          if (expInput && currentUser.niveau_expertise) expInput.value = currentUser.niveau_expertise;
+          if (yrsInput && currentUser.annees_experience) yrsInput.value = currentUser.annees_experience;
+        }
+
         switchSettingsTab(activeTab || 'profile');
+        if (window.lucide) lucide.createIcons();
       }
-    }
+    };
 
-    function closeSettingsControlModal() {
+    window.closeSettingsControlModal = function() {
       const modal = document.getElementById('settings-control-modal');
-      if (modal) modal.classList.add('hidden');
-    }
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
 
-    function switchSettingsTab(tabName) {
+    window.switchSettingsTab = function(tabName) {
       document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
       const activeBtn = document.getElementById(`settings-btn-${tabName}`);
       if (activeBtn) activeBtn.classList.add('active');
@@ -1697,7 +1719,55 @@
       document.querySelectorAll('.settings-pane').forEach(pane => pane.classList.add('hidden'));
       const activePane = document.getElementById(`settings-pane-${tabName}`);
       if (activePane) activePane.classList.remove('hidden');
-    }
+    };
+
+    window.handleSettingsProfileSubmit = function(e) {
+      e.preventDefault();
+      if (!currentAuthToken) return;
+
+      const name = document.getElementById('settings-edit-name').value;
+      const entreprise = document.getElementById('settings-edit-company').value;
+      const fonction = document.getElementById('settings-edit-function').value;
+      const secteur_activite = document.getElementById('settings-edit-sector').value;
+      const niveau_expertise = document.getElementById('settings-edit-expertise').value;
+      const annees_experience = parseInt(document.getElementById('settings-edit-years').value || 5, 10);
+
+      const parts = name.trim().split(' ');
+      const prenom = parts[0] || 'Utilisateur';
+      const nom = parts.slice(1).join(' ') || 'Client';
+
+      fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + currentAuthToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prenom,
+          nom,
+          entreprise,
+          fonction,
+          secteur_activite,
+          niveau_expertise,
+          annees_experience
+        })
+      })
+      .then(res => res.json())
+      .then(updatedUser => {
+        currentUser = updatedUser;
+        const uSect = currentUser.secteur_activite || 'Immobilière de construction';
+        const uExp = currentUser.niveau_expertise || 'Intermédiaire';
+        const badgeTextEl = document.getElementById('user-context-text');
+        if (badgeTextEl) badgeTextEl.innerText = `IA Personnalisée : ${uSect} | ${uExp}`;
+
+        document.getElementById('user-display-name').innerText = currentUser.name || (currentUser.prenom + ' ' + currentUser.nom);
+        document.getElementById('user-avatar-circle').innerText = (currentUser.prenom[0] || 'U') + (currentUser.nom[0] || 'D');
+
+        alert('Profil mis à jour avec succès !');
+        closeSettingsControlModal();
+      })
+      .catch(err => alert(err.message));
+    };
 
     // Collaboration & Share Modal Handlers
     function openShareModal() {
@@ -1991,13 +2061,15 @@
   </div>
 
   <!-- COMPREHENSIVE 6-TAB SETTINGS CONTROL CENTER MODAL -->
-  <div id="settings-control-modal" class="modal-overlay hidden" style="position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1250; display: flex; align-items: center; justify-content: center; padding: 20px;">
+  <div id="settings-control-modal" class="modal-overlay hidden">
     <div class="settings-modal-dialog fade-in-up">
       <!-- Left Sidebar Tabs -->
       <div class="settings-sidebar">
-        <h3 style="font-size: 14px; font-weight: 800; padding: 0 14px 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="settings" style="width: 18px; height: 18px; color: var(--primary);"></i> ⚙️ Paramètres
-        </h3>
+        <div style="padding: 0 10px 12px 10px; border-bottom: 1px solid var(--border); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+            <i data-lucide="settings" style="width: 18px; height: 18px; color: var(--primary);"></i> ⚙️ Paramètres
+          </h3>
+        </div>
 
         <button id="settings-btn-profile" class="settings-tab-btn active" onclick="switchSettingsTab('profile')">
           <i data-lucide="user" style="width: 16px; height: 16px;"></i> Mon Profil
@@ -2020,7 +2092,7 @@
 
         <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border);">
           <button class="pro-btn-ghost" onclick="closeSettingsControlModal()" style="width: 100%; justify-content: flex-start; gap: 8px; color: var(--text-secondary);">
-            <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Fermer
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i> Fermer
           </button>
         </div>
       </div>
@@ -2029,29 +2101,36 @@
       <div class="settings-content-area">
         <!-- 1. Mon Profil Pane -->
         <div id="settings-pane-profile" class="settings-pane">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Mon Profil Utilisateur</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Gérez vos informations personnelles et votre contexte métier.</p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Mon Profil Utilisateur</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Gérez vos informations personnelles et votre contexte métier pour l'IA.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
 
-          <form onsubmit="handleProfileUpdateSubmit(event)">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <form onsubmit="handleSettingsProfileSubmit(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Nom Complet</label>
-                <input type="text" id="edit-profile-name" class="pro-input" required>
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Nom Complet</label>
+                <input type="text" id="settings-edit-name" class="pro-input" required style="width: 100%;">
               </div>
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Entreprise</label>
-                <input type="text" id="edit-profile-company" class="pro-input">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Entreprise</label>
+                <input type="text" id="settings-edit-company" class="pro-input" style="width: 100%;">
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Poste / Fonction</label>
-                <input type="text" id="edit-profile-function" class="pro-input">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Fonction / Poste</label>
+                <input type="text" id="settings-edit-function" class="pro-input" style="width: 100%;">
               </div>
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Secteur d'Activité</label>
-                <select id="edit-profile-sector" class="pro-input">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Secteur d'Activité</label>
+                <select id="settings-edit-sector" class="pro-input" style="width: 100%;">
                   <option value="Immobilière de construction">Immobilière de construction</option>
                   <option value="Finance / Banque">Finance / Banque</option>
                   <option value="Santé / Médical">Santé / Médical</option>
@@ -2062,22 +2141,22 @@
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Niveau d'Expertise</label>
-                <select id="edit-profile-expertise" class="pro-input">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Niveau d'Expertise</label>
+                <select id="settings-edit-expertise" class="pro-input" style="width: 100%;">
                   <option value="Débutant">Débutant (Étudiant/Junior)</option>
                   <option value="Intermédiaire" selected>Intermédiaire (Analyste/Comptable)</option>
                   <option value="Expert">Expert (Directeur/Executive)</option>
                 </select>
               </div>
               <div>
-                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Années d'Expérience</label>
-                <input type="number" id="edit-profile-exp" class="pro-input" min="0" max="50" value="5">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Années d'Expérience</label>
+                <input type="number" id="settings-edit-years" class="pro-input" min="0" max="50" value="5" style="width: 100%;">
               </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
               <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()">Annuler</button>
               <button type="submit" class="pro-btn-primary">Enregistrer le Profil</button>
             </div>
@@ -2086,8 +2165,15 @@
 
         <!-- 2. Préférences Pane -->
         <div id="settings-pane-preferences" class="settings-pane hidden">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Préférences Régionales</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Choisissez la langue d'affichage et de rapportation.</p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Préférences Régionales</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Choisissez la langue d'affichage et de rapportation.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
 
           <div style="margin-bottom: 20px;">
             <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px;">Langue de l'Interface & Rapports PDF</label>
@@ -2100,34 +2186,49 @@
 
         <!-- 3. Apparence Pane -->
         <div id="settings-pane-appearance" class="settings-pane hidden">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Thème & Apparence</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Personnalisez l'apparence visuelle de GraphEin AI.</p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Thème & Apparence</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Personnalisez l'apparence visuelle de GraphEin AI.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <div style="padding: 16px; border: 2px solid var(--primary); border-radius: 8px; text-align: center; cursor: pointer;" onclick="ThemeManager.toggleTheme()">
-              <i data-lucide="sun" style="width: 24px; height: 24px; color: var(--primary); margin-bottom: 6px;"></i>
-              <strong style="display: block; font-size: 13px;">Basculer Thème</strong>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div style="padding: 20px; border: 2px solid var(--primary); border-radius: 12px; text-align: center; cursor: pointer; background: var(--bg-surface);" onclick="ThemeManager.toggleTheme()">
+              <i data-lucide="sun" style="width: 28px; height: 28px; color: var(--primary); margin-bottom: 8px;"></i>
+              <strong style="display: block; font-size: 14px; margin-bottom: 4px;">Basculer le Thème (Clair / Sombre)</strong>
+              <span style="font-size: 12px; color: var(--text-secondary);">Adapte automatiquement les couleurs de l'application</span>
             </div>
           </div>
         </div>
 
         <!-- 4. Assistant IA Pane -->
         <div id="settings-pane-assistant" class="settings-pane hidden">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Configuration de l'Assistant IA</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Ajustez le ton, la longueur et l'émotion de l'agent raisonneur.</p>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
             <div>
-              <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Style des Réponses</label>
-              <select class="pro-input">
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Configuration de l'Assistant IA</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Ajustez le ton, la longueur et l'émotion de l'agent raisonneur.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Style des Réponses</label>
+              <select class="pro-input" style="width: 100%;">
                 <option value="analytique">Analytique & Chiffré</option>
-                <option value="synthetique">Synthétique Executif</option>
+                <option value="synthetique">Synthétique Exécutif</option>
                 <option value="pedagogique">Pédagogique Détaillé</option>
               </select>
             </div>
             <div>
-              <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Émotion & Empathie IA</label>
-              <select class="pro-input">
+              <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Émotion & Empathie IA</label>
+              <select class="pro-input" style="width: 100%;">
                 <option value="neutre">Neutre Professionnel</option>
                 <option value="encourageant">Encourageant & Conseiller</option>
               </select>
@@ -2137,30 +2238,46 @@
 
         <!-- 5. Notifications Pane -->
         <div id="settings-pane-notifications" class="settings-pane hidden">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Centre de Notifications</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Gérez vos alertes par e-mail et notifications in-app.</p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Centre de Notifications</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Gérez vos alertes par e-mail et notifications in-app.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
 
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <input type="checkbox" checked style="accent-color: var(--primary);"> E-mails de rapportation et synthèses hebdomadaires
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" checked style="width: 16px; height: 16px; accent-color: var(--primary);"> E-mails de rapportation et synthèses hebdomadaires
             </label>
-            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <input type="checkbox" checked style="accent-color: var(--primary);"> Notifications d'invitations à des Workspaces
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" checked style="width: 16px; height: 16px; accent-color: var(--primary);"> Notifications d'invitations à des Workspaces
             </label>
           </div>
         </div>
 
         <!-- 6. Sécurité Pane -->
         <div id="settings-pane-security" class="settings-pane hidden">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Sécurité & Authentification</h3>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Mise à jour du mot de passe et gestion des sessions.</p>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Sécurité & Authentification</h3>
+              <p style="font-size: 13px; color: var(--text-secondary);">Mise à jour du mot de passe et gestion des sessions.</p>
+            </div>
+            <button type="button" class="pro-btn-ghost" onclick="closeSettingsControlModal()" title="Fermer" style="padding: 4px 8px;">
+              <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+          </div>
 
-          <button class="pro-btn-secondary" style="margin-bottom: 16px;" onclick="alert('Lien de réinitialisation envoyé à votre e-mail.')">
-            🔑 Changer mon mot de passe
-          </button>
-          <button class="pro-btn-primary" style="display: block;" onclick="handleLogout()">
-            Déconnexion
-          </button>
+          <div style="display: flex; flex-direction: column; gap: 12px; max-width: 320px;">
+            <button type="button" class="pro-btn-secondary" onclick="alert('Lien de réinitialisation envoyé à votre e-mail.')">
+              🔑 Changer mon mot de passe
+            </button>
+            <button type="button" class="pro-btn-danger" onclick="handleLogout()">
+              <i data-lucide="log-out" style="width: 16px; height: 16px;"></i> Déconnexion
+            </button>
+          </div>
         </div>
       </div>
     </div>
