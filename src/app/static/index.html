@@ -350,10 +350,38 @@
           <span class="sidebar-label" data-i18n="nav.reports">Rapports PDF</span>
         </button>
 
-        <button id="nav-settings" class="pro-btn-ghost" style="width: 100%; justify-content: flex-start; gap: 12px;" onclick="openSettingsControlModal('profile')" data-tooltip="Paramètres & Configuration">
-          <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
-          <span class="sidebar-label">Paramètres</span>
-        </button>
+        <!-- Paramètres Accordion Item with Sub-menu -->
+        <div id="nav-settings-container" style="width: 100%;">
+          <button id="nav-settings" class="pro-btn-ghost" style="width: 100%; justify-content: space-between; align-items: center;" onclick="toggleSettingsSubmenu()" data-tooltip="Paramètres & Configuration">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+              <span class="sidebar-label" style="font-weight: 600;">Paramètres</span>
+            </div>
+            <i data-lucide="chevron-down" id="settings-chevron" class="sidebar-label" style="width: 14px; height: 14px; transition: transform 0.2s ease;"></i>
+          </button>
+
+          <!-- Sidebar Sub-items (Sous-onglets) -->
+          <div id="settings-submenu" class="sidebar-label hidden" style="margin-left: 14px; padding-left: 12px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 2px; margin-top: 4px;">
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-profile" onclick="openSettingsTab('profile')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="user" style="width: 14px; height: 14px;"></i> Mon Profil
+            </button>
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-preferences" onclick="openSettingsTab('preferences')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="globe" style="width: 14px; height: 14px;"></i> Préférences
+            </button>
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-appearance" onclick="openSettingsTab('appearance')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="sun" style="width: 14px; height: 14px;"></i> Apparence
+            </button>
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-assistant" onclick="openSettingsTab('assistant')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="bot" style="width: 14px; height: 14px;"></i> Assistant IA
+            </button>
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-notifications" onclick="openSettingsTab('notifications')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="bell" style="width: 14px; height: 14px;"></i> Notifications
+            </button>
+            <button class="pro-btn-ghost settings-subitem-btn" id="subitem-security" onclick="openSettingsTab('security')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
+              <i data-lucide="shield" style="width: 14px; height: 14px;"></i> Sécurité
+            </button>
+          </div>
+        </div>
 
         <!-- ROLE-BASED ADMIN ONLY NAVIGATION ITEMS (Hidden for Standard Users / Guests / Collaborators) -->
         <div id="admin-menu-section" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
@@ -1245,23 +1273,17 @@
 
       // Logged-in User Profile Modal Handlers
       window.openUserProfileModal = function() {
-        if (!currentUser) return;
-        document.getElementById('modal-user-name').innerText = currentUser.name || (currentUser.prenom + ' ' + currentUser.nom);
-        document.getElementById('modal-user-email').innerText = currentUser.email || '';
-        document.getElementById('modal-user-role').innerText = currentUser.role || 'standard_user';
-        document.getElementById('modal-user-company').innerText = currentUser.entreprise || 'Non renseigné';
-        document.getElementById('modal-user-function').innerText = currentUser.fonction || 'Non renseigné';
-        document.getElementById('modal-user-sector').innerText = currentUser.secteur_activite || 'Finance';
-        document.getElementById('modal-user-expertise').innerText = currentUser.niveau_expertise || 'Intermédiaire';
-        document.getElementById('modal-user-total-analyses').innerText = currentUser.total_analyses || 0;
-        document.getElementById('modal-user-country').innerText = (currentUser.pays || 'France') + ' (' + (currentUser.langue || 'fr').toUpperCase() + ')';
-        
-        document.getElementById('user-profile-modal-backdrop').classList.remove('hidden');
-        if (window.lucide) lucide.createIcons();
+        if (window.openSettingsTab) {
+          window.openSettingsTab('profile');
+        } else {
+          window.openSettingsControlModal('profile');
+        }
       };
 
       window.closeUserProfileModal = function() {
-        document.getElementById('user-profile-modal-backdrop').classList.add('hidden');
+        if (window.closeSettingsControlModal) {
+          window.closeSettingsControlModal();
+        }
       };
 
       // Load Dashboard Stats & Empty State for New Users
@@ -1681,7 +1703,31 @@
       });
     }
 
-    // 5. Settings Control Center Modal Handlers
+    // 5. Sidebar Settings Sub-menu & Modal Handlers
+    window.toggleSettingsSubmenu = function() {
+      const submenu = document.getElementById('settings-submenu');
+      const chevron = document.getElementById('settings-chevron');
+      if (submenu) {
+        submenu.classList.toggle('hidden');
+        if (chevron) {
+          chevron.style.transform = submenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+      }
+    };
+
+    window.openSettingsTab = function(tabName) {
+      const submenu = document.getElementById('settings-submenu');
+      if (submenu && submenu.classList.contains('hidden')) {
+        window.toggleSettingsSubmenu();
+      }
+
+      document.querySelectorAll('.settings-subitem-btn').forEach(btn => btn.classList.remove('active'));
+      const activeSubitem = document.getElementById(`subitem-${tabName}`);
+      if (activeSubitem) activeSubitem.classList.add('active');
+
+      window.openSettingsControlModal(tabName);
+    };
+
     window.openSettingsControlModal = function(activeTab) {
       const modal = document.getElementById('settings-control-modal');
       if (modal) {
