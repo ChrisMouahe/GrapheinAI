@@ -136,7 +136,11 @@ def test_classification_benchmark_metrics(sample_chart_directory):
 
 def test_api_session_metadata_endpoint(client):
     """Verifies that /api/session/new includes full ChartMetadata structure."""
-    res = client.post("/api/session/new", data={"target_language": "fr"})
+    login_res = client.post("/api/auth/login", json={"email": "demo@graphein.ai", "password": "password123"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    res = client.post("/api/session/new", data={"target_language": "fr"}, headers=headers)
     assert res.status_code == 200
     data = res.json()
     assert "chart_type" in data

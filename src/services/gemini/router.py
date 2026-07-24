@@ -63,6 +63,17 @@ class QuestionRouter:
         """
         clean_q = question.strip().lower()
 
+        # 0. Check for conversational / natural language explanations -> GEMINI_VLM
+        conversational_patterns = [
+            r"\bbonjour\b", r"\bsalut\b", r"\bhello\b", r"\bhi\b", r"\bcomment\b",
+            r"\bpourquoi\b", r"\bexplique\b", r"\bexpliquer\b", r"\bconseil\b",
+            r"\bavis\b", r"\banalyse\b", r"\bque pensez\b", r"\bsynthèse\b"
+        ]
+        for p in conversational_patterns:
+            if re.search(p, clean_q):
+                logger.info(f"QuestionRouter: Routed conversational question '{question[:30]}...' to GEMINI_VLM.")
+                return RouteTarget.GEMINI_VLM
+
         # 1. Check for Math / Statistical query -> AST_CALCULATOR
         for pattern in self.MATH_KEYWORDS:
             if re.search(pattern, clean_q):

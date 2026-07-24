@@ -71,12 +71,12 @@ class GraphInterpreter:
 
         if not is_en:
             report_lines = [
-                f"# RAPPORT DE SYNTHÈSE AI BUSINESS ANALYST - {title.upper()}",
-                f"**Poste Cible:** `{job_str}` | **Secteur:** `{sect_str}` | **Architecture:** `{c_type}`",
+                f"# RAPPORT AUTOMATIQUE D'INTERPRÉTATION SCIENTIFIQUE DU GRAPHIQUE - {title.upper()}",
+                f"**Poste Cible:** `{job_str}` | **Secteur:** `{sect_str}` | **Architecture & Description du Contexte:** `{c_type}`",
                 "",
                 "---",
                 "",
-                "### 1. RÉSUMÉ EXÉCUTIF ET CADRAGE STRATÉGIQUE",
+                "### 1. RÉSUMÉ EXÉCUTIF ET CADRAGE STRATÉGIQUE (Executive Summary)",
                 recs.executive_summary,
                 "",
                 "### 2. DÉCOMPOSITION QUANTITATIVE ET FAITS OBSERVÉS",
@@ -90,8 +90,8 @@ class GraphInterpreter:
                 "### 3. TENDANCES ET STATISTIQUES CLÉS",
                 f"- **Moyenne du portefeuille / secteur:** `{avg_val:.2f} unités`",
                 f"- **Cumul total observé:** `{sum_val:.2f} unités`",
-                f"- **Pic maximum:** `{max_val:.2f}` (Catégorie: *{max_label}*)",
-                f"- **Seuil minimum:** `{min_val:.2f}` (Catégorie: *{min_label}*)",
+                f"- **Pic Maximum:** `{max_val:.2f}` (Catégorie: *{max_label}*)",
+                f"- **Seuil Minimum:** `{min_val:.2f}` (Catégorie: *{min_label}*)",
                 f"- **Écart d'amplitude (Max - Min):** `{delta_val:.2f} unités`",
                 "",
                 "### 4. RISQUES ET ANOMALIES IDENTIFIÉS",
@@ -129,8 +129,8 @@ class GraphInterpreter:
             ])
         else:
             report_lines = [
-                f"# AI BUSINESS ANALYST REPORT - {title.upper()}",
-                f"**Target Role:** `{job_str}` | **Industry Sector:** `{sect_str}` | **Architecture:** `{c_type}`",
+                f"# AUTOMATIC SCIENTIFIC GRAPHIC INTERPRETATION REPORT - {title.upper()}",
+                f"**Target Role:** `{job_str}` | **Industry Sector:** `{sect_str}` | **Description & Context Architecture:** `{c_type}`",
                 "",
                 "---",
                 "",
@@ -145,11 +145,11 @@ class GraphInterpreter:
 
             report_lines.extend([
                 "",
-                "### 3. STATISTICAL TRENDS & KEY METRICS",
+                "### 3. STATISTICAL TRENDS & KEY METRICS (Trends)",
                 f"- **Sector / Portfolio Mean:** `{avg_val:.2f} units`",
                 f"- **Total Cumulative Sum:** `{sum_val:.2f} units`",
-                f"- **Maximum Peak:** `{max_val:.2f}` (Category: *{max_label}*)",
-                f"- **Minimum Floor:** `{min_val:.2f}` (Category: *{min_label}*)",
+                f"- **Peak Maximum:** `{max_val:.2f}` (Category: *{max_label}*)",
+                f"- **Floor Minimum:** `{min_val:.2f}` (Category: *{min_label}*)",
                 f"- **Range Amplitude Gap:** `{delta_val:.2f} units`",
                 "",
                 "### 4. IDENTIFIED RISKS & ANOMALIES",

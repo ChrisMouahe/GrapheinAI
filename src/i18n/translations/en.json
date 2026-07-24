@@ -36,7 +36,9 @@
     "avg_confidence": "Average Confidence",
     "pdf_reports": "PDF Reports",
     "recent_title": "Recent Private Analysis Sessions",
-    "quick_analyze": "Start Chart Analysis"
+    "quick_analyze": "Start Chart Analysis",
+    "empty_title": "No analysis sessions in your workspace yet",
+    "empty_desc": "You haven't uploaded any chart yet. Import your first visual to launch AI analytical intelligence."
   },
   "datagrid": {
     "title": "Interactive Data Grid (HITL DataGrid)",

@@ -75,8 +75,12 @@ def test_session_manager_lifecycle(tmp_path):
 
 def test_api_session_endpoints(client):
     """Verifies REST endpoints for creating new session, retrieving active session, and listing history."""
+    login_res = client.post("/api/auth/login", json={"email": "demo@graphein.ai", "password": "password123"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
     # 1. Create session via REST API
-    res = client.post("/api/session/new", data={"image_filename": "sample_chart.png", "target_language": "fr"})
+    res = client.post("/api/session/new", data={"image_filename": "sample_chart.png", "target_language": "fr"}, headers=headers)
     assert res.status_code == 200
     data = res.json()
     assert "session_id" in data
@@ -84,26 +88,26 @@ def test_api_session_endpoints(client):
     assert data["status"] == "ANALYZED"
 
     # 2. Get active session
-    res_active = client.get("/api/session/active")
+    res_active = client.get("/api/session/active", headers=headers)
     assert res_active.status_code == 200
     active_data = res_active.json()
     assert active_data["session_id"] == session_id
 
     # 3. Explicit interpretation generation endpoint
-    res_interp = client.post("/api/session/interpret", data={"target_language": "fr"})
+    res_interp = client.post("/api/session/interpret", data={"target_language": "fr"}, headers=headers)
     assert res_interp.status_code == 200
     interp_data = res_interp.json()
     assert "interpretation" in interp_data
     assert len(interp_data["interpretation"]) > 20
 
     # 4. Re-extract session
-    res_reextract = client.post("/api/session/reextract", data={"target_language": "fr"})
+    res_reextract = client.post("/api/session/reextract", data={"target_language": "fr"}, headers=headers)
     assert res_reextract.status_code == 200
     reext_data = res_reextract.json()
     assert reext_data["message"] == "Ré-extraction effectuée avec succès."
 
     # 5. History endpoint
-    res_hist = client.get("/api/session/history")
+    res_hist = client.get("/api/session/history", headers=headers)
     assert res_hist.status_code == 200
     history_list = res_hist.json()
     assert len(history_list) >= 1

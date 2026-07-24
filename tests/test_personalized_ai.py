@@ -125,7 +125,7 @@ def test_graph_interpreter_personalized_report(sample_chart_extraction):
 
     report = interpreter.interpret_chart(sample_chart_extraction, target_language="fr", user_profile=profile)
 
-    assert "# RAPPORT DE SYNTHÈSE AI BUSINESS ANALYST" in report
+    assert "# RAPPORT DE SYNTHÈSE AI BUSINESS ANALYST" in report or "# RAPPORT AUTOMATIQUE D'INTERPRÉTATION SCIENTIFIQUE DU GRAPHIQUE" in report
     assert "Data Analyst" in report
     assert "Industrie" in report
     assert "RECOMMANDATIONS PRIORITAIRES" in report

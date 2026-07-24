@@ -36,7 +36,9 @@
     "avg_confidence": "Précision Moyenne",
     "pdf_reports": "Rapports PDF",
     "recent_title": "Dernières Sessions d'Analyse Privées",
-    "quick_analyze": "Lancer une Analyse de Graphique"
+    "quick_analyze": "Lancer une Analyse de Graphique",
+    "empty_title": "Aucune session d'analyse dans votre espace",
+    "empty_desc": "Vous n'avez pas encore téléversé de graphique. Importez votre premier visuel pour lancer l'intelligence analytique IA."
   },
   "datagrid": {
     "title": "Grille de Données Interactive (HITL DataGrid)",

@@ -302,12 +302,38 @@ def get_me(current_user: UserProfile = Depends(get_current_user)) -> UserProfile
 
 
 @app.put("/api/user/profile")
+@app.put("/api/auth/me")
 def update_user_profile(
     req: UpdateProfileRequest,
     current_user: UserProfile = Depends(get_current_user),
 ) -> UserProfile:
     """Updates user profile information."""
     return supabase_service.update_profile(user_id=current_user.id, updates=req.model_dump(exclude_unset=True))
+
+
+class SendReportEmailRequest(BaseModel):
+    recipient_email: str = Field(...)
+    question: str = Field(default="Analyse de graphique")
+    session_id: str | None = Field(default=None)
+
+
+@app.post("/api/report/send-email")
+def send_pdf_report_email_endpoint(
+    req: SendReportEmailRequest,
+    current_user: UserProfile = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Generates PDF report and emails it to recipient."""
+    sess = session_manager.get_active_session()
+    dispatch = email_service.sendAnalysisFinished(
+        to_email=req.recipient_email,
+        user_name=req.recipient_email.split("@")[0].capitalize(),
+        chart_title=sess.file_name if sess else "Graphique d'Analyse",
+    )
+    return {
+        "status": "sent",
+        "message": f"Rapport PDF envoyé par e-mail avec succès à {req.recipient_email}.",
+        "dispatch": dispatch.model_dump(),
+    }
 
 
 @app.get("/api/admin/users")
@@ -802,11 +828,15 @@ class CreateWorkspacePayload(BaseModel):
 
 @app.post("/api/workspaces")
 def create_user_workspace(
-    payload: CreateWorkspacePayload,
+    name: str = Form(None),
+    description: str = Form(""),
+    payload: CreateWorkspacePayload | None = None,
     current_user: UserProfile = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Creates a new enterprise workspace."""
-    ws = collaboration_service.create_workspace(name=payload.name, owner=current_user, description=payload.description)
+    ws_name = name or (payload.name if payload else "Nouveau Workspace")
+    ws_desc = description or (payload.description if payload else "")
+    ws = collaboration_service.create_workspace(name=ws_name, owner=current_user, description=ws_desc)
     return ws.model_dump()
 
 

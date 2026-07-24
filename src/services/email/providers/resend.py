@@ -57,7 +57,7 @@ class ResendProvider(BaseEmailProvider):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "GraphEinAI-EmailEngine/1.0",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         }
 
         try:
@@ -75,6 +75,27 @@ class ResendProvider(BaseEmailProvider):
                     latency_ms=round(latency, 2),
                 )
         except Exception as e:
+            # Fallback to onboarding@resend.dev if custom sender domain was rejected
+            if sender_addr != "onboarding@resend.dev":
+                logger.warning(f"[RESEND] Custom sender {sender_addr} failed ({e}). Retrying with onboarding@resend.dev...")
+                payload["from"] = f"{sender_label} <onboarding@resend.dev>"
+                try:
+                    data_bytes = json.dumps(payload).encode("utf-8")
+                    req = urllib.request.Request(self.api_url, data=data_bytes, headers=headers, method="POST")
+                    with urllib.request.urlopen(req, timeout=10) as response:
+                        res_body = json.loads(response.read().decode("utf-8"))
+                        returned_id = res_body.get("id", msg_id)
+                        latency = (time.time() - start_time) * 1000
+                        logger.info(f"[RESEND] Dispatched via fallback onboarding@resend.dev to {message.to_email}")
+                        return EmailDispatchResult(
+                            success=True,
+                            message_id=returned_id,
+                            provider_name=self.provider_name,
+                            latency_ms=round(latency, 2),
+                        )
+                except Exception as fb_err:
+                    e = fb_err
+
             latency = (time.time() - start_time) * 1000
             logger.error(f"[RESEND] Dispatch failed: {e}")
             return EmailDispatchResult(
