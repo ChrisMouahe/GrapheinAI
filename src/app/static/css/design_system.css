@@ -346,6 +346,20 @@ body {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
+/* 4. Empty State Containers */
+.empty-state-card {
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: 0.75rem;
+  background-color: var(--bg-surface);
+}
+
+.empty-state-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem auto;
+  color: var(--text-muted);
 }
 
 /* 6. Hero Drag & Drop Upload Component (Figma / Notion / Canva Style) */
@@ -529,5 +543,29 @@ body {
   flex: 1;
   padding: 28px 32px;
   overflow-y: auto;
+}
+
+/* 10. Responsive Breakpoints (Desktop, Laptop, Tablet, Mobile) */
+@media (max-width: 1024px) {
+  .saas-stepper {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .step-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-modal-dialog {
+    flex-direction: column;
+    height: auto;
+    max-height: 90vh;
+  }
+  .settings-sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
 }
 

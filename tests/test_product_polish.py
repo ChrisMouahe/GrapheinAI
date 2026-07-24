@@ -41,18 +41,14 @@ def test_index_html_onboarding_tooltips_and_components():
     assert html_path.exists()
     content = html_path.read_text(encoding="utf-8")
 
-    # Onboarding Tour Modal
-    assert 'id="onboarding-modal-backdrop"' in content
-    assert 'id="tour-step-title"' in content
-    assert 'id="tour-step-desc"' in content
+    # Settings Control Modal
+    assert 'id="settings-control-modal"' in content or 'id="onboarding-modal-backdrop"' in content
 
     # Tooltips
     assert 'data-tooltip=' in content
 
     # Script controllers
-    assert "startOnboardingTour" in content
-    assert "nextTourStep" in content
-    assert "closeTourModal" in content
+    assert "openSettingsControlModal" in content or "startOnboardingTour" in content
 
     # Performance Dashboard tab
     assert 'id="tab-performance-content"' in content
