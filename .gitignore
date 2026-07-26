@@ -41,8 +41,12 @@ coverage.xml
 # Data & Output Artifacts
 data/processed/plots/
 data/raw/crops/
+data/raw/*.png
+!data/raw/.gitkeep
 data/sessions/
 models/cache/
+logs/
+backups/
 
 # Environment Variables & Secrets
 .env

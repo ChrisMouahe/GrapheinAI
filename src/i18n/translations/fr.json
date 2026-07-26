@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "GrapheinAI",
-    "subtitle": "Plateforme SaaS d'Analyse de Graphiques Scientifiques & Enterprise Analytics"
+    "subtitle": "Plateforme SaaS d'Analyse de Graphiques Scientifiques pour Entreprises et Particuliers"
   },
   "nav": {
     "dashboard": "Tableau de Bord",
@@ -16,9 +16,9 @@
     "login": "Se Connecter"
   },
   "landing": {
-    "hero_tag": "IA Visuelle & Analytics d'Entreprise",
-    "title": "Plateforme SaaS d'Intelligence Graphique Enterprise",
-    "subtitle": "Analysez, extrayez et interprétez vos données visuelles avec Gemini Flash Vision, OpenCV et un calcul AST déterministe.",
+    "hero_tag": "IA d'Analyse de Données Visuelles",
+    "title": "Plateforme Intelligente d'Analyse de Graphiques",
+    "subtitle": "Analysez, extrayez et interprétez vos données visuelles à l'aide de l'Intelligence Artificielle.",
     "login_btn": "Se Connecter",
     "signup_btn": "Créer un Compte",
     "feature1_title": "Multi-Tenant & Profiling IA",
@@ -49,7 +49,8 @@
     "col_label": "Étiquette / Catégorie",
     "col_value": "Valeur Numérique",
     "col_confidence": "Confiance",
-    "col_actions": "Actions"
+    "col_actions": "Actions",
+    "btn_validate": "VALIDER"
   },
   "auth": {
     "login_title": "Connexion à votre Espace SaaS",
@@ -123,12 +124,6 @@
     "interpreter_title": "Rapport Narratif GraphInterpreter",
     "interpreter_desc": "Génère un rapport scientifique complet de 1 page (Description, Variables, Tendances, Max, Min, Anomalies, Synthèse)."
   },
-  "stepper": {
-    "step1": "Téléversement & Aperçu",
-    "step2": "OCR & Géométrie CV",
-    "step3": "Grille de Données HITL",
-    "step4": "Raisonnement AI & Rapport"
-  },
   "steps": {
     "step1_title": "Étape 1 : Téléverser l'Image du Graphique",
     "step1_drop": "Déposez votre fichier ici ou cliquez pour parcourir",
@@ -140,5 +135,60 @@
     "ask_placeholder": "Posez une question sur ce graphique...",
     "btn_send": "Analyser avec l'IA",
     "download_pdf": "Télécharger le Rapport PDF"
+  },
+  "settings_tabs": {
+    "profile": "Mon Profil",
+    "preferences": "Préférences",
+    "appearance": "Apparence",
+    "assistant": "Assistant IA",
+    "notifications": "Notifications",
+    "security": "Sécurité"
+  },
+  "stepper": {
+    "step1": "Importer un graphique",
+    "step2": "Vérifier les données",
+    "step3": "Interprétation IA",
+    "step4": "Questions Chat",
+    "step5": "Télécharger le rapport"
+  },
+  "right_panel": {
+    "title": "Raisonnement AI Multi-Agents & Copilote Décisionnel",
+    "context": "Contexte Actif : Profil Métier et Niveau d'Expertise Injectés dans Gemini Vision.",
+    "chat_placeholder": "Posez votre question ci-dessous pour déclencher l'analyse VLM...",
+    "btn_analyze": "Analyser",
+    "btn_share": "Partager",
+    "reco_title": "Recommandations Stratégiques AI",
+    "reco_badge": "Moteur Copilote Décisionnel Actif",
+    "reco_empty": "Les recommandations personnalisées s'afficheront ici après l'analyse.",
+    "xai_title": "Explicabilité & Transparence (XAI)",
+    "comments_title": "Commentaires & Collaboration"
+  },
+  "tooltip": {
+    "settings": "Paramètres & Configuration",
+    "dashboard": "Vue d'ensemble de vos analyses",
+    "analysis": "Studio d'analyse graphique VLM & AST",
+    "history": "Historique des sessions",
+    "reports": "Export de rapports PDF"
+  },
+  "settings_modal": {
+    "title": "Paramètres",
+    "close": "Fermer",
+    "prefs_title": "Préférences Régionales",
+    "prefs_desc": "Choisissez la langue d'affichage et de rapportation.",
+    "lang_label": "Langue de l'Interface & Rapports PDF",
+    "appearance_title": "Thème & Apparence",
+    "appearance_desc": "Personnalisez l'apparence visuelle de GraphEin AI.",
+    "theme_toggle": "Basculer le Thème (Clair / Sombre)",
+    "theme_note": "Adapte automatiquement les couleurs de l'application",
+    "ai_title": "Configuration de l'Assistant IA",
+    "ai_desc": "Ajustez le ton, la longueur et l'émotion de l'agent raisonneur.",
+    "ai_style": "Style des Réponses",
+    "ai_emotion": "Émotion & Empathie IA",
+    "notif_title": "Centre de Notifications",
+    "notif_desc": "Gérez vos alertes par e-mail et notifications in-app.",
+    "sec_title": "Sécurité & Authentification",
+    "sec_desc": "Mise à jour du mot de passe et gestion des sessions.",
+    "change_pwd": "Changer mon mot de passe",
+    "logout": "Déconnexion"
   }
 }

@@ -74,13 +74,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-canvas);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
 }
@@ -292,8 +295,13 @@ body {
 }
 
 @keyframes skeletonPulse {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* 2. Custom Tooltip System */
@@ -344,8 +352,17 @@ body {
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* 4. Empty State Containers */
 .empty-state-card {
   padding: 3rem 2rem;
@@ -376,7 +393,8 @@ body {
   overflow: hidden;
 }
 
-.upload-hero-zone:hover, .upload-hero-zone.dragover {
+.upload-hero-zone:hover,
+.upload-hero-zone.dragover {
   border-color: var(--primary-hover);
   background: var(--primary-subtle);
   transform: translateY(-2px);
@@ -401,7 +419,8 @@ body {
 }
 
 /* 7. Permanent Horizontal 5-Step SaaS Workflow Stepper */
-.saas-stepper, .saas-stepper-horizontal {
+.saas-stepper,
+.saas-stepper-horizontal {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -418,7 +437,8 @@ body {
   overflow-x: auto;
 }
 
-.saas-stepper .step-item, .saas-stepper-horizontal .step-item {
+.saas-stepper .step-item,
+.saas-stepper-horizontal .step-item {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -431,7 +451,8 @@ body {
   flex-shrink: 0;
 }
 
-.saas-stepper .step-number, .saas-stepper-horizontal .step-number {
+.saas-stepper .step-number,
+.saas-stepper-horizontal .step-number {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -446,26 +467,32 @@ body {
   flex-shrink: 0;
 }
 
-.saas-stepper .step-item.active, .saas-stepper-horizontal .step-item.active {
+.saas-stepper .step-item.active,
+.saas-stepper-horizontal .step-item.active {
   color: var(--primary);
 }
 
-.saas-stepper .step-item.active .step-number, .saas-stepper-horizontal .step-item.active .step-number {
+.saas-stepper .step-item.active .step-number,
+.saas-stepper-horizontal .step-item.active .step-number {
   background: var(--primary);
   color: #FFFFFF;
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
 }
 
-.saas-stepper .step-item.completed, .saas-stepper-horizontal .step-item.completed {
+.saas-stepper .step-item.completed,
+.saas-stepper-horizontal .step-item.completed {
   color: var(--success);
 }
 
-.saas-stepper .step-item.completed .step-number, .saas-stepper-horizontal .step-item.completed .step-number {
+.saas-stepper .step-item.completed .step-number,
+.saas-stepper-horizontal .step-item.completed .step-number {
   background: var(--success);
   color: #FFFFFF;
 }
 
-.saas-stepper .step-line, .saas-stepper-horizontal .step-line, .step-divider {
+.saas-stepper .step-line,
+.saas-stepper-horizontal .step-line,
+.step-divider {
   flex: 1;
   height: 2px;
   background: var(--border);
@@ -580,9 +607,11 @@ body {
     overflow-x: auto;
     padding: 12px 16px;
   }
+
   .saas-stepper-horizontal .step-label {
     font-size: 12px;
   }
+
   .saas-stepper-horizontal .step-line {
     margin: 0 8px;
     min-width: 12px;
@@ -595,6 +624,7 @@ body {
     height: auto;
     max-height: 92vh;
   }
+
   .settings-sidebar {
     width: 100%;
     flex-direction: row;
@@ -603,9 +633,9 @@ body {
     border-bottom: 1px solid var(--border);
     padding: 12px;
   }
+
   .settings-tab-btn {
     white-space: nowrap;
     width: auto;
   }
 }
-

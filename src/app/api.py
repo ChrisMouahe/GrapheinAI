@@ -97,6 +97,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Production Security Headers Middleware (OWASP recommended)."""
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
+START_TIME = time.time()
+
 # Base Directories
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 RAW_DATA_DIR = BASE_DIR / "data" / "raw"
@@ -214,15 +228,22 @@ def require_admin(current_user: UserProfile = Depends(get_current_user)) -> User
 
 
 # --------------------------------------------------------------------
-# SYSTEM HEALTH ENDPOINT (Public)
+# SYSTEM HEALTH & MONITORING ENDPOINTS (Public / Production Monitoring)
 # --------------------------------------------------------------------
 
+@app.get("/health")
 @app.get("/api/health")
 def health_check() -> dict[str, Any]:
-    """Health check endpoint indicating pipeline component status."""
-    reasoning_agent._ensure_client()
+    """Production Health check endpoint indicating pipeline component status."""
+    try:
+        reasoning_agent._ensure_client()
+        gemini_ok = reasoning_agent.client is not None
+    except Exception:
+        gemini_ok = False
+
     return {
         "status": "healthy",
+        "uptime_seconds": round(time.time() - START_TIME, 2),
         "timestamp": time.time(),
         "components": {
             "opencv_ocr": True,
@@ -232,8 +253,33 @@ def health_check() -> dict[str, Any]:
             "safe_calculator_ast": True,
             "xgboost_classifier": True,
             "faiss_rag": True,
-            "gemini_vlm": reasoning_agent.client is not None,
+            "gemini_vlm": gemini_ok,
         },
+    }
+
+
+@app.get("/status")
+@app.get("/api/status")
+def status_check() -> dict[str, Any]:
+    """Detailed SRE Status endpoint reporting memory, latency, and active sessions."""
+    metrics = performance_monitor.get_performance_summary()
+    return {
+        "status": "operational",
+        "uptime_seconds": round(time.time() - START_TIME, 2),
+        "performance_metrics": metrics,
+        "active_sessions_count": len(session_manager.sessions),
+    }
+
+
+@app.get("/version")
+@app.get("/api/version")
+def version_info() -> dict[str, Any]:
+    """Version metadata endpoint."""
+    return {
+        "app_name": "GrapheinAI Commercial SaaS Enterprise",
+        "version": "5.0.0",
+        "environment": "production",
+        "api_docs_url": "/docs",
     }
 
 

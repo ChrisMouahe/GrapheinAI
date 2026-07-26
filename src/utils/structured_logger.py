@@ -1,10 +1,24 @@
-"""Structured Logger producing JSON-formatted application logs with in-memory admin buffer."""
-
-from datetime import datetime
 import json
 import logging
+import os
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from typing import Any
+
 from pydantic import BaseModel, Field
+
+# Configure production rotating log file handler
+LOG_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "graphein_app.log"
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+if not any(isinstance(h, RotatingFileHandler) for h in root_logger.handlers):
+    rf_handler = RotatingFileHandler(LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
+    rf_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
+    root_logger.addHandler(rf_handler)
 
 
 class LogRecordEntry(BaseModel):
@@ -18,7 +32,7 @@ class LogRecordEntry(BaseModel):
 
 
 class StructuredLogger:
-    """Structured logger storing JSON log records in a thread-safe in-memory circular buffer."""
+    """Structured logger storing JSON log records in a thread-safe in-memory circular buffer and rotating file."""
 
     def __init__(self, max_records: int = 500) -> None:
         self.max_records = max_records
