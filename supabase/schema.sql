@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS public.user_preferences (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     theme VARCHAR(20) DEFAULT 'light',
     language VARCHAR(10) DEFAULT 'fr',
-    vlm_model TEXT DEFAULT 'gemini-2.5-flash',
+    vlm_model TEXT DEFAULT 'gemini-3.5-flash',
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

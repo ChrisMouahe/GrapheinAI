@@ -40,7 +40,7 @@ logger = logging.getLogger("ReasoningAgent")
 class ReasoningAgent:
     """Agent using Gemini Flash Vision guided by pre-extracted OpenCV OCR text regions and computer vision geometry."""
 
-    DEFAULT_MODEL: str = "gemini-2.5-flash"
+    DEFAULT_MODEL: str = "gemini-3.5-flash"
 
     OUT_OF_DOMAIN_PATTERNS: list[str] = [
         r"\bpopulation\s+of\b",

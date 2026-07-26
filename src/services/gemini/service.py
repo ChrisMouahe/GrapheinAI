@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -35,7 +36,7 @@ logger = logging.getLogger("GeminiService")
 class GeminiService(BaseAIService):
     """Central Enterprise AI Service interfacing with Gemini Flash Vision VLM."""
 
-    DEFAULT_MODEL: str = "gemini-2.5-flash"
+    DEFAULT_MODEL: str = "gemini-3.5-flash"
 
     def __init__(
         self,
@@ -67,7 +68,7 @@ class GeminiService(BaseAIService):
 
     def extract_chart(self, image_data: bytes | Path | str) -> FullChartExtraction:
         """Extracts complete structured data from a chart image in a SINGLE PASS (with SHA256 caching)."""
-        # 1. Check SHA256 Cache (Cache Hit = 0 Gemini calls, 0 tokens)
+        # 1. Check SHA256 Cache (RÉACTIVÉ !)
         cached_extraction = self.cache_manager.get(image_data)
         if cached_extraction:
             self.quota_manager.record_cache_hit()
@@ -86,7 +87,7 @@ class GeminiService(BaseAIService):
 
         return extraction_result
 
-    @exponential_backoff_retry(max_retries=5, initial_delay=1.0)
+    @exponential_backoff_retry(max_retries=2, initial_delay=1.0)
     def _execute_single_extraction_api(self, pil_img: Image.Image, img_bytes: bytes) -> FullChartExtraction:
         """Executes API extraction request to Gemini."""
         if self.client is None:
@@ -107,10 +108,11 @@ class GeminiService(BaseAIService):
                     parsed = json.loads(cleaned_json)
                     return self._map_to_full_extraction(parsed)
             except Exception as e:
-                logger.warning(f"GeminiService API extraction call exception: {e}")
-
-        # Fallback heuristic extraction if API unconfigured or unreachable
-        return self._generate_fallback_extraction(pil_img)
+                logger.error(f"ERREUR CRITIQUE Gemini API : {e}")
+                # Au lieu d'utiliser le fallback, on lève l'erreur pour que le frontend l'affiche !
+                raise ValueError(f"Échec de l'analyse IA : {str(e)}")
+        else:
+            raise ValueError("Le SDK Google GenAI n'est pas installé ou la clé API GEMINI_API_KEY est manquante.")
 
     def detect_chart_type(self, image_data: bytes | Path | str) -> str:
         """Detects the category or type of the given chart image."""
@@ -252,7 +254,16 @@ class GeminiService(BaseAIService):
 
     @staticmethod
     def _clean_json(raw_text: str) -> str:
-        """Cleans markdown markdown codeblock wrappers from Gemini response."""
+        """Cleans markdown wrappers and extracts strictly the JSON block using regex."""
+        if not raw_text:
+            return "{}"
+        
+        # Recherche robuste du premier '{' jusqu'au dernier '}' pour ignorer tout bavardage de l'IA
+        match = re.search(r'\{.*\}', raw_text.strip(), re.DOTALL)
+        if match:
+            return match.group(0)
+            
+        # Fallback sur l'ancien nettoyage basique si aucune accolade n'est trouvée
         text = raw_text.strip()
         if text.startswith("```json"):
             text = text[7:]

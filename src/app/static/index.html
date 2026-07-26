@@ -101,12 +101,14 @@
 
       <div style="display: flex; align-items: center; gap: 16px;">
         <!-- Theme Toggle -->
-        <button class="pro-btn-ghost" onclick="ThemeManager.toggleTheme()" title="Mode Clair / Sombre"
-          style="padding: 8px 12px;">
-          <i data-lucide="sun" id="landing-theme-icon-sun"
-            style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
-          <i data-lucide="moon" id="landing-theme-icon-moon"
-            style="width: 18px; height: 18px; color: var(--text-secondary); display: none;"></i>
+        <button class="pro-btn-ghost" onclick="toggleAppTheme()" title="Mode Clair / Sombre"
+          style="padding: 8px 12px; display: flex; align-items: center; justify-content: center;">
+          <span id="theme-sun-wrapper">
+            <i data-lucide="sun" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+          </span>
+          <span id="theme-moon-wrapper" class="hidden">
+            <i data-lucide="moon" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+          </span>
         </button>
 
         <!-- Language Selector -->
@@ -126,23 +128,22 @@
       <div style="text-align: center; max-width: 800px; margin: 0 auto 60px auto;">
         <span class="badge-blue" style="font-size: 13px; padding: 6px 16px; margin-bottom: 20px; display: inline-block;"
           data-i18n="landing.hero_tag">
-          IA Visuelle & Analytics d'Entreprise
+          IA d'Analyse de Données Visuelles
         </span>
         <h1
           style="font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; tracking: -1px; color: var(--text-primary);"
           data-i18n="landing.title">
-          Plateforme SaaS d'Intelligence Graphique Enterprise
+          Plateforme Intelligente d'Analyse de Graphiques
         </h1>
         <p style="font-size: 18px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 36px;"
           data-i18n="landing.subtitle">
-          Analysez, extrayez et interprétez vos données visuelles avec Gemini Flash Vision, OpenCV et un calcul AST
-          déterministe.
+          Extrayez, analysez, et interprétez vos données visuelles à l'aide de l'Intelligence Artificielle.
         </p>
         <div style="display: flex; gap: 16px; justify-content: center;">
           <button class="pro-btn-primary" style="padding: 14px 32px; font-size: 16px;"
             onclick="showAuthModal('signup')">Commencer Gratuitement</button>
           <button class="pro-btn-secondary" style="padding: 14px 28px; font-size: 16px;"
-            onclick="showAuthModal('login')">Se Connecter à mon Espace</button>
+            onclick="showAuthModal('login')">Me Connecter à mon Espace</button>
         </div>
       </div>
 
@@ -831,42 +832,46 @@
                   </button>
                 </div>
 
-                <div style="margin-top: 16px; text-align: center;">
+                <div id="preview-section"
+                  style="margin-top: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
                   <img id="chart-preview-img" src="/static/sample_chart.png" alt="Graphique"
                     style="max-width: 100%; max-height: 320px; border-radius: 8px; border: 1px solid var(--border);"
                     onerror="this.src='https://via.placeholder.com/600x350?text=Chart+Preview'">
+
+                  <!-- Nouveau bouton discret pour remplacer l'image, caché par défaut -->
+                  <button type="button" id="btn-change-chart" class="pro-btn-secondary hidden"
+                    onclick="document.getElementById('chart-file-input').click()"
+                    style="font-size: 12px; padding: 4px 12px;">
+                    <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i> Changer de graphique
+                  </button>
                 </div>
               </div>
 
-              <!-- Multi-Chart Detection Sub-chart Gallery Card -->
-              <div class="pro-card" style="padding: 24px;" id="multi-chart-card">
+              <!-- Dynamic Chart Properties Card -->
+              <div class="pro-card hidden" style="padding: 24px;" id="chart-properties-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                   <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="layout-grid" style="width: 18px; height: 18px; color: var(--primary);"></i>
-                    Détection Multi-Graphiques
+                    <i data-lucide="pie-chart" style="width: 18px; height: 18px; color: var(--primary);"></i>
+                    Type & Propriétés du Graphique
                   </h3>
-                  <span id="multi-chart-badge" class="badge-blue" style="font-size: 12px;">2 Graphiques Détectés</span>
+                  <span id="ui-chart-type" class="badge-blue"
+                    style="font-size: 12px; text-transform: uppercase;">Type</span>
                 </div>
 
-                <div id="multi-chart-gallery"
-                  style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 240px; overflow-y: auto;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
                   <div
                     style="padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-canvas);">
-                    <div
-                      style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-                      <span>Graphique 1 (Bar Chart)</span>
-                      <span class="badge-emerald" style="font-size: 10px;">0.96</span>
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Axe X: Trimestre | 4 points</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Titre détecté</div>
+                    <div id="ui-chart-title"
+                      style="font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      -</div>
                   </div>
                   <div
                     style="padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-canvas);">
-                    <div
-                      style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
-                      <span>Graphique 2 (Line Chart)</span>
-                      <span class="badge-emerald" style="font-size: 10px;">0.94</span>
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Axe X: Mois | 6 points</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Axes (X / Y)</div>
+                    <div id="ui-chart-axes"
+                      style="font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      -</div>
                   </div>
                 </div>
               </div>
@@ -880,8 +885,10 @@
                     <button class="pro-btn-secondary" onclick="exportDataGridCSV()">
                       <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export CSV
                     </button>
-                    <button id="validate-data-btn" class="pro-btn-primary" onclick="validateDataAndRunAnalysis()" style="display: none; align-items: center; gap: 6px; font-weight: 700;">
-                      <i data-lucide="check-circle-2" style="width: 16px; height: 16px;"></i> <span data-i18n="datagrid.btn_validate">VALIDER</span>
+                    <button id="validate-data-btn" class="pro-btn-primary" onclick="validateDataAndRunAnalysis()"
+                      style="display: none; align-items: center; gap: 6px; font-weight: 700;">
+                      <i data-lucide="check-circle-2" style="width: 16px; height: 16px;"></i> <span
+                        data-i18n="datagrid.btn_validate">VALIDER</span>
                     </button>
                   </div>
                 </div>
@@ -890,10 +897,10 @@
                 <div style="max-height: 240px; overflow-y: auto;">
                   <table class="datagrid-table" id="datagrid-table">
                     <thead>
-                      <tr>
-                        <th onclick="sortDataGrid('label')">Étiquette</th>
-                        <th onclick="sortDataGrid('value')">Valeur</th>
-                        <th onclick="sortDataGrid('confidence')">Confiance</th>
+                      <tr id="datagrid-thead-tr">
+                        <!-- Les colonnes seront générées dynamiquement par JS -->
+                        <th>Catégorie (Axe X)</th>
+                        <th>Valeurs</th>
                       </tr>
                     </thead>
                     <tbody id="datagrid-tbody">
@@ -929,8 +936,10 @@
 
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                   <input type="text" id="user-question-input" class="pro-input"
-                    placeholder="Posez une question sur ce graphique..." value="Quel est le total de la distribution ?" disabled>
-                  <button id="submit-question-btn" class="pro-btn-primary" onclick="submitAnalysisQuestion()" disabled>Analyser</button>
+                    placeholder="Posez une question sur ce graphique..." value="Quel est le total de la distribution ?"
+                    disabled>
+                  <button id="submit-question-btn" class="pro-btn-primary" onclick="submitAnalysisQuestion()"
+                    disabled>Analyser</button>
                   <button class="pro-btn-secondary" onclick="openShareModal()" title="Partager cette analyse"
                     style="background: var(--emerald-600); color: white;">
                     <i data-lucide="share-2" style="width: 16px; height: 16px;"></i> Partager
@@ -1293,6 +1302,28 @@
       document.getElementById('onboarding-modal-backdrop').classList.add('hidden');
       localStorage.setItem('graphein_tour_completed', 'true');
     }
+    // Gestionnaire global du thème pour la page d'accueil
+    window.toggleAppTheme = function () {
+      // 1. On demande au ThemeManager de basculer les couleurs globales
+      if (typeof ThemeManager !== 'undefined') {
+        ThemeManager.toggleTheme();
+      } else {
+        document.documentElement.classList.toggle('dark'); // Sécurité si ThemeManager est indisponible
+      }
+
+      // 2. On intervertit manuellement les icônes
+      const isDark = document.documentElement.classList.contains('dark');
+      const sunWrapper = document.getElementById('theme-sun-wrapper');
+      const moonWrapper = document.getElementById('theme-moon-wrapper');
+
+      if (isDark) {
+        if (sunWrapper) sunWrapper.classList.add('hidden');
+        if (moonWrapper) moonWrapper.classList.remove('hidden');
+      } else {
+        if (sunWrapper) sunWrapper.classList.remove('hidden');
+        if (moonWrapper) moonWrapper.classList.add('hidden');
+      }
+    };
 
     // Sidebar Collapse / Expand Controller
     function toggleSidebar() {
@@ -1790,10 +1821,13 @@
 
       const fd = new FormData();
       fd.append('question', q);
-      fd.append('target_language', window.currentLang || 'fr'); // AJOUT IMPORTANT
+      fd.append('target_language', window.currentLang || 'fr');
+
+      // NOUVEAU : Transmission du contexte actif au backend
+      if (window.currentSessionId) fd.append('session_id', window.currentSessionId);
+      if (window.currentFilename) fd.append('image_filename', window.currentFilename);
 
       document.getElementById('ai-response-container').innerHTML = '<div style="color: var(--primary);">Raisonnement VLM Gemini Flash & Recommandations en cours...</div>';
-
       fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + currentAuthToken },
@@ -1996,38 +2030,57 @@
         .replace(/\n/g, '<br>');
     }
 
-    // 1. Dynamic DataGrid Rendering
-    function renderDataGrid(dataPoints) {
+    // 1. Dynamic DataGrid Rendering (Multi-Series Support)
+    function renderDataGrid(extraction) {
       const tbody = document.getElementById('datagrid-tbody');
+      const theadTr = document.getElementById('datagrid-thead-tr');
       const valBtn = document.getElementById('validate-data-btn');
-      if (!tbody) return;
-      if (!dataPoints || dataPoints.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="3" style="text-align: center; padding: 24px; color: var(--text-secondary);">
-              <i data-lucide="table" style="width: 24px; height: 24px; margin-bottom: 8px; color: var(--text-muted); display: block; margin-left: auto; margin-right: auto;"></i>
-              <span>Aucune donnée extraite. Téléversez un graphique pour afficher la grille.</span>
-            </td>
-          </tr>
-        `;
+
+      if (!tbody || !theadTr) return;
+
+      const seriesList = extraction.series || [];
+      const flatData = extraction.donnees_tabulaires || extraction.data_points || [];
+
+      if (seriesList.length === 0 && flatData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 24px;">Aucune donnée extraite.</td></tr>`;
         if (valBtn) valBtn.style.display = 'none';
-        if (window.lucide) lucide.createIcons();
         return;
       }
-      let html = '';
-      dataPoints.forEach(dp => {
-        const lbl = dp.label || '[Illisible]';
-        const val = dp.value !== undefined && dp.value !== null ? dp.value : 'N/A';
-        const confPct = ((dp.confidence || 0.95) * 100).toFixed(0);
-        html += `
-          <tr>
-            <td><strong>${lbl}</strong></td>
-            <td><code>${val}</code></td>
-            <td><span class="badge-emerald">${confPct}%</span></td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
+
+      // --- GÉNÉRATION DYNAMIQUE DES EN-TÊTES ---
+      let headHtml = `<th>Catégorie (Axe X)</th>`;
+      if (seriesList.length > 0) {
+        seriesList.forEach(s => {
+          headHtml += `<th>${s.series_name || 'Valeur'}</th>`;
+        });
+      } else {
+        headHtml += `<th>Valeur</th>`;
+      }
+      theadTr.innerHTML = headHtml;
+
+      // --- GÉNÉRATION DYNAMIQUE DES LIGNES ---
+      let bodyHtml = '';
+      if (seriesList.length > 0) {
+        const categories = seriesList[0].categories || [];
+
+        // CORRECTION : Déclaration explicite de l'index dans la boucle avec 'let'
+        categories.forEach((cat, index) => {
+          bodyHtml += `<tr><td><strong>${cat}</strong></td>`;
+          seriesList.forEach(s => {
+            const val = (s.values && s.values[index] !== undefined) ? s.values[index] : 'N/A';
+            bodyHtml += `<td><input type="text" class="pro-input hitl-val" style="width: 80px; padding: 4px; height: 26px; text-align: center; font-family: monospace; font-size: 12px;" value="${val}"></td>`;
+          });
+          bodyHtml += `</tr>`;
+        });
+      } else {
+        flatData.forEach(dp => {
+          const lbl = dp.categorie || dp.label || '[Inconnu]';
+          const val = dp.valeur !== undefined ? dp.valeur : (dp.value !== undefined ? dp.value : '');
+          bodyHtml += `<tr><td><strong>${lbl}</strong></td><td><input type="text" class="pro-input hitl-val" style="width: 80px; padding: 4px; height: 26px; text-align: center; font-family: monospace; font-size: 12px;" value="${val}"></td></tr>`;
+        });
+      }
+
+      tbody.innerHTML = bodyHtml;
       if (valBtn) valBtn.style.display = 'inline-flex';
       if (window.lucide) lucide.createIcons();
     }
@@ -2124,7 +2177,20 @@
       if (!file || !currentAuthToken) return;
 
       updateWorkflowStep(1);
-      updateProgressBar("Chargement de l'image du graphique...", 30);
+
+      // 1. Démarrage de la barre dynamique
+      let simProgress = 15;
+      updateProgressBar("Chargement de l'image...", simProgress);
+
+      window.uploadInterval = setInterval(() => {
+        if (simProgress < 85) {
+          simProgress += Math.floor(Math.random() * 8) + 2; // Incrément aléatoire
+          updateProgressBar("Extraction IA et OCR en cours...", simProgress);
+        }
+      }, 800);
+
+      document.getElementById('upload-hero-container').style.display = 'none';
+      document.getElementById('btn-change-chart').classList.remove('hidden');
 
       const fd = new FormData();
       fd.append('file', file);
@@ -2135,16 +2201,46 @@
         headers: { 'Authorization': 'Bearer ' + currentAuthToken },
         body: fd
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            // NOUVEAU : On capte tous les formats d'erreur possibles du backend
+            return res.json().then(err => {
+              throw new Error(err.technical_message || err.message || err.detail || "Erreur critique du serveur");
+            });
+          }
+          return res.json();
+        })
         .then(session => {
-          updateProgressBar("Extraction VLM & OCR des données visuelles...", 60);
+          // 2. Nettoyage de l'intervalle et passage à 100%
+          clearInterval(window.uploadInterval);
+          updateProgressBar("Terminé !", 100);
+
+          // SAUVEGARDE POUR LE CHAT (Correction du point 3)
+          window.currentSessionId = session.session_id;
+          window.currentFilename = session.file_name;
+
           document.getElementById('chart-preview-img').src = URL.createObjectURL(file);
           switchTab('analysis');
 
+          // ... (la suite reste identique avec if (session.extraction) ...)
+
           window.currentSessionInterpretation = null;
 
-          if (session.extraction && session.extraction.data_points) {
-            renderDataGrid(session.extraction.data_points);
+          // Remplir et afficher la carte des propriétés du graphique
+          if (session.extraction) {
+            document.getElementById('ui-chart-type').innerText = session.extraction.type_graphique || 'INCONNU';
+            document.getElementById('ui-chart-title').innerText = session.extraction.titre || 'Aucun titre détecté';
+
+            const axeX = session.extraction.axe_x_label || '?';
+            const axeY = session.extraction.axe_y_label || '?';
+            document.getElementById('ui-chart-axes').innerText = `${axeX} / ${axeY}`;
+
+            // Afficher la carte et instancier les nouvelles icônes
+            document.getElementById('chart-properties-card').classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+          };
+          if (session.extraction) {
+            renderDataGrid(session.extraction);
           }
 
           // Initial State: Show VALIDER button & Lock Chat
@@ -2180,8 +2276,20 @@
           updateProgressBar("Vérifiez les données et cliquez sur VALIDER.", 100);
         })
         .catch(err => {
-          updateProgressBar("Erreur lors du traitement de l'image.", 0);
+          // 1. ARRÊT IMMÉDIAT DE LA BARRE DE CHARGEMENT
+          if (window.uploadInterval) {
+            clearInterval(window.uploadInterval);
+          }
+
+          // 2. MASQUER LA BARRE
+          updateProgressBar("Erreur lors de l'analyse.", 0);
+
+          // 3. AFFICHER LE POP-UP D'ERREUR
           alert(err.message);
+
+          // 4. RÉTABLIR LA ZONE DE TÉLÉCHARGEMENT INITIALE
+          document.getElementById('upload-hero-container').style.display = 'flex';
+          document.getElementById('btn-change-chart').classList.add('hidden');
         });
     }
 
@@ -2440,6 +2548,10 @@
     // Initial Auth Token Verification on Page Load
     document.addEventListener('DOMContentLoaded', () => {
       ThemeManager.initTheme();
+
+      // NOUVEAU : Dessiner les icônes Lucide de la page d'accueil immédiatement
+      if (window.lucide) lucide.createIcons();
+
       if (currentAuthToken) {
         fetch('/api/auth/me', {
           headers: { 'Authorization': 'Bearer ' + currentAuthToken }
@@ -2835,6 +2947,14 @@
         if (e.target.closest('[data-tooltip]')) tooltipBox.classList.remove('visible');
       });
       document.addEventListener('mousedown', () => tooltipBox.classList.remove('visible'));
+    });
+  </script>
+  <!-- Initialisation globale des icônes et sécurité UI -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
     });
   </script>
 </body>

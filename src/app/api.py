@@ -5,6 +5,25 @@ import io
 import time
 from pathlib import Path
 from typing import Any
+import os
+from dotenv import load_dotenv
+
+# Trouver le chemin du fichier .env à la racine du projet
+env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+
+# Charger les variables du fichier .env
+loaded = load_dotenv(dotenv_path=env_path)
+
+if loaded:
+    print("✅ Fichier .env chargé avec succès !")
+else:
+    print("⚠️ Attention : Impossible de trouver ou charger le fichier .env")
+
+# Vérification immédiate de la présence de la clé API
+if not os.getenv("GEMINI_API_KEY"):
+    print("❌ Clé GEMINI_API_KEY introuvable dans l'environnement !")
+else:
+    print("🔑 Clé GEMINI_API_KEY détectée.")
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -710,7 +729,19 @@ async def create_new_session(
     # Perform fresh vision extraction & structural analysis with ChartIntelligenceEngine
     ocr_boxes = ocr_engine.detect_ocr_text_boxes(img_path)
     chart_metadata = chart_intelligence.analyze_image(img_path, ocr_boxes)
+    
+    # 1. Extraction classique pour le pipeline backend strict
     extraction = reasoning_agent.extract_chart_data(img_path, metadata=chart_metadata)
+    
+    # --- 2. LE BYPASS FRONTEND : Récupération des données Riches complètes ---
+    try:
+        rich_extraction = reasoning_agent.gemini_service.extract_chart(img_path)
+        rich_data = rich_extraction.model_dump()
+    except Exception as e:
+        structured_logger.warning("API", f"Impossible de récupérer l'extraction riche : {e}")
+        rich_data = extraction.model_dump()
+    # -------------------------------------------------------------------------
+
     chart_metadata = chart_intelligence.reconcile_with_vlm(chart_metadata, extraction.chart_type, vlm_confidence=0.92)
 
     stats = StatisticalEngine.compute_summary(extraction)
@@ -732,7 +763,11 @@ async def create_new_session(
     # Persist to Supabase Database (RLS bound)
     supabase_service.save_analysis(user_id=current_user.id, session=session)
 
-    return session.model_dump()
+    # --- 3. INJECTION : On écrase l'extraction basique par la riche pour l'UI ---
+    response_payload = session.model_dump()
+    response_payload["extraction"] = rich_data
+    
+    return response_payload
 
 
 @app.get("/api/session/active")
@@ -841,16 +876,40 @@ def reopen_session(
     session_id: str,
     current_user: UserProfile = Depends(get_current_user),
 ) -> dict[str, Any]:
-    """Reopens a historical session into the active workspace."""
+    """Reopens a historical session securely, enforcing RBAC and ownership."""
+    
+    # 1. On cherche d'abord dans la base de données (Single Source of Truth) pour connaître le propriétaire
+    user_analyses = supabase_service.get_user_analyses(current_user.id)
+    session_data = next((a for a in user_analyses if a.get("session_id") == session_id), None)
+    
+    # 2. Si non trouvé dans SES analyses, on vérifie si ça lui a été partagé (CollaborationService)
+    if not session_data:
+        # A-t-il le droit d'accéder à cette ressource partagée ?
+        has_access = collaboration_service.has_analysis_permission(
+            user_id=current_user.id, 
+            analysis_id=session_id, 
+            required_role="viewer"
+        )
+        
+        if not has_access:
+            # 🚨 BOOM ! Blocage de la faille IDOR : On renvoie 404 (pas 403) pour ne pas révéler que l'ID existe !
+            structured_logger.warning("SECURITY", f"IDOR Attempt blocked. User {current_user.id} tried to access {session_id}")
+            raise HTTPException(status_code=404, detail=f"Session '{session_id}' introuvable ou accès refusé.")
+            
+        # S'il a le droit (partage), on doit récupérer la donnée (idéalement via une requête admin ou cache)
+        try:
+            session = session_manager.reopen_session(session_id)
+            session_data = session.model_dump()
+        except KeyError:
+            raise HTTPException(status_code=404, detail=f"Session partagée '{session_id}' expirée du cache.")
+
+    # 3. Réouverture en mémoire cache avec l'utilisateur actuel
     try:
-        session = session_manager.reopen_session(session_id)
-        return session.model_dump()
+        session_manager.reopen_session(session_id)
     except KeyError:
-        user_analyses = supabase_service.get_user_analyses(current_user.id)
-        for a in user_analyses:
-            if a.get("session_id") == session_id:
-                return a
-        raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found.")
+        pass # Déjà chargé ou géré via DB
+
+    return session_data
 
 
 # ====================================================================
