@@ -122,7 +122,24 @@ docker run -d \
 
 ---
 
-## 7. Supervision & Health Checks
+## 7. Déploiement sur Render (via Blueprint)
+
+GraphEin AI inclut un fichier `render.yaml` prêt à l'emploi (Render Blueprint) configurant l'API REST FastAPI backend et l'interface Web Streamlit UI.
+
+### Étapes de déploiement en 1-clic :
+1. Pushez vos modifications sur GitHub/GitLab.
+2. Connectez-vous sur votre tableau de bord [Render Dashboard](https://dashboard.render.com).
+3. Cliquez sur **New +** -> **Blueprint**.
+4. Séléctionnez votre dépôt Git `GrapheinAI`.
+5. Render détectera automatiquement le fichier [render.yaml](file:///c:/Users/chris/Desktop/GrapheinAI/render.yaml) et proposera de créer 2 services :
+   - **`graphein-ai-api`** : Serveur REST FastAPI (`uvicorn src.app.api:app`) avec health check automatique (`/health`).
+   - **`graphein-ai-ui`** : Application Streamlit UI (`streamlit run app.py`).
+6. Saisissez les valeurs des variables d'environnement requises (`GEMINI_API_KEY`, etc.).
+7. Cliquez sur **Apply**.
+
+---
+
+## 8. Supervision & Health Checks
 
 Les endpoints suivants sont disponibles pour les sondes Kubernetes et outils SRE (Datadog, Prometheus, UptimeRobot) :
 
@@ -146,7 +163,7 @@ Les endpoints suivants sont disponibles pour les sondes Kubernetes et outils SRE
 
 ---
 
-## 8. Rotation des Logs & Sauvegardes
+## 9. Rotation des Logs & Sauvegardes
 
 ### Logs de Production
 Les logs applicatifs structurés sont enregistrés automatiquement dans `logs/graphein_app.log` avec une rotation de **5 MB x 5 fichiers**.
@@ -164,7 +181,7 @@ python scripts/backup_manager.py --keep 15
 
 ---
 
-## 9. Directives de Sécurité Production
+## 10. Directives de Sécurité Production
 - **En-têtes HTTP de Sécurité (OWASP)** : `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection` et `Referrer-Policy` sont injectés automatiquement.
 - **Protection Anti-Injection** : Toutes les requêtes utilisateur sont inspectées par le module `PromptInjectionGuard`.
 - **Calcul Déterministe** : Évaluation isolée via l'AST Python `SafeCalculator` (aucun `eval()` dangereux).
