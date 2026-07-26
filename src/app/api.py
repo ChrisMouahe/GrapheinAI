@@ -1545,5 +1545,10 @@ def get_i18n_translation_file(lang: str) -> Response:
 # Serve static single-page web app at root
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
 
+import os
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    # Render fournit dynamiquement le port via la variable d'environnement PORT
+    port = int(os.environ.get("PORT", 8080))
+    # L'hôte doit être 0.0.0.0 pour accepter les connexions externes sur le cloud
+    uvicorn.run(app, host="0.0.0.0", port=port)
