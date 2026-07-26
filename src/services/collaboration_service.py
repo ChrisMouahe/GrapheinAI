@@ -19,7 +19,7 @@ from src.models.workspace import (
     Workspace,
     WorkspaceMember,
 )
-from src.services.email_service import EmailService
+from src.services.email import EmailService
 
 logger = logging.getLogger("CollaborationService")
 

@@ -5,16 +5,26 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import os
+
 logger = logging.getLogger("EmailService")
 
 
 class EmailService:
-    """Email delivery service supporting local MailDev SMTP server in dev and standard SMTP in production."""
+    """Email delivery service supporting environment-based SMTP and MailDev fallback."""
 
-    def __init__(self, smtp_host: str = "localhost", smtp_port: int = 1025) -> None:
-        self.smtp_host = smtp_host
-        self.smtp_port = smtp_port
-        self.sender_email = "no-reply@graphein.ai"
+    def __init__(
+        self,
+        smtp_host: str | None = None,
+        smtp_port: int | None = None,
+        smtp_user: str | None = None,
+        smtp_password: str | None = None,
+    ) -> None:
+        self.smtp_host = smtp_host or os.getenv("SMTP_HOST", "localhost")
+        self.smtp_port = int(smtp_port or os.getenv("SMTP_PORT", 1025))
+        self.smtp_user = smtp_user or os.getenv("SMTP_USER", "")
+        self.smtp_password = smtp_password or os.getenv("SMTP_PASSWORD", "")
+        self.sender_email = self.smtp_user if self.smtp_user and "@" in self.smtp_user else "no-reply@graphein.ai"
         self.sender_name = "GrapheinAI Enterprise Collaboration"
 
     def send_invitation_email(
@@ -67,9 +77,15 @@ class EmailService:
         msg.attach(MIMEText(html_content, "html", "utf-8"))
 
         try:
-            with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=2.0) as server:
+            with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=5.0) as server:
+                if self.smtp_user and self.smtp_password:
+                    try:
+                        server.starttls()
+                    except Exception:
+                        pass
+                    server.login(self.smtp_user, self.smtp_password)
                 server.sendmail(self.sender_email, [to_email], msg.as_string())
-            logger.info(f"Email sent successfully via SMTP/MailDev to {to_email}")
+            logger.info(f"Email sent successfully via SMTP to {to_email}")
             return True
         except Exception as e:
             # Fallback for dev environments where MailDev server is not currently running

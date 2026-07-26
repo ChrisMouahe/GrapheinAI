@@ -76,7 +76,7 @@ class SupabaseService:
 
         if not isinstance(req, SignupRequest):
             mail = email or "user@graphein.ai"
-            pwd = password or "password123"
+            pwd = password or "Password123"
             disp = name or mail.split("@")[0].capitalize()
             req = SignupRequest(
                 nom="",
@@ -323,6 +323,23 @@ class SupabaseService:
             total_analyses=total_analyses,
             total_pdfs=total_pdfs,
         )
+
+    def get_profile_by_email(self, email: str) -> UserProfile | None:
+        """Retrieves user profile by email address."""
+        if not email:
+            return None
+        clean_email = email.strip().lower()
+        for u_id, u_data in self._mock_users.items():
+            if u_data.get("email", "").lower() == clean_email:
+                return self.get_profile(u_id)
+        if self.client:
+            try:
+                res = self.client.table("profiles").select("*").eq("email", clean_email).execute()
+                if res.data and len(res.data) > 0:
+                    return self.get_profile(res.data[0]["id"])
+            except Exception:
+                pass
+        return None
 
     def update_profile(
         self,

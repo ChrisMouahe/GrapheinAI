@@ -22,6 +22,8 @@ from src.models.user import UserProfile
 from src.utils.chart_detector import ChartTypeDetector
 from src.utils.ocr_engine import OCREngine
 
+from src.services.gemini import GeminiService, FullChartExtraction
+
 try:
     from google import genai
     from google.genai import types
@@ -60,12 +62,14 @@ class ReasoningAgent:
         model_name: str = DEFAULT_MODEL,
         max_retries: int = 3,
         backoff_factor: float = 1.5,
+        gemini_service: GeminiService | None = None,
     ) -> None:
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         self.model_name = model_name
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
         self.client = None
+        self.gemini_service = gemini_service or GeminiService(api_key=self.api_key, model_name=self.model_name)
 
         self.ocr_engine = OCREngine()
         self.chart_detector = ChartTypeDetector()
@@ -102,56 +106,31 @@ class ReasoningAgent:
         ocr_boxes = self.ocr_engine.detect_ocr_text_boxes(img_path)
         structure = self.chart_detector.detect_chart_structure(img_path)
 
-        ocr_info_str = "\n".join([f"  - Box {b.box} in region '{b.region}' (Conf: {b.confidence})" for b in ocr_boxes])
+        # Single Extraction Strategy via GeminiService (with SHA256 caching & retry)
+        full_ext = self.gemini_service.extract_chart(img_path)
 
-        chart_type_val = metadata.chart_type.value if metadata and hasattr(metadata, "chart_type") else structure.detected_type
-        meta_prompt_part = ""
-        if metadata and hasattr(metadata, "chart_type"):
-            meta_prompt_part = (
-                f"Le graphique est de type : {metadata.chart_type.value}\n"
-                f"Le niveau de confiance est : {int(metadata.confidence * 100)}%\n"
-                f"La légende est : {'Oui' if metadata.legend_detected else 'Non'}\n"
-                f"Le nombre de séries est : {metadata.number_of_series}\n"
-                f"L'orientation est : {metadata.orientation}\n"
-                "Utilise ces informations dans ton raisonnement.\n\n"
-            )
+        # Map FullChartExtraction to ChartExtraction
+        data_points = []
+        for s in full_ext.series:
+            for c, v in zip(s.categories, s.values):
+                data_points.append(ExtractedDataPoint(label=c, value=v, confidence=0.95))
 
-        prompt = (
-            "Tu es un expert en interprétation de graphiques de niveau recherche.\n"
-            "Les régions de texte et la géométrie du graphique ont été pré-détectées par Computer Vision / OCR :\n"
-            f"Detected Geometric Chart Architecture: {chart_type_val.upper()}\n"
-            f"{meta_prompt_part}"
-            f"Detected Text Bounding Regions:\n{ocr_info_str}\n\n"
-            "RÈGLES STRICTES ANTI-HALLUCINATION :\n"
-            "1. Ne réinvente JAMAIS un texte ou un label. Si un label est illisible, retourne null.\n"
-            "2. Interdiction définitive d'utiliser des labels par défaut tels que 'Category A', 'Category B', 'Series 1'.\n"
-            "3. Utilise uniquement les données réelles visibles dans le graphique.\n\n"
-            "Respond strictly with a JSON object:\n"
-            "```json\n"
-            "{\n"
-            f'  "chart_type": "{chart_type_val}",\n'
-            '  "title": "Title of Chart or null",\n'
-            '  "x_label": "X axis label or null",\n'
-            '  "y_label": "Y axis label or null",\n'
-            '  "data_points": [\n'
-            '    {"label": "Actual Label or null", "value": 100.0, "confidence": 0.95}\n'
-            "  ]\n"
-            "}\n"
-            "```"
+        if not data_points:
+            for tab in full_ext.donnees_tabulaires:
+                lbl = tab.get("categorie") or tab.get("label") or "Cat"
+                val = float(tab.get("valeur", 0.0))
+                data_points.append(ExtractedDataPoint(label=str(lbl), value=val, confidence=0.95))
+
+        ext = ChartExtraction(
+            chart_type=full_ext.type_graphique,
+            title=full_ext.titre,
+            x_label=full_ext.axe_x_label,
+            y_label=full_ext.axe_y_label,
+            data_points=data_points,
+            extraction_source="Single Pass GeminiService (SHA256 Cached)" if self.client is not None or self.gemini_service.client is not None else "OpenCV OCR + Structural Contour Analyzer",
+            ocr_boxes=ocr_boxes,
         )
-
-        raw_json = self._call_vlm_vision(img_path, prompt, question="")
-
-        try:
-            parsed = self._extract_json_dict(raw_json)
-            ext = ChartExtraction.model_validate(parsed)
-            ext.extraction_source = "OpenCV OCR + Gemini Flash Vision API" if self.client is not None else "OpenCV OCR + Structural Contour Analyzer"
-            ext.ocr_boxes = ocr_boxes
-            return ext
-        except Exception:
-            ext = self._dynamic_fallback_extraction(img_path, structure, ocr_boxes)
-            ext.ocr_boxes = ocr_boxes
-            return ext
+        return ext
 
     def is_out_of_domain_query(self, question: str, extraction: ChartExtraction) -> bool:
         """Checks if user question is out of domain and unanswerable from chart image."""

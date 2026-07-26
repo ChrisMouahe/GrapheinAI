@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "GrapheinAI",
-    "subtitle": "Scientific Chart Analysis & Enterprise Analytics SaaS Platform"
+    "subtitle": "Saas Plateform For Analysis Of Scientific Graphs For Enterprises and Individuals"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -16,9 +16,9 @@
     "login": "Sign In"
   },
   "landing": {
-    "hero_tag": "Visual AI & Enterprise Analytics",
-    "title": "Enterprise Visual Chart Intelligence SaaS",
-    "subtitle": "Extract, analyze, and interpret visual data with Gemini Flash Vision, OpenCV, and deterministic AST calculation.",
+    "hero_tag": "Visual Data Analysis AI",
+    "title": "Intelligent Chart Analysis Platform",
+    "subtitle": "Extract, analyze, and interpret visual data with AI.",
     "login_btn": "Sign In",
     "signup_btn": "Create Account",
     "feature1_title": "Multi-Tenant AI Profiling",
@@ -36,7 +36,9 @@
     "avg_confidence": "Average Confidence",
     "pdf_reports": "PDF Reports",
     "recent_title": "Recent Private Analysis Sessions",
-    "quick_analyze": "Start Chart Analysis"
+    "quick_analyze": "Start Chart Analysis",
+    "empty_title": "No analysis sessions in your workspace yet",
+    "empty_desc": "You haven't uploaded any chart yet. Import your first visual to launch AI analytical intelligence."
   },
   "datagrid": {
     "title": "Interactive Data Grid (HITL DataGrid)",
@@ -47,7 +49,8 @@
     "col_label": "Label / Category",
     "col_value": "Numerical Value",
     "col_confidence": "Confidence",
-    "col_actions": "Actions"
+    "col_actions": "Actions",
+    "btn_validate": "VALIDATE"
   },
   "auth": {
     "login_title": "Sign In to your SaaS Workspace",
@@ -121,12 +124,6 @@
     "interpreter_title": "GraphInterpreter Narrative Report",
     "interpreter_desc": "Generates a full 1-page scientific report (Description, Variables, Trends, Max, Min, Anomalies, Synthesis)."
   },
-  "stepper": {
-    "step1": "Upload & Preview",
-    "step2": "OCR & CV Geometry",
-    "step3": "HITL Data Grid",
-    "step4": "AI Reasoning & Report"
-  },
   "steps": {
     "step1_title": "Step 1: Upload Chart Image",
     "step1_drop": "Drop your chart file here or click to browse",
@@ -138,5 +135,60 @@
     "ask_placeholder": "Ask a question about this chart...",
     "btn_send": "Analyze with AI",
     "download_pdf": "Download PDF Report"
+  },
+  "settings_tabs": {
+    "profile": "My Profile",
+    "preferences": "Preferences",
+    "appearance": "Appearance",
+    "assistant": "AI Assistant",
+    "notifications": "Notifications",
+    "security": "Security"
+  },
+  "stepper": {
+    "step1": "Import a chart",
+    "step2": "Verify data",
+    "step3": "AI Interpretation",
+    "step4": "Chat Questions",
+    "step5": "Download report"
+  },
+  "right_panel": {
+    "title": "Multi-Agent AI Reasoning & Decision Copilot",
+    "context": "Active Context: Business Profile and Expertise injected into Gemini Vision.",
+    "chat_placeholder": "Ask your question below to trigger VLM analysis...",
+    "btn_analyze": "Analyze",
+    "btn_share": "Share",
+    "reco_title": "Strategic AI Recommendations",
+    "reco_badge": "Decision Copilot Engine Active",
+    "reco_empty": "Personalized recommendations will appear here after analysis.",
+    "xai_title": "Explainability & Transparency (XAI)",
+    "comments_title": "Comments & Collaboration"
+  },
+  "tooltip": {
+    "settings": "Settings & Configuration",
+    "dashboard": "Overview of your analyses",
+    "analysis": "VLM & AST Graph Analysis Studio",
+    "history": "Analysis session history",
+    "reports": "Export official PDF reports"
+  },
+  "settings_modal": {
+    "title": "Settings",
+    "close": "Close",
+    "prefs_title": "Regional Preferences",
+    "prefs_desc": "Choose the display and reporting language.",
+    "lang_label": "Interface & PDF Reports Language",
+    "appearance_title": "Theme & Appearance",
+    "appearance_desc": "Customize the visual appearance of Graphein AI.",
+    "theme_toggle": "Toggle Theme (Light / Dark)",
+    "theme_note": "Automatically adapts application colors",
+    "ai_title": "AI Assistant Configuration",
+    "ai_desc": "Adjust the tone, length, and emotion of the reasoning agent.",
+    "ai_style": "Response Style",
+    "ai_emotion": "AI Emotion & Empathy",
+    "notif_title": "Notification Center",
+    "notif_desc": "Manage your email alerts and in-app notifications.",
+    "sec_title": "Security & Authentication",
+    "sec_desc": "Password update and session management.",
+    "change_pwd": "Change my password",
+    "logout": "Log Out"
   }
 }

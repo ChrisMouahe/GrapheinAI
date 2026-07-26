@@ -28,16 +28,15 @@ def test_index_html_structure_and_sidebar():
     assert 'id="nav-analysis"' in content
     assert 'id="nav-history"' in content
     assert 'id="nav-reports"' in content
-    assert 'id="nav-stats"' in content
-    assert 'id="nav-settings"' in content
-    assert 'id="nav-profile"' in content
+    assert 'id="nav-admin-console"' in content
+    assert 'id="nav-monitoring"' in content
+    assert 'id="nav-performance"' in content
 
     # Dashboard & Studio Screen Content Containers
     assert 'id="tab-dashboard-content"' in content
     assert 'id="tab-analysis-content"' in content
     assert 'id="tab-history-content"' in content
-    assert 'id="tab-settings-content"' in content
-    assert 'id="tab-profile-content"' in content
+    assert 'id="tab-reports-content"' in content
 
     # DataGrid & Controls
     assert 'id="datagrid-search"' in content

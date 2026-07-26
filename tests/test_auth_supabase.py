@@ -18,14 +18,14 @@ def test_supabase_service_auth_flow():
     service = SupabaseService()
 
     # 1. Signup
-    auth_res = service.signup(email="alice@graphein.ai", password="secretpassword", name="Alice Wonderland")
+    auth_res = service.signup(email="alice@graphein.ai", password="Password123", name="Alice Wonderland")
     assert auth_res.access_token is not None
     assert auth_res.user.email == "alice@graphein.ai"
     assert auth_res.user.name == "Alice Wonderland"
     alice_id = auth_res.user.id
 
     # 2. Login
-    login_res = service.login(email="alice@graphein.ai", password="secretpassword")
+    login_res = service.login(email="alice@graphein.ai", password="Password123")
     assert login_res.access_token is not None
     assert login_res.user.id == alice_id
 
@@ -44,8 +44,8 @@ def test_multi_tenant_rls_isolation():
     """Verifies Row Level Security (RLS) data isolation between different users."""
     service = SupabaseService()
 
-    user_a = service.signup(email="usera@graphein.ai", password="password123", name="User A")
-    user_b = service.signup(email="userb@graphein.ai", password="password123", name="User B")
+    user_a = service.signup(email="usera@graphein.ai", password="Password123", name="User A")
+    user_b = service.signup(email="userb@graphein.ai", password="Password123", name="User B")
 
     # Create mock session for User A
     from src.models.session import AnalysisSession
@@ -71,7 +71,7 @@ def test_multi_tenant_rls_isolation():
 def test_api_auth_and_profile_endpoints(client):
     """Verifies REST API endpoints for authentication, profile management, and session history."""
     # 1. Signup endpoint
-    res_signup = client.post("/api/auth/signup", json={"email": "bob@graphein.ai", "password": "password123", "name": "Bob Builder"})
+    res_signup = client.post("/api/auth/signup", json={"email": "bob@graphein.ai", "password": "Password123", "name": "Bob Builder"})
     assert res_signup.status_code == 200
     signup_data = res_signup.json()
     token = signup_data["access_token"]
