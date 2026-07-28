@@ -1,26 +1,32 @@
 {
   "app": {
     "title": "GrapheinAI",
-    "subtitle": "Saas Plateform For Analysis Of Scientific Graphs For Enterprises and Individuals"
+    "subtitle": "SaaS Platform For Analysis Of Scientific Graphs For Enterprises and Individuals"
   },
   "nav": {
     "dashboard": "Dashboard",
     "analysis": "Analysis Studio",
-    "history": "History",
+    "history": "Private History",
     "reports": "PDF Reports",
     "stats": "SaaS Analytics",
     "settings": "Settings",
     "docs": "API Documentation",
     "profile": "My Profile",
     "analyze_btn": "New Analysis",
-    "login": "Sign In"
+    "login": "Sign In",
+    "admin_section": "ADMINISTRATION",
+    "admin_console": "Enterprise Admin Console",
+    "monitoring": "Monitoring & SRE",
+    "performance": "Performance Dashboard"
   },
   "landing": {
     "hero_tag": "Visual Data Analysis AI",
     "title": "Intelligent Chart Analysis Platform",
-    "subtitle": "Extract, analyze, and interpret visual data with AI.",
+    "subtitle": "Extract, analyze, and interpret visual data with Artificial Intelligence.",
     "login_btn": "Sign In",
     "signup_btn": "Create Account",
+    "hero_start_btn": "Start for Free",
+    "hero_login_btn": "Sign In to My Space",
     "feature1_title": "Multi-Tenant AI Profiling",
     "feature1_desc": "Business sector and expertise level automatically injected into Gemini Flash Vision prompts.",
     "feature2_title": "Supabase RLS Security",
@@ -36,9 +42,17 @@
     "avg_confidence": "Average Confidence",
     "pdf_reports": "PDF Reports",
     "recent_title": "Recent Private Analysis Sessions",
-    "quick_analyze": "Start Chart Analysis",
+    "quick_analyze": "Start Analysis",
     "empty_title": "No analysis sessions in your workspace yet",
-    "empty_desc": "You haven't uploaded any chart yet. Import your first visual to launch AI analytical intelligence."
+    "empty_desc": "You haven't uploaded any chart yet. Import your first visual to launch AI analytical intelligence.",
+    "first_analysis_btn": "Launch my First Analysis →",
+    "th_session_id": "Session ID",
+    "th_chart": "Chart",
+    "th_type": "Type",
+    "th_questions": "Questions",
+    "th_confidence": "Confidence",
+    "th_date": "Date",
+    "th_action": "Action"
   },
   "datagrid": {
     "title": "Interactive Data Grid (HITL DataGrid)",
@@ -50,11 +64,16 @@
     "col_value": "Numerical Value",
     "col_confidence": "Confidence",
     "col_actions": "Actions",
-    "btn_validate": "VALIDATE"
+    "btn_validate": "VALIDATE",
+    "empty_msg": "No extracted data. Upload a chart to display the grid.",
+    "col_category": "Category (X Axis)",
+    "col_values": "Values"
   },
   "auth": {
     "login_title": "Sign In to your SaaS Workspace",
+    "login_subtitle": "Access your private charts and analyses.",
     "signup_title": "Create Enterprise Account",
+    "signup_subtitle": "Join the visual analytics platform.",
     "email": "Business Email Address",
     "password": "Password",
     "password_confirm": "Confirm Password",
@@ -62,21 +81,133 @@
     "prenom": "First Name",
     "entreprise": "Company / Organization",
     "secteur_activite": "Activity Sector",
-    "secteur_autre": "Specify your industry sector...",
+    "secteur_autre": "Specify your activity sector",
+    "secteur_autre_placeholder": "Ex: Biotechnology, Aerospace...",
     "fonction": "Job Title / Function",
-    "niveau_expertise": "Analytics Expertise Level",
-    "annees_experience": "Years of Experience",
-    "terms": "I accept the Terms of Service and Privacy Policy.",
+    "niveau_expertise": "Expertise Level",
+    "annees_experience": "Experience (Years)",
+    "terms": "I accept the Terms of Service.",
     "forgot_password": "Forgot Password?",
     "remember_me": "Remember Me",
     "sign_in_btn": "Sign In",
     "sign_up_btn": "Create Enterprise Account",
-    "no_account": "Don't have an account? Sign up",
-    "already_account": "Already have an account? Sign in",
+    "no_account": "Don't have an account?",
+    "signup_link": "Sign up",
+    "already_account": "Already have an account?",
+    "login_link": "Sign in",
     "logout_success": "Session logged out and context cleared.",
     "forgot_title": "Reset Password",
     "forgot_desc": "Enter your email address to receive reset instructions.",
-    "send_reset": "Send Instructions"
+    "send_reset": "Send Instructions",
+    "back_to_login": "Back to sign in",
+    "email_placeholder": "name@company.com",
+    "password_placeholder": "••••••••",
+    "prenom_placeholder": "John",
+    "nom_placeholder": "Doe",
+    "email_pro_placeholder": "j.doe@company.com",
+    "entreprise_placeholder": "Acme Corp",
+    "fonction_placeholder": "Data Analyst"
+  },
+  "onboarding": {
+    "tag": "Guided Product Tour",
+    "title": "Welcome to GraphEin AI",
+    "desc": "Discover our Enterprise graphic intelligence platform. Follow these 3 simple steps to analyze your visual data.",
+    "skip": "Skip",
+    "next": "Next →",
+    "finish": "Finish 🎉"
+  },
+  "topbar": {
+    "my_workspace": "My Workspace",
+    "mkt_workspace": "Marketing Workspace",
+    "fin_workspace": "Finance Workspace",
+    "new_workspace": "+ New Workspace",
+    "notifications": "Notifications",
+    "mark_all_read": "Mark all as read"
+  },
+  "upload": {
+    "hero_title": "Drop your chart here",
+    "hero_subtitle": "Drag & drop an image (PNG, JPG, WebP) or click to browse a file",
+    "hero_btn": "Choose a chart",
+    "change_btn": "Change chart"
+  },
+  "chart_props": {
+    "title": "Chart Type & Properties",
+    "title_detected": "Detected Title",
+    "axes": "Axes (X / Y)"
+  },
+  "ai": {
+    "context_indicator": "Active Context: Business Profile and Expertise Level taken into account.",
+    "default_message": "Upload a chart then validate the extracted data to unlock AI analysis and chat.",
+    "btn_analyze": "Analyze",
+    "btn_share": "Share",
+    "btn_pdf": "Download PDF",
+    "engine_active": "Decision Copilot Engine Active",
+    "recommendations_default": "Personalized recommendations will appear here after analysis."
+  },
+  "comments": {
+    "title": "5. Comments & Collaboration",
+    "empty": "No comments yet. Be the first to add an observation or mention @Name.",
+    "placeholder": "Add a comment or mention @User...",
+    "publish_btn": "Publish"
+  },
+  "history": {
+    "title": "Private Analysis History",
+    "subtitle": "All your analysis sessions are isolated by Supabase RLS."
+  },
+  "reports": {
+    "send_email": "📧 Send by Email",
+    "download_pdf": "📄 Download PDF",
+    "desc": "Generate and export your high-resolution PDF analysis reports with explainability metrics (XAI), VLM reasoning, and AST deterministic validation."
+  },
+  "monitoring": {
+    "avg_time": "Average Analysis Time",
+    "ram_usage": "RAM Usage",
+    "cpu_usage": "CPU Usage",
+    "active_users": "Active Users",
+    "logs_title": "Structured SRE Log Stream (Internal Admin Logs)"
+  },
+  "admin": {
+    "console_title": "Enterprise Administration Console",
+    "backup_json": "Backup JSON",
+    "new_api_key": "New API Key",
+    "tab_users": "Users & Roles",
+    "tab_apikeys": "API Keys & Quotas",
+    "tab_consumption": "Gemini AI Consumption",
+    "tab_settings": "System Settings",
+    "th_user": "User",
+    "th_email": "Email",
+    "th_sector": "Sector",
+    "th_role": "SaaS Role",
+    "th_status": "Account Status",
+    "th_actions": "Actions",
+    "btn_suspend": "Suspend"
+  },
+  "perf": {
+    "title": "Enterprise Performance Engine Dashboard",
+    "flush_cache": "Flush Cache",
+    "ram": "Memory (RAM)",
+    "cpu": "CPU Usage",
+    "total_count": "Analysis Count",
+    "cache_ratio": "Cache Hit Ratio",
+    "latency_title": "Response Time by Pipeline Stage",
+    "ocr_time": "OCR Time",
+    "gemini_time": "Gemini Time",
+    "faiss_time": "FAISS Time",
+    "ast_time": "AST Time",
+    "pdf_time": "PDF Time"
+  },
+  "share": {
+    "title": "Share this Analysis",
+    "email_label": "Collaborator Email Address",
+    "email_placeholder": "collaborator@company.com",
+    "role_label": "Role & RBAC Permissions",
+    "role_editor": "Editor (Edit, VLM Q&A, PDF)",
+    "role_commenter": "Commenter (Read & Comments)",
+    "role_viewer": "Viewer (Read Only)",
+    "invite_btn": "Invite by Email",
+    "generate_link_btn": "Generate Signed Link",
+    "signed_link_label": "Temporary Signed Link (Valid 7 days):",
+    "copy_btn": "Copy"
   },
   "profile": {
     "title": "User Profile & AI Personalization",
@@ -125,13 +256,14 @@
     "interpreter_desc": "Generates a full 1-page scientific report (Description, Variables, Trends, Max, Min, Anomalies, Synthesis)."
   },
   "steps": {
-    "step1_title": "Step 1: Upload Chart Image",
+    "step1_title": "1. Upload Chart Image",
     "step1_drop": "Drop your chart file here or click to browse",
     "step1_hint": "Supported formats: PNG, JPG, WEBP. Max size: 10 MB.",
     "step2_title": "Step 2: OCR Inspection & CV Geometry",
     "step2_desc": "Segmentation of visual regions and axis detection.",
     "step3_title": "Step 3: HITL Validation & Data Grid",
-    "step4_title": "Step 4: AI Multi-Agent Reasoning & Report",
+    "step4_title": "3. AI Reasoning & Decision Copilot",
+    "step5_title": "4. Strategic AI Recommendations",
     "ask_placeholder": "Ask a question about this chart...",
     "btn_send": "Analyze with AI",
     "download_pdf": "Download PDF Report"
@@ -168,11 +300,22 @@
     "dashboard": "Overview of your analyses",
     "analysis": "VLM & AST Graph Analysis Studio",
     "history": "Analysis session history",
-    "reports": "Export official PDF reports"
+    "reports": "Export official PDF reports",
+    "toggle_menu": "Show/Hide menu"
   },
   "settings_modal": {
     "title": "Settings",
     "close": "Close",
+    "profile_title": "My User Profile",
+    "profile_desc": "Manage your personal information and business context for AI.",
+    "full_name": "Full Name",
+    "company": "Company",
+    "job_title": "Job Title",
+    "sector": "Sector of Activity",
+    "expertise": "Expertise Level",
+    "experience": "Years of Experience",
+    "cancel": "Cancel",
+    "save_profile": "Save Profile",
     "prefs_title": "Regional Preferences",
     "prefs_desc": "Choose the display and reporting language.",
     "lang_label": "Interface & PDF Reports Language",
@@ -184,11 +327,18 @@
     "ai_desc": "Adjust the tone, length, and emotion of the reasoning agent.",
     "ai_style": "Response Style",
     "ai_emotion": "AI Emotion & Empathy",
+    "style_analytique": "Analytical & Numeric",
+    "style_synthetique": "Executive Summary",
+    "style_pedagogique": "Detailed Educational",
+    "emotion_neutre": "Professional Neutral",
+    "emotion_encourageant": "Encouraging & Advisory",
     "notif_title": "Notification Center",
     "notif_desc": "Manage your email alerts and in-app notifications.",
+    "notif_weekly": "Reporting emails and weekly summaries",
+    "notif_invites": "Workspace invitation notifications",
     "sec_title": "Security & Authentication",
     "sec_desc": "Password update and session management.",
-    "change_pwd": "Change my password",
+    "change_pwd": "🔑 Change my password",
     "logout": "Log Out"
   }
 }

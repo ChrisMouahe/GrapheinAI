@@ -531,6 +531,17 @@ async def analyze_chart(
     )
     confidence = confidence_calculator.calculate_confidence(result)
     anomalies = data_anomaly_detector.inspect_extraction(result.extracted_data)
+    confidence = confidence_calculator.calculate_confidence(result)
+    anomalies = data_anomaly_detector.inspect_extraction(result.extracted_data)
+
+    # --- AJOUTEZ CE BLOC ICI ---
+    if session_id:
+        active_sess = session_manager.get_session(session_id)
+        if active_sess:
+            history = pipeline_agent.conversation_manager.get_history(session_id)
+            active_sess.conversation_history = [h.model_dump() for h in history]
+            session_manager.save_active_session()
+            supabase_service.save_analysis(user_id=current_user.id, session=active_sess)
 
     observability_service.record_metric("ANALYSIS", latency)
     performance_monitor.record_stage_latency("OCR", round(latency * 0.25, 4))

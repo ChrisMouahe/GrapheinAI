@@ -133,7 +133,12 @@ class ReasoningAgent:
         return ext
 
     def is_out_of_domain_query(self, question: str, extraction: ChartExtraction) -> bool:
-        """Checks if user question is out of domain and unanswerable from chart image."""
+        """Checks if user question is out of domain. 
+        RELAXED: Always return False to allow Gemini to converse naturally with the user."""
+        # Désactivation du blocage strict "UNANSWERABLE"
+        return False
+        """Checks if user question is out of domain and unanswerable from chart image.
+        
         if not question or not isinstance(question, str):
             return False
 
@@ -153,9 +158,9 @@ class ReasoningAgent:
         has_title_kw = any(w in q_lower for w in title.split() if len(w) > 3)
 
         if not has_math_kw and not has_label_kw and not has_title_kw:
-            return True
+            return True 
 
-        return False
+        return False """
 
     def analyze(
         self,
@@ -306,10 +311,10 @@ class ReasoningAgent:
             [
                 "",
                 "### TARGET QUESTION ###",
-                f"Question: {question}",
+                f"Question de l'utilisateur: {question}",
                 "",
                 "### REQUIRED JSON OUTPUT FORMAT ###",
-                "Respond strictly with a JSON object:",
+                "Respond strictly with a JSON object. IMPORTANT: Si la question de l'utilisateur est conversationnelle ou s'appuie sur l'historique de la conversation, fournis une réponse détaillée et naturelle dans 'reasoning' et mets 'UNANSWERABLE' dans 'calculation_expression'.",
                 "```json",
                 "{",
                 '  "extracted_data": {',
@@ -319,8 +324,8 @@ class ReasoningAgent:
                 '    "y_label": "Y label or null",',
                 '    "data_points": [{"label": "Label or null", "value": 100.0, "confidence": 0.95}]',
                 "  },",
-                '  "reasoning": "Step-by-step logic detailing how values were analyzed.",',
-                '  "calculation_expression": "Expression or value formula if applicable, or summary phrase"',
+                '  "reasoning": "Ta réponse conversationnelle, argumentée et fluide à la question posée (en tenant compte de l\'historique si nécessaire).",',
+                '  "calculation_expression": "Expression arithmétique (ex: 50 + 20) si la question requiert un calcul précis, SINON écrire \'UNANSWERABLE\'"',
                 "}",
                 "```",
             ]

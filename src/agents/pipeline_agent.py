@@ -144,9 +144,14 @@ class PipelineAgent:
                 )
                 calc_expr = reasoning_out.calculation_expression
                 if calc_expr == "UNANSWERABLE" or reasoning_out.is_out_of_domain:
-                    final_answer = "This question cannot be calculated from the chart data." if target_lang == "en" else "Cette question ne peut pas être calculée à partir des données du graphique."
+                    # Si aucun calcul mathématique n'est trouvé, on retourne la discussion naturelle générée par l'IA
+                    final_answer = reasoning_out.reasoning 
                 else:
-                    final_answer = self.calculator.evaluate(calc_expr)
+                    # S'il y a un vrai calcul mathématique, on l'évalue
+                    try:
+                        final_answer = self.calculator.evaluate(calc_expr)
+                    except Exception:
+                        final_answer = reasoning_out.reasoning
 
                 short_ans = f"Calculation result: {final_answer}" if target_lang == "en" else f"Résultat du calcul : {final_answer}"
                 explanation = f"Formula: {calc_expr}." if target_lang == "en" else f"Calcul basé sur la formule : {calc_expr}."
