@@ -601,6 +601,23 @@ body {
   overflow-y: auto;
 }
 
+/* Grille robuste pour le studio d'analyse (Anti-Blowout) */
+.split-grid {
+  display: grid;
+  /* On force STRICTEMENT 50% max, même si le contenu est immense */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+  /* 'start' est plus sûr que 'stretch' pour éviter les bugs de hauteur */
+}
+
+@media (max-width: 1024px) {
+  .split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* 10. Responsive Breakpoints (Desktop, Laptop, Tablet, Mobile) */
 @media (max-width: 1024px) {
   .saas-stepper-horizontal {

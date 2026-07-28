@@ -72,9 +72,38 @@
       transform: translateY(4px);
     }
 
+    /* Centrage des icônes quand la sidebar est réduite */
+    .sidebar-collapsed nav button {
+      justify-content: center !important;
+      padding: 10px !important;
+    }
+
+    .sidebar-collapsed nav button i {
+      margin: 0 !important;
+    }
+
     .dynamic-tooltip-box.visible {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    /* Grille robuste et responsive pour le studio d'analyse */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* Force exactement 50% / 50% */
+      gap: 24px;
+      width: 100%;
+      /* Oblige à prendre toute la place disponible */
+      align-items: stretch;
+      /* Les deux colonnes auront la même hauteur */
+    }
+
+    /* Bonus : Sur les petits écrans, on passe sur une seule colonne */
+    @media (max-width: 1100px) {
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -489,43 +518,42 @@
           </button>
 
           <!-- Sidebar Sub-items (Sous-onglets) -->
-          <div id="settings-submenu" class="sidebar-label hidden"
+          <div id="settings-submenu" class="hidden"
             style="margin-left: 14px; padding-left: 12px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 2px; margin-top: 4px;">
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-profile"
               onclick="openSettingsTab('profile')">
-              <i data-lucide="user" style="width: 14px; height: 14px;"></i> <span data-i18n="settings_tabs.profile">Mon
-                Profil</span>
+              <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.profile">Mon Profil</span>
             </button>
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-preferences"
               onclick="openSettingsTab('preferences')"
               style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
-              <i data-lucide="globe" style="width: 14px; height: 14px;"></i> <span
-                data-i18n="settings_tabs.preferences">Préférences</span>
+              <i data-lucide="globe" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.preferences">Préférences</span>
             </button>
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-appearance"
               onclick="openSettingsTab('appearance')"
               style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
-              <i data-lucide="sun" style="width: 14px; height: 14px;"></i> <span
-                data-i18n="settings_tabs.appearance">Apparence</span>
+              <i data-lucide="sun" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.appearance">Apparence</span>
             </button>
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-assistant"
               onclick="openSettingsTab('assistant')"
               style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
-              <i data-lucide="bot" style="width: 14px; height: 14px;"></i> <span
-                data-i18n="settings_tabs.assistant">Assistant
-                IA</span>
+              <i data-lucide="bot" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.assistant">Assistant IA</span>
             </button>
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-notifications"
               onclick="openSettingsTab('notifications')"
               style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
-              <i data-lucide="bell" style="width: 14px; height: 14px;"></i> <span
-                data-i18n="settings_tabs.notifications">Notifications</span>
+              <i data-lucide="bell" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.notifications">Notifications</span>
             </button>
             <button class="pro-btn-ghost settings-subitem-btn" id="subitem-security"
               onclick="openSettingsTab('security')"
               style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; padding: 6px 10px;">
-              <i data-lucide="shield" style="width: 14px; height: 14px;"></i> <span
-                data-i18n="settings_tabs.security">Sécurité</span>
+              <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+              <span class="sidebar-label" data-i18n="settings_tabs.security">Sécurité</span>
             </button>
           </div>
         </div>
@@ -802,8 +830,7 @@
             </div>
           </div>
 
-          <!-- LA GRILLE À 2 COLONNES ORIGINALE RESTE INCHANGÉE -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div class="split-grid">
 
             <!-- Left Panel: Hero Drag & Drop Upload & Chart Preview -->
             <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -833,12 +860,11 @@
                 </div>
 
                 <div id="preview-section"
-                  style="margin-top: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                  style="margin-top: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; overflow: hidden;">
                   <img id="chart-preview-img" src="/static/sample_chart.png" alt="Graphique"
-                    style="max-width: 100%; max-height: 320px; border-radius: 8px; border: 1px solid var(--border);"
+                    style="width: 100%; max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border);"
                     onerror="this.src='https://via.placeholder.com/600x350?text=Chart+Preview'">
 
-                  <!-- Nouveau bouton discret pour remplacer l'image, caché par défaut -->
                   <button type="button" id="btn-change-chart" class="pro-btn-secondary hidden"
                     onclick="document.getElementById('chart-file-input').click()"
                     style="font-size: 12px; padding: 4px 12px;">
@@ -861,7 +887,8 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
                   <div
                     style="padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-canvas);">
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Titre détecté</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">Titre détecté
+                    </div>
                     <div id="ui-chart-title"
                       style="font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                       -</div>
@@ -879,8 +906,9 @@
               <!-- DataGrid Table -->
               <div class="pro-card" style="padding: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                  <h3 style="font-size: 16px; font-weight: 700;" data-i18n="datagrid.title">Grille de Données (HITL
-                    DataGrid)</h3>
+                  <h3 style="font-size: 16px; font-weight: 700;" data-i18n="datagrid.title">
+                    2. Grille de Données Interactive HITL
+                  </h3>
                   <div style="display: flex; gap: 8px;">
                     <button class="pro-btn-secondary" onclick="exportDataGridCSV()">
                       <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export CSV
@@ -894,7 +922,7 @@
                 </div>
                 <input type="text" id="datagrid-search" class="pro-input" placeholder="Rechercher..."
                   oninput="filterDataGrid(this.value)" style="margin-bottom: 12px;">
-                <div style="max-height: 240px; overflow-y: auto;">
+                <div style="max-height: 240px; overflow-x: auto; overflow-y: auto;">
                   <table class="datagrid-table" id="datagrid-table">
                     <thead>
                       <tr id="datagrid-thead-tr">
@@ -920,32 +948,35 @@
             <!-- Right Panel: AI Reasoning & Q&A & Recommendations -->
             <div style="display: flex; flex-direction: column; gap: 20px;">
               <div class="pro-card" style="padding: 24px; flex: 1; display: flex; flex-direction: column;">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;" data-i18n="steps.step4_title">4.
-                  Raisonnement AI Multi-Agents & Copilote Décisionnel</h3>
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;" data-i18n="steps.step4_title">
+                  3. Raisonnement AI & Copilote Décisionnel
+                </h3>
 
                 <div id="ai-chat-output"
                   style="flex: 1; min-height: 220px; max-height: 380px; overflow-y: auto; background: var(--bg-canvas); border-radius: 8px; padding: 16px; border: 1px solid var(--border); margin-bottom: 16px;">
-                  <div class="badge-blue" style="margin-bottom: 12px; font-size: 12px;" id="ai-context-indicator">
-                    Contexte Actif : Profil Métier et Niveau d'Expertise Injectés dans Gemini Vision.
+                  <div class="badge-blue" style="margin-bottom: 12px; font-size: 12px;" data-i18n="ai.context_indicator"
+                    id="ai-context-indicator">
+                    Contexte Actif : Profil Métier et Niveau d'Expertise pris en compte.
                   </div>
                   <div style="font-size: 14px; line-height: 1.6; color: var(--text-primary);"
-                    id="ai-response-container">
+                    data-i18n="ai.default_message" id="ai-response-container">
                     Téléversez un graphique puis validez les données extraites pour débloquer l'analyse IA et le chat.
                   </div>
                 </div>
 
                 <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                  <input type="text" id="user-question-input" class="pro-input"
+                  <input type="text" id="user-question-input" class="pro-input" style="flex: 1;"
                     placeholder="Posez une question sur ce graphique..." value="Quel est le total de la distribution ?"
                     disabled>
-                  <button id="submit-question-btn" class="pro-btn-primary" onclick="submitAnalysisQuestion()"
-                    disabled>Analyser</button>
-                  <button class="pro-btn-secondary" onclick="openShareModal()" title="Partager cette analyse"
-                    style="background: var(--emerald-600); color: white;">
+                  <button id="submit-question-btn" class="pro-btn-primary" data-i18n="ai.btn_analyze"
+                    onclick="submitAnalysisQuestion()" disabled>Analyser</button>
+                  <button class="pro-btn-secondary" data-i18n="ai.btn_share" onclick="openShareModal()"
+                    title="Partager cette analyse" style="background: var(--success); color: white; border: none;">
                     <i data-lucide="share-2" style="width: 16px; height: 16px;"></i> Partager
                   </button>
-                  <button class="pro-btn-secondary" onclick="generatePDFReport()" title="Télécharger Rapport PDF">
-                    <i data-lucide="file-down" style="width: 16px; height: 16px;"></i> PDF
+                  <button class="pro-btn-secondary" data-i18n="ai.btn_pdf" onclick="generatePDFReport()"
+                    title="Télécharger Rapport PDF">
+                    <i data-lucide="file-down" style="width: 16px; height: 16px;"></i> Télécharger PDF
                   </button>
                 </div>
               </div>
@@ -953,21 +984,24 @@
               <!-- AI Recommendations & Strategic Insights Card -->
               <div class="pro-card" id="ai-recommendations-card" style="padding: 24px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                  <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                  <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;"
+                    data-i18n="steps.step5_title">
                     <i data-lucide="sparkles" style="width: 18px; height: 18px; color: var(--primary);"></i>
-                    Recommandations Stratégiques AI
+                    4.Recommandations Stratégiques AI
                   </h3>
-                  <span class="badge-emerald" style="font-size: 11px;">Moteur Copilote Décisionnel Actif</span>
+                  <span class="badge-emerald" style="font-size: 11px;" data-i18n="ai.engine_active">
+                    Moteur Copilote Décisionnel Actif</span>
                 </div>
 
                 <div id="ai-recommendations-content">
-                  <p style="font-size: 13px; color: var(--text-secondary);">Les recommandations personnalisées
+                  <p style="font-size: 13px; color: var(--text-secondary);" data-i18n="ai.recommendations_default">Les
+                    recommandations personnalisées
                     s'afficheront ici après l'analyse.</p>
                 </div>
               </div>
 
               <!-- Explainability Engine XAI Panel Card -->
-              <div class="pro-card" id="xai-explainability-card" style="padding: 24px;">
+              <!-- <div class="pro-card" id="xai-explainability-card" style="padding: 24px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
                   <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
                     <i data-lucide="eye" style="width: 18px; height: 18px; color: var(--accent);"></i> Explicabilité &
@@ -983,7 +1017,8 @@
                   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                     <div
                       style="padding: 10px; background: var(--bg-canvas); border-radius: 6px; border: 1px solid var(--border);">
-                      <span style="font-size: 11px; color: var(--text-secondary); display: block;">Modèle Gemini</span>
+                      <span style="font-size: 11px; color: var(--text-secondary); display: block;">Modèle
+                        Gemini</span>
                       <strong id="xai-model" style="font-size: 12px; color: var(--primary);">Gemini Flash 1.5
                         Vision</strong>
                     </div>
@@ -1023,14 +1058,14 @@
                     </code>
                   </div>
                 </div>
-              </div>
+              </div> -->
 
               <!-- Threaded Comments & Activity Feed Card -->
               <div class="pro-card" style="padding: 24px;">
                 <h3
                   style="font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                   <i data-lucide="message-square" style="width: 18px; height: 18px; color: var(--primary);"></i>
-                  Commentaires & Collaboration
+                  5. Commentaires & Collaboration
                 </h3>
 
                 <div id="comments-thread-container" style="max-height: 220px; overflow-y: auto; margin-bottom: 16px;">
@@ -1038,7 +1073,7 @@
                     ajouter une observation ou mentionner @Nom.</p>
                 </div>
 
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex=1; gap: 8px;">
                   <input type="text" id="comment-input" class="pro-input"
                     placeholder="Ajouter un commentaire ou mentionner @Utilisateur...">
                   <button class="pro-btn-primary" onclick="submitComment()">Publier</button>
@@ -1053,7 +1088,8 @@
         <div id="tab-history-content" class="fade-in-up hidden">
           <div class="pro-card" style="padding: 24px;">
             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Historique des Analyses Privées</h3>
-            <p style="color: var(--text-secondary); font-size: 14px;">Toutes vos sessions d'analyse sont isolées par RLS
+            <p style="color: var(--text-secondary); font-size: 14px;">Toutes vos sessions d'analyse sont isolées par
+              RLS
               Supabase.</p>
           </div>
         </div>
@@ -1086,16 +1122,19 @@
             </div>
             <div class="pro-card" style="padding: 20px;">
               <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Utilisation RAM</span>
-              <h3 style="font-size: 24px; font-weight: 800; color: var(--accent); margin-top: 6px;" id="mon-ram">142 MB
+              <h3 style="font-size: 24px; font-weight: 800; color: var(--accent); margin-top: 6px;" id="mon-ram">142
+                MB
               </h3>
             </div>
             <div class="pro-card" style="padding: 20px;">
               <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Utilisation CPU</span>
-              <h3 style="font-size: 24px; font-weight: 800; color: var(--success); margin-top: 6px;" id="mon-cpu">4.2 %
+              <h3 style="font-size: 24px; font-weight: 800; color: var(--success); margin-top: 6px;" id="mon-cpu">4.2
+                %
               </h3>
             </div>
             <div class="pro-card" style="padding: 20px;">
-              <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Utilisateurs Actifs</span>
+              <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Utilisateurs
+                Actifs</span>
               <h3 style="font-size: 24px; font-weight: 800; color: var(--info); margin-top: 6px;" id="mon-users">1
                 Active</h3>
             </div>
@@ -1131,7 +1170,8 @@
                 style="display: flex; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
                 <button class="pro-btn-ghost active" onclick="switchAdminSubTab('users')"
                   id="admin-subtab-users">Utilisateurs & Rôles</button>
-                <button class="pro-btn-ghost" onclick="switchAdminSubTab('apikeys')" id="admin-subtab-apikeys">Clés API
+                <button class="pro-btn-ghost" onclick="switchAdminSubTab('apikeys')" id="admin-subtab-apikeys">Clés
+                  API
                   & Quotas</button>
                 <button class="pro-btn-ghost" onclick="switchAdminSubTab('consumption')"
                   id="admin-subtab-consumption">Consommation IA Gemini</button>
@@ -1191,7 +1231,8 @@
                 <!-- Resource metrics 4 cards -->
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
                   <div class="pro-card" style="padding: 16px;">
-                    <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Mémoire (RAM)</span>
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Mémoire
+                      (RAM)</span>
                     <h3 style="font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 4px;"
                       id="perf-ram">142.5 MB</h3>
                   </div>
@@ -1487,6 +1528,7 @@
           localStorage.setItem('graphein_auth_token', currentAuthToken);
           currentUser = data.user;
           closeAuthModal();
+          switchTab('dashboard');
           initWorkspaceUI();
         })
         .catch(err => alert(err.message));
@@ -1494,6 +1536,9 @@
 
     // Logout Handler (Terminates session & redirects to Landing Login)
     function handleLogout() {
+      // AJOUT : Fermeture du modal de paramètres
+      if (window.closeSettingsControlModal) closeSettingsControlModal();
+
       if (currentAuthToken) {
         fetch('/api/auth/logout', {
           method: 'POST',
@@ -1505,6 +1550,8 @@
       currentUser = null;
       document.getElementById('app-workspace').classList.add('hidden');
       document.getElementById('landing-page').classList.remove('hidden');
+      // LA CORRECTION : On force le rechargement de la page pour purger toute la mémoire JS !
+      window.location.reload();
     }
 
     // Forgot Password Handler
@@ -1690,6 +1737,17 @@
               document.getElementById('kpi-avg-confidence').innerText = ((totalConf / totalAnalyses) * 100).toFixed(1) + ' %';
               if (tbody) tbody.innerHTML = html;
             }
+            // Remplir également l'onglet Historique
+            const historyTab = document.getElementById('tab-history-content');
+            if (historyTab) {
+              historyTab.innerHTML = `
+              <div class="pro-card" style="padding: 24px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Historique des Analyses Privées</h3>
+                <table class="datagrid-table" style="width: 100%;">
+                  ${html} <!-- On réutilise le HTML généré pour le dashboard -->
+                </table>
+              </div>`;
+            }
             if (window.lucide) lucide.createIcons();
           })
           .catch(err => console.warn('Dashboard data fetch error:', err));
@@ -1819,6 +1877,28 @@
       const q = document.getElementById('user-question-input').value;
       if (!q || !currentAuthToken) return;
 
+      // Vider le champ input
+      document.getElementById('user-question-input').value = '';
+
+      const container = document.getElementById('ai-response-container');
+
+      // Enlever le message par défaut s'il est là
+      if (container.innerText.includes('Téléversez un graphique')) {
+        container.innerHTML = '';
+      }
+
+      // 1. Ajouter la bulle de l'utilisateur
+      container.innerHTML += `
+        <div style="margin-bottom: 12px; text-align: right;">
+          <span style="background: var(--bg-surface-secondary); padding: 8px 12px; border-radius: 8px; font-size: 13px; display: inline-block;">
+            <strong>Vous:</strong> ${q}
+          </span>
+        </div>
+      `;
+
+      // 2. Scroll vers le bas
+      container.parentElement.scrollTop = container.parentElement.scrollHeight;
+
       const fd = new FormData();
       fd.append('question', q);
       fd.append('target_language', window.currentLang || 'fr');
@@ -1838,11 +1918,14 @@
           return res.json();
         })
         .then(data => {
-          document.getElementById('ai-response-container').innerHTML = `
-          <div style="margin-bottom: 12px;"><strong>Réponse :</strong> ${data.final_answer || 'Analyse terminée.'}</div>
-          <div style="font-size: 13px; color: var(--text-secondary);"><strong>Calcul AST :</strong> <code>${data.calculation_expression || 'N/A'}</code></div>
-          <div style="font-size: 13px; margin-top: 8px;"><strong>Raisonnement :</strong> ${data.reasoning || ''}</div>
-        `;
+          // 3. AJOUTER (+=) la réponse de l'IA au lieu de l'écraser
+          container.innerHTML += `
+            <div style="margin-bottom: 16px; background: var(--primary-subtle); padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary);">
+              <div style="font-size: 13px; margin-bottom: 6px;"><strong>IA:</strong> ${data.final_answer || 'Analyse terminée.'}</div>
+              <div style="font-size: 11px; color: var(--text-secondary);"><strong>AST:</strong> <code>${data.calculation_expression || 'N/A'}</code></div>
+            </div>
+          `;
+          container.parentElement.scrollTop = container.parentElement.scrollHeight;
 
           if (data.recommendations) {
             const recs = data.recommendations;
@@ -1889,20 +1972,32 @@
 
       const fd = new FormData();
       fd.append('question', q);
-      fd.append('target_language', window.currentLang || 'fr'); // AJOUT IMPORTANT
+      fd.append('target_language', window.currentLang || 'fr');
+      if (window.currentSessionId) fd.append('session_id', window.currentSessionId);
 
+      // CORRECTION DU TÉLÉCHARGEMENT PDF
       fetch('/api/report/pdf', {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + currentAuthToken },
         body: fd
       })
-        .then(res => res.blob())
+        .then(async res => {
+          if (!res.ok) {
+            // Si le serveur renvoie une erreur, on l'affiche et on stoppe le téléchargement
+            const errText = await res.text();
+            throw new Error(errText);
+          }
+          return res.blob();
+        })
         .then(blob => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
           a.download = 'ChartQA_Report.pdf';
           a.click();
+        })
+        .catch(err => {
+          alert("Erreur lors de la génération du PDF :\n" + err.message);
         });
     }
 
@@ -2805,7 +2900,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div
               style="padding: 20px; border: 2px solid var(--primary); border-radius: 12px; text-align: center; cursor: pointer; background: var(--bg-surface);"
-              onclick="ThemeManager.toggleTheme()">
+              onclick="toggleAppTheme()">
               <i data-lucide="sun" style="width: 28px; height: 28px; color: var(--primary); margin-bottom: 8px;"></i>
               <strong style="display: block; font-size: 14px; margin-bottom: 4px;"
                 data-i18n="settings_modal.theme_toggle">Basculer le Thème (Clair /

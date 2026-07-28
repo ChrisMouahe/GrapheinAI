@@ -105,8 +105,15 @@ class GeminiService(BaseAIService):
                 )
                 if response and response.text:
                     cleaned_json = self._clean_json(response.text)
-                    parsed = json.loads(cleaned_json)
-                    return self._map_to_full_extraction(parsed)
+                    try:
+                        parsed = json.loads(cleaned_json)
+                        return self._map_to_full_extraction(parsed)
+                    except json.JSONDecodeError as e:
+                        # On imprime le JSON cassé dans le terminal pour l'inspecter !
+                        print("\n=== 🚨 JSON CRASH REPORT 🚨 ===")
+                        print(cleaned_json)
+                        print("===============================\n")
+                        raise ValueError(f"Erreur de syntaxe de l'IA : {str(e)}")
             except Exception as e:
                 logger.error(f"ERREUR CRITIQUE Gemini API : {e}")
                 # Au lieu d'utiliser le fallback, on lève l'erreur pour que le frontend l'affiche !
@@ -135,7 +142,27 @@ class GeminiService(BaseAIService):
             extracted_json=json.dumps(extraction.model_dump(), ensure_ascii=False),
             target_language="Français" if target_language == "fr" else "English",
         )
+        
+        # AJOUT : Directive anti-répétition absolue
+        prompt += f""" Agis en tant qu'Analyste Stratégique. Analyse les données extraites de ce graphique : {json.dumps(extraction.model_dump(), ensure_ascii=False)}
 
+        CONTRAINTES STRICTES ET ABSOLUES :
+        1. AUCUNE RECOMMANDATION : Ne propose aucune action, solution, ou conseil (cela est géré par un autre système).
+        2. AUCUNE RECOPIE DE DONNÉES : Ne fais aucune décomposition quantitative et ne liste pas les valeurs du tableau. Va directement aux insights.
+        3. FORMAT STRICT : Ta réponse DOIT contenir UNIQUEMENT les 4 sections exactes ci-dessous, formatées en Markdown avec '###'. Ne rajoute ni introduction ni conclusion en dehors de ces titres :
+
+        ### Résumé Exécutif et Cadrage Stratégique
+        (Ton analyse ici)
+
+        ### Tendances et Statistiques Clés
+        (Ton analyse ici)
+
+        ### Risques et Anomalies Identifiés
+        (Ton analyse ici)
+
+        ### Opportunités de Croissance et de Rentabilité
+        (Ton analyse ici)
+        """
         res_text = self._call_text_api(prompt, temp=0.2)
         latency = time.time() - start_t
         self.quota_manager.record_call(input_tokens=300, output_tokens=250, latency_sec=latency)
@@ -175,13 +202,21 @@ class GeminiService(BaseAIService):
         self.quota_manager.record_call(input_tokens=400, output_tokens=200, latency_sec=latency)
         return res_text
 
-    def generate_recommendation(self, extraction: FullChartExtraction, target_language: str = "fr") -> list[dict[str, Any]]:
-        """Generates strategic recommendations based on extracted chart trends."""
+    # AJOUT : paramètre user_context
+    def generate_recommendation(self, extraction: FullChartExtraction, target_language: str = "fr", user_context: str = "") -> list[dict[str, Any]]:
+        """Generate strategic recommendations based on extracted charts trends and user context."""
         start_t = time.time()
+        
         prompt = RECOMMENDATION_PROMPT_TEMPLATE.format(
             extracted_json=json.dumps(extraction.model_dump(), ensure_ascii=False)
         )
+        
+        # AJOUT : Injection du contexte utilisateur pour des recos sur-mesure
+        if user_context:
+            prompt += f"\n\nCONTRAINTE DE PERSONNALISATION : L'utilisateur est un(e) {user_context}. Toutes tes recommandations doivent être ultra-spécifiques à son secteur d'activité et à son niveau d'expertise, et non génériques."
+
         res_text = self._call_text_api(prompt, temp=0.1)
+        # ...
         latency = time.time() - start_t
         self.quota_manager.record_call(input_tokens=350, output_tokens=200, latency_sec=latency)
 
@@ -254,24 +289,45 @@ class GeminiService(BaseAIService):
 
     @staticmethod
     def _clean_json(raw_text: str) -> str:
-        """Cleans markdown wrappers and extracts strictly the JSON block using regex."""
+        """Cleans markdown wrappers, auto-heals commas, and fixes truncated JSON braces."""
         if not raw_text:
             return "{}"
         
-        # Recherche robuste du premier '{' jusqu'au dernier '}' pour ignorer tout bavardage de l'IA
-        match = re.search(r'\{.*\}', raw_text.strip(), re.DOTALL)
-        if match:
-            return match.group(0)
+        clean_text = raw_text.strip()
+        
+        # 1. Nettoyage des balises Markdown (au début et à la fin)
+        if clean_text.startswith("```json"):
+            clean_text = clean_text[7:]
+        elif clean_text.startswith("```"):
+            clean_text = clean_text[3:]
+        if clean_text.endswith("```"):
+            clean_text = clean_text[:-3]
             
-        # Fallback sur l'ancien nettoyage basique si aucune accolade n'est trouvée
-        text = raw_text.strip()
-        if text.startswith("```json"):
-            text = text[7:]
-        elif text.startswith("```"):
-            text = text[3:]
-        if text.endswith("```"):
-            text = text[:-3]
-        return text.strip()
+        clean_text = clean_text.strip()
+        
+        # 2. Sécurisation du début du JSON
+        start_idx = clean_text.find('{')
+        if start_idx != -1:
+            clean_text = clean_text[start_idx:]
+
+        # 3. AUTO-HEALER V2 : Correction chirurgicale des virgules
+        clean_text = re.sub(r'\}\s+\{', '}, {', clean_text)
+        clean_text = re.sub(r'\]\s+\{', '], {', clean_text)
+        clean_text = re.sub(r'\]\s+"', '], "', clean_text)
+        clean_text = re.sub(r'\}\s+"', '}, "', clean_text)
+        clean_text = re.sub(r'"\s+"', '", "', clean_text)
+        clean_text = re.sub(r',\s*\}', '}', clean_text)
+        clean_text = re.sub(r',\s*\]', ']', clean_text)
+        
+        # 4. AUTO-HEALER V3 : Le correcteur de flemme (Accolades manquantes)
+        open_braces = clean_text.count('{')
+        close_braces = clean_text.count('}')
+        
+        if open_braces > close_braces:
+            # S'il manque des accolades fermantes, on les ajoute à la fin !
+            clean_text += '}' * (open_braces - close_braces)
+            
+        return clean_text.strip()
 
     @staticmethod
     def _map_to_full_extraction(parsed: dict[str, Any]) -> FullChartExtraction:

@@ -1,0 +1,151 @@
+{
+  "8bccae6f48987c8b824ffe570af692121bdfe9abdb14f9d6c4c5c003ab79d1c1": {
+    "data": {
+      "type_graphique": "BAR",
+      "titre": "Quarterly Sales Revenue 2024",
+      "sous_titre": "",
+      "axe_x_label": "Quarters",
+      "axe_y_label": "Revenue ()",
+      "unites": "",
+      "legendes": [],
+      "series": [
+        {
+          "series_name": "Sales Revenue",
+          "categories": [
+            "Q1 Sales",
+            "Q2 Sales",
+            "Q3 Sales",
+            "Q4 Sales"
+          ],
+          "values": [
+            126.0,
+            180.0,
+            140.0,
+            210.0
+          ],
+          "unit": ""
+        }
+      ],
+      "donnees_tabulaires": [
+        {
+          "categorie": "Q1 Sales",
+          "valeur": 126.0
+        },
+        {
+          "categorie": "Q2 Sales",
+          "valeur": 180.0
+        },
+        {
+          "categorie": "Q3 Sales",
+          "valeur": 140.0
+        },
+        {
+          "categorie": "Q4 Sales",
+          "valeur": 210.0
+        }
+      ],
+      "metadonnees": {
+        "source": "Extraction Vision VLM"
+      },
+      "confiance_extraction": 98.0,
+      "resume_executif": "Le chiffre d'affaires trimestriel de 2024 montre une tendance globale à la hausse, culminant au quatrième trimestre (Q4) à 210. Malgré un fléchissement au troisième trimestre (Q3) à 140, le dernier trimestre enregistre la performance la plus élevée de l'année.",
+      "interpretation_initiale": "L'analyse des ventes de 2024 révèle une dynamique fluctuante mais globalement positive. Le premier trimestre débute à 126, suivi d'une progression notable au deuxième trimestre à 180. Le troisième trimestre connaît une baisse à 140, potentiellement due à une saisonnalité estivale, avant un rebond spectaculaire au quatrième trimestre atteignant 210, ce qui représente le pic annuel de performance.",
+      "image_hash": "8bccae6f48987c8b824ffe570af692121bdfe9abdb14f9d6c4c5c003ab79d1c1"
+    },
+    "timestamp": 1785179163.4712946
+  },
+  "14c55055a99fd0a5beb9d3afa864607cd33aadb3dd09d0cd40ff2746d578bf05": {
+    "data": {
+      "type_graphique": "OTHER",
+      "titre": "Distribution des prix unitaires par produit",
+      "sous_titre": "",
+      "axe_x_label": "Produit",
+      "axe_y_label": "Prix unitaire (TND)",
+      "unites": "TND",
+      "legendes": [
+        "Médiane du prix"
+      ],
+      "series": [
+        {
+          "series_name": "Médiane du prix",
+          "categories": [
+            "Chicken Wrap",
+            "Falafel Sandwich",
+            "Beef Kebab",
+            "Coke",
+            "Fries",
+            "Fish and Chips",
+            "Veggie Burger",
+            "Cheese Pizza",
+            "Pepperoni Pizza",
+            "Chicken Burger"
+          ],
+          "values": [
+            6.0,
+            6.2,
+            7.8,
+            7.9,
+            9.0,
+            9.1,
+            9.1,
+            9.4,
+            9.6,
+            10.4
+          ],
+          "unit": "TND"
+        }
+      ],
+      "donnees_tabulaires": [
+        {
+          "categorie": "Chicken Wrap",
+          "valeur": 6.0
+        },
+        {
+          "categorie": "Falafel Sandwich",
+          "valeur": 6.2
+        },
+        {
+          "categorie": "Beef Kebab",
+          "valeur": 7.8
+        },
+        {
+          "categorie": "Coke",
+          "valeur": 7.9
+        },
+        {
+          "categorie": "Fries",
+          "valeur": 9.0
+        },
+        {
+          "categorie": "Fish and Chips",
+          "valeur": 9.1
+        },
+        {
+          "categorie": "Veggie Burger",
+          "valeur": 9.1
+        },
+        {
+          "categorie": "Cheese Pizza",
+          "valeur": 9.4
+        },
+        {
+          "categorie": "Pepperoni Pizza",
+          "valeur": 9.6
+        },
+        {
+          "categorie": "Chicken Burger",
+          "valeur": 10.4
+        }
+      ],
+      "metadonnees": {
+        "source": "Extraction Vision VLM",
+        "type_specifique": "Boîte à moustaches (Box plot)"
+      },
+      "confiance_extraction": 92.0,
+      "resume_executif": "Le graphique présente la distribution des prix unitaires pour dix produits différents en TND. On observe une tendance générale à la hausse du prix médian, allant de 6,0 TND pour le Chicken Wrap à 10,4 TND pour le Chicken Burger.",
+      "interpretation_initiale": "Cette boîte à moustaches montre une forte variabilité des prix pour certains produits comme le Chicken Wrap, le Falafel Sandwich et le Coke, qui présentent des étendues interquartiles très larges. À l'inverse, le Chicken Burger montre une distribution beaucoup plus resserrée autour de sa médiane élevée. Des valeurs aberrantes (outliers) sont visibles pour le Beef Kebab, le Pepperoni Pizza et le Chicken Burger, indiquant des transactions à des prix atypiques (très élevés ou très bas).",
+      "image_hash": "14c55055a99fd0a5beb9d3afa864607cd33aadb3dd09d0cd40ff2746d578bf05"
+    },
+    "timestamp": 1785197566.79851
+  }
+}
