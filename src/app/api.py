@@ -629,54 +629,43 @@ def clear_chat_history(
 @app.post("/api/report/pdf")
 async def download_pdf_report(
     question: str = Form(...),
-    image_filename: str = Form("sample_chart.png"),
-    hitl_data_json: str | None = Form(None),
+    image_filename: str | None = Form(None),
+    session_id: str | None = Form(None), # Ajout du session_id
     target_language: str | None = Form(None),
     current_user: UserProfile = Depends(get_current_user),
 ) -> Response:
     """Generates and returns downloadable official PDF report."""
-    img_path = RAW_DATA_DIR / image_filename
+    
+    # 1. Récupération de la session existante
+    session = session_manager.get_session(session_id) if session_id else None
+    
+    if session and session.image_path:
+        img_path = Path(session.image_path)
+    elif image_filename:
+        img_path = RAW_DATA_DIR / image_filename
+    else:
+        img_path = RAW_DATA_DIR / "sample_chart.png"
+
     if not img_path.exists():
         img_path = RAW_DATA_DIR / "sample_chart.png"
 
     start_t = time.time()
+    
+    # 2. Utiliser l'extraction validée de la session pour ne rien recalculer à zéro
+    valid_extraction = session.extraction if session else None
+
     result = pipeline_agent.answer(
         image=img_path,
         question=question,
+        session_id=session_id,
+        hitl_extraction=valid_extraction,
         target_language=target_language,
         user_profile=current_user,
     )
 
-    if hitl_data_json:
-        try:
-            hitl_items = json.loads(hitl_data_json)
-            if isinstance(hitl_items, list) and len(hitl_items) > 0:
-                updated_dps = []
-                for item in hitl_items:
-                    lbl = item.get("label")
-                    val = item.get("value")
-                    conf = float(item.get("confidence", 1.0))
-                    try:
-                        val = float(val)
-                    except (ValueError, TypeError):
-                        pass
-                    updated_dps.append(ExtractedDataPoint(label=lbl, value=val, confidence=conf))
-
-                result.extracted_data.data_points = updated_dps
-                result.extracted_data.metadata["is_hitl_modified"] = True
-                vals = [dp.value for dp in updated_dps if isinstance(dp.value, (int, float))]
-                if vals and not result.is_out_of_domain:
-                    q_lower = question.lower()
-                    if "total" in q_lower or "sum" in q_lower:
-                        result.calculation_expression = " + ".join(str(v) for v in vals)
-                    elif "difference" in q_lower or "diff" in q_lower:
-                        result.calculation_expression = f"{max(vals)} - {min(vals)}"
-                    else:
-                        result.calculation_expression = f"({' + '.join(str(v) for v in vals)}) / {len(vals)}"
-                    result.final_answer = pipeline_agent.calculator.evaluate(result.calculation_expression)
-                    result.initial_interpretation = graph_interpreter.interpret_chart(result.extracted_data)
-        except Exception:
-            pass
+    # 3. CORRECTION MAJEURE: On injecte le Raisonnement IA (généré plus tôt) dans le PDF !
+    if session and session.interpretation:
+        result.initial_interpretation = session.interpretation
 
     latency = round(time.time() - start_t, 3)
 
@@ -690,7 +679,7 @@ async def download_pdf_report(
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename=ChartQA_Report_{img_path.stem}.pdf"},
+        headers={"Content-Disposition": f"attachment; filename=Rapport_Analyse_{img_path.stem}.pdf"},
     )
 
 

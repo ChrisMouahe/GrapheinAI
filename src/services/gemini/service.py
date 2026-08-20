@@ -36,7 +36,7 @@ logger = logging.getLogger("GeminiService")
 class GeminiService(BaseAIService):
     """Central Enterprise AI Service interfacing with Gemini Flash Vision VLM."""
 
-    DEFAULT_MODEL: str = "gemini-3.5-flash"
+    DEFAULT_MODEL: str = "gemini-2.5-flash"
 
     def __init__(
         self,
@@ -331,31 +331,40 @@ class GeminiService(BaseAIService):
 
     @staticmethod
     def _map_to_full_extraction(parsed: dict[str, Any]) -> FullChartExtraction:
-        """Maps dict JSON output to FullChartExtraction Pydantic model."""
+        """Maps dict JSON output to FullChartExtraction Pydantic model securely."""
         series_objs = []
-        for s in parsed.get("series", []):
+        
+        # Sécurité : on s'assure que parsed.get("series") n'est pas None
+        raw_series = parsed.get("series") or []
+        for s in raw_series:
+            raw_values = s.get("values") or []
+            # BLINDAGE : On empêche les crashs de type float(None)
+            safe_values = [float(v) if v is not None else 0.0 for v in raw_values]
+            
             series_objs.append(
                 SeriesData(
-                    series_name=s.get("series_name", "Série"),
-                    categories=s.get("categories", []),
-                    values=[float(v) for v in s.get("values", [])],
-                    unit=s.get("unit", ""),
+                    series_name=s.get("series_name") or "Série",
+                    categories=s.get("categories") or [],
+                    values=safe_values,
+                    unit=s.get("unit") or "",
                 )
             )
+            
+        # BLINDAGE : L'opérateur `or ""` force les `null` renvoyés par Gemini à devenir des chaînes vides
         return FullChartExtraction(
-            type_graphique=parsed.get("type_graphique", "BAR"),
-            titre=parsed.get("titre", "Graphique Extrait"),
-            sous_titre=parsed.get("sous_titre", ""),
-            axe_x_label=parsed.get("axe_x_label", ""),
-            axe_y_label=parsed.get("axe_y_label", ""),
-            unites=parsed.get("unites", ""),
-            legendes=parsed.get("legendes", []),
+            type_graphique=parsed.get("type_graphique") or "BAR",
+            titre=parsed.get("titre") or "Graphique Extrait",
+            sous_titre=parsed.get("sous_titre") or "",
+            axe_x_label=parsed.get("axe_x_label") or "",
+            axe_y_label=parsed.get("axe_y_label") or "",
+            unites=parsed.get("unites") or "",
+            legendes=parsed.get("legendes") or [],
             series=series_objs,
-            donnees_tabulaires=parsed.get("donnees_tabulaires", []),
-            metadonnees=parsed.get("metadonnees", {}),
-            confiance_extraction=parsed.get("confiance_extraction", 95.0),
-            resume_executif=parsed.get("resume_executif", ""),
-            interpretation_initiale=parsed.get("interpretation_initiale", ""),
+            donnees_tabulaires=parsed.get("donnees_tabulaires") or [],
+            metadonnees=parsed.get("metadonnees") or {},
+            confiance_extraction=float(parsed.get("confiance_extraction") if parsed.get("confiance_extraction") is not None else 95.0),
+            resume_executif=parsed.get("resume_executif") or "",
+            interpretation_initiale=parsed.get("interpretation_initiale") or "",
         )
 
     @staticmethod

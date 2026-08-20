@@ -40,7 +40,7 @@ logger = logging.getLogger("ReasoningAgent")
 class ReasoningAgent:
     """Agent using Gemini Flash Vision guided by pre-extracted OpenCV OCR text regions and computer vision geometry."""
 
-    DEFAULT_MODEL: str = "gemini-3.5-flash"
+    DEFAULT_MODEL: str = "gemini-2.5-flash"
 
     OUT_OF_DOMAIN_PATTERNS: list[str] = [
         r"\bpopulation\s+of\b",
@@ -109,17 +109,22 @@ class ReasoningAgent:
         # Single Extraction Strategy via GeminiService (with SHA256 caching & retry)
         full_ext = self.gemini_service.extract_chart(img_path)
 
-        # Map FullChartExtraction to ChartExtraction
+        # Map FullChartExtraction to ChartExtraction de manière sécurisée
         data_points = []
-        for s in full_ext.series:
-            for c, v in zip(s.categories, s.values):
-                data_points.append(ExtractedDataPoint(label=c, value=v, confidence=0.95))
+        if hasattr(full_ext, 'series') and full_ext.series:
+            for s in full_ext.series:
+                for c, v in zip(s.categories, s.values):
+                    # Sécurité : Si v est null, on met 0.0
+                    safe_val = float(v) if v is not None else 0.0
+                    data_points.append(ExtractedDataPoint(label=str(c), value=safe_val, confidence=0.95))
 
-        if not data_points:
+        if not data_points and hasattr(full_ext, 'donnees_tabulaires'):
             for tab in full_ext.donnees_tabulaires:
                 lbl = tab.get("categorie") or tab.get("label") or "Cat"
-                val = float(tab.get("valeur", 0.0))
-                data_points.append(ExtractedDataPoint(label=str(lbl), value=val, confidence=0.95))
+                raw_val = tab.get("valeur")
+                # Sécurité : On vérifie que la valeur brute n'est pas None avant le float()
+                safe_val = float(raw_val) if raw_val is not None else 0.0
+                data_points.append(ExtractedDataPoint(label=str(lbl), value=safe_val, confidence=0.95))
 
         ext = ChartExtraction(
             chart_type=full_ext.type_graphique,
@@ -335,7 +340,7 @@ class ReasoningAgent:
     def _call_vlm_vision(self, img_path: Path, prompt: str, question: str = "") -> str:
         self._ensure_client()
         attempt = 0
-        models_to_try = [self.model_name, "gemini-1.5-flash", "gemini-1.5-pro"]
+        models_to_try = [self.model_name, "gemini-2.5-flash", "gemini-2.5-pro"]
         for target_model in models_to_try:
             attempt = 0
             while attempt < 2:
