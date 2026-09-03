@@ -1,614 +1,114 @@
 {
-  "5e44814670c8da8e38209c1a15240662247af334ea1b0683abe4ba5b3616cd5f": {
+  "8bccae6f48987c8b824ffe570af692121bdfe9abdb14f9d6c4c5c003ab79d1c1": {
     "data": {
-      "type_graphique": "OTHER",
-      "titre": "Corrélations entre variables énergétiques",
+      "type_graphique": "BAR",
+      "titre": "Quarterly Sales Revenue 2024",
       "sous_titre": "",
-      "axe_x_label": "Variables énergétiques",
-      "axe_y_label": "Variables énergétiques",
+      "axe_x_label": "Sales Quarter",
+      "axe_y_label": "Revenue",
       "unites": "",
       "legendes": [
-        "Corrélation (0.0 - 1.0)"
+        "Quarterly Sales Revenue"
       ],
       "series": [
         {
-          "series_name": "power_kw",
+          "series_name": "Quarterly Sales Revenue",
           "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
+            "Q1 Sales",
+            "Q2 Sales",
+            "Q3 Sales",
+            "Q4 Sales"
           ],
           "values": [
-            1.0,
-            0.05,
-            0.05,
-            0.3,
-            0.05,
-            0.05,
-            0.9,
-            0.05,
-            0.05,
-            0.05,
-            0.05
+            125.0,
+            180.0,
+            140.0,
+            210.0
           ],
           "unit": ""
-        },
-        {
-          "series_name": "temperature_c",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            1.0,
-            0.9,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "ambient_temperature_c",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.9,
-            1.0,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "vibration_hz",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.3,
-            0.05,
-            0.05,
-            1.0,
-            0.3,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "pressure_bar",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.3,
-            1.0,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "voltage_v",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            1.0,
-            0.05,
-            0.9,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "current_a",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.9,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            1.0,
-            0.05,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "power_factor",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.9,
-            0.05,
-            1.0,
-            0.05,
-            0.05,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "frequency_hz",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            1.0,
-            0.9,
-            0.05
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "load_percentage",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.9,
-            1.0,
-            0.9
-          ],
-          "unit": ""
-        },
-        {
-          "series_name": "energy_efficiency_pct",
-          "categories": [
-            "power_kw",
-            "temperature_c",
-            "ambient_temperature_c",
-            "vibration_hz",
-            "pressure_bar",
-            "voltage_v",
-            "current_a",
-            "power_factor",
-            "frequency_hz",
-            "load_percentage",
-            "energy_efficiency_pct"
-          ],
-          "values": [
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.05,
-            0.9,
-            1.0
-          ],
-          "unit": ""
-        }
-      ],
-      "donnees_tabulaires": [],
-      "metadonnees": {
-        "source": "Extraction Vision VLM"
-      },
-      "confiance_extraction": 92.0,
-      "resume_executif": "Ce graphique présente une matrice de corrélation entre diverses variables énergétiques, où l'intensité de la couleur indique la force de la corrélation positive. On observe des corrélations très fortes (jaune) entre certaines paires de variables, tandis que la plupart des autres paires montrent des corrélations très faibles (violet foncé).",
-      "interpretation_initiale": "L'analyse de la matrice de corrélation révèle plusieurs relations significatives. Premièrement, 'power_kw' est fortement corrélé à 'current_a', ce qui est attendu car la puissance est souvent une fonction directe du courant à tension constante. Deuxièmement, 'temperature_c' et 'ambient_temperature_c' sont fortement corrélées, suggérant une influence directe de la température ambiante sur la température de l'équipement. Troisièmement, 'voltage_v' et 'power_factor' montrent une forte corrélation, indiquant que ces deux paramètres sont étroitement liés dans le système. Enfin, 'frequency_hz', 'load_percentage' et 'energy_efficiency_pct' sont fortement corrélées entre elles, ce qui pourrait indiquer que la charge et l'efficacité énergétique sont fortement dépendantes de la fréquence du système. Les autres paires de variables présentent des corrélations très faibles, suggérant une indépendance relative ou l'absence de relation linéaire directe.",
-      "image_hash": "5e44814670c8da8e38209c1a15240662247af334ea1b0683abe4ba5b3616cd5f"
-    },
-    "timestamp": 1786387477.2958674
-  },
-  "55ed7f60528ff1f3f4658b18ce3e536fa39df782ff57eed395749d671023d9fe": {
-    "data": {
-      "type_graphique": "LINE",
-      "titre": "Détection des anomalies — EQ-00002",
-      "sous_titre": "",
-      "axe_x_label": "Temps",
-      "axe_y_label": "Puissance (kW)",
-      "unites": "kW",
-      "legendes": [
-        "Normal",
-        "Anomalie"
-      ],
-      "series": [
-        {
-          "series_name": "Normal",
-          "categories": [
-            "2025-01-01 00:00",
-            "2025-01-01 04:00",
-            "2025-01-01 08:00",
-            "2025-01-01 10:00",
-            "2025-01-01 12:00",
-            "2025-01-01 14:00",
-            "2025-01-01 16:00",
-            "2025-01-01 20:00",
-            "2025-01-02 00:00",
-            "2025-01-02 02:00",
-            "2025-01-02 04:00",
-            "2025-01-02 06:00",
-            "2025-01-02 08:00",
-            "2025-01-02 10:00",
-            "2025-01-02 12:00",
-            "2025-01-02 16:00",
-            "2025-01-02 20:00",
-            "2025-01-03 00:00",
-            "2025-01-03 04:00",
-            "2025-01-03 08:00",
-            "2025-01-03 10:00",
-            "2025-01-03 12:00",
-            "2025-01-03 16:00",
-            "2025-01-03 20:00",
-            "2025-01-04 00:00",
-            "2025-01-04 04:00",
-            "2025-01-04 08:00",
-            "2025-01-04 12:00",
-            "2025-01-04 16:00",
-            "2025-01-04 20:00",
-            "2025-01-05 00:00",
-            "2025-01-05 04:00",
-            "2025-01-05 08:00",
-            "2025-01-05 12:00",
-            "2025-01-05 16:00",
-            "2025-01-05 20:00",
-            "2025-01-06 00:00",
-            "2025-01-06 04:00",
-            "2025-01-06 08:00",
-            "2025-01-06 12:00",
-            "2025-01-06 16:00",
-            "2025-01-06 20:00",
-            "2025-01-07 00:00",
-            "2025-01-07 04:00",
-            "2025-01-07 08:00",
-            "2025-01-07 12:00",
-            "2025-01-07 16:00",
-            "2025-01-07 20:00",
-            "2025-01-08 00:00"
-          ],
-          "values": [
-            37.0,
-            45.0,
-            35.0,
-            41.5,
-            48.0,
-            43.0,
-            38.0,
-            45.0,
-            40.0,
-            44.5,
-            49.0,
-            40.5,
-            32.0,
-            41.0,
-            50.0,
-            30.0,
-            48.0,
-            40.0,
-            53.0,
-            40.0,
-            44.0,
-            48.0,
-            35.0,
-            45.0,
-            52.0,
-            32.0,
-            45.0,
-            40.0,
-            35.0,
-            45.0,
-            52.0,
-            32.0,
-            45.0,
-            40.0,
-            35.0,
-            45.0,
-            52.0,
-            32.0,
-            45.0,
-            40.0,
-            35.0,
-            45.0,
-            52.0,
-            32.0,
-            45.0,
-            40.0,
-            35.0,
-            45.0,
-            35.0
-          ],
-          "unit": "kW"
-        },
-        {
-          "series_name": "Anomalie",
-          "categories": [
-            "2025-01-01 00:00",
-            "2025-01-01 04:00",
-            "2025-01-01 08:00",
-            "2025-01-01 10:00",
-            "2025-01-01 12:00",
-            "2025-01-01 14:00",
-            "2025-01-01 16:00",
-            "2025-01-01 20:00",
-            "2025-01-02 00:00",
-            "2025-01-02 02:00",
-            "2025-01-02 04:00",
-            "2025-01-02 06:00",
-            "2025-01-02 08:00",
-            "2025-01-02 10:00",
-            "2025-01-02 12:00",
-            "2025-01-02 16:00",
-            "2025-01-02 20:00",
-            "2025-01-03 00:00",
-            "2025-01-03 04:00",
-            "2025-01-03 08:00",
-            "2025-01-03 10:00",
-            "2025-01-03 12:00",
-            "2025-01-03 16:00",
-            "2025-01-03 20:00",
-            "2025-01-04 00:00",
-            "2025-01-04 04:00",
-            "2025-01-04 08:00",
-            "2025-01-04 12:00",
-            "2025-01-04 16:00",
-            "2025-01-04 20:00",
-            "2025-01-05 00:00",
-            "2025-01-05 04:00",
-            "2025-01-05 08:00",
-            "2025-01-05 12:00",
-            "2025-01-05 16:00",
-            "2025-01-05 20:00",
-            "2025-01-06 00:00",
-            "2025-01-06 04:00",
-            "2025-01-06 08:00",
-            "2025-01-06 12:00",
-            "2025-01-06 16:00",
-            "2025-01-06 20:00",
-            "2025-01-07 00:00",
-            "2025-01-07 04:00",
-            "2025-01-07 08:00",
-            "2025-01-07 12:00",
-            "2025-01-07 16:00",
-            "2025-01-07 20:00",
-            "2025-01-08 00:00"
-          ],
-          "values": [
-            0.0,
-            0.0,
-            0.0,
-            40.0,
-            0.0,
-            39.0,
-            0.0,
-            0.0,
-            0.0,
-            39.0,
-            0.0,
-            39.0,
-            0.0,
-            39.0,
-            0.0,
-            0.0,
-            0.0,
-            35.0,
-            0.0,
-            0.0,
-            72.0,
-            0.0,
-            0.0,
-            0.0,
-            75.0,
-            0.0,
-            0.0,
-            0.0,
-            66.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            71.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0
-          ],
-          "unit": "kW"
         }
       ],
       "donnees_tabulaires": [
         {
-          "categorie": "2025-01-01 00:00",
-          "valeur": 37.0
+          "categorie": "Q1 Sales",
+          "valeur": 125.0
         },
         {
-          "categorie": "2025-01-01 04:00",
-          "valeur": 45.0
+          "categorie": "Q2 Sales",
+          "valeur": 180.0
         },
         {
-          "categorie": "2025-01-01 08:00",
-          "valeur": 35.0
+          "categorie": "Q3 Sales",
+          "valeur": 140.0
         },
         {
-          "categorie": "2025-01-01 12:00",
-          "valeur": 48.0
-        },
-        {
-          "categorie": "2025-01-01 16:00",
-          "valeur": 38.0
+          "categorie": "Q4 Sales",
+          "valeur": 210.0
         }
       ],
       "metadonnees": {
         "source": "Extraction Vision VLM"
       },
-      "confiance_extraction": 95.0,
-      "resume_executif": "Le graphique présente la puissance (kW) d'un équipement (EQ-00002) sur une période d'une semaine en janvier 2025, avec des fluctuations quotidiennes et l'identification de plusieurs points anormaux. La puissance normale oscille généralement entre 30 kW et 53 kW, tandis que les anomalies détectées se situent soit dans la plage normale, soit à des niveaux de puissance significativement plus élevés, atteignant jusqu'à 75 kW.",
-      "interpretation_initiale": "L'analyse du graphique révèle un comportement cyclique de la puissance de l'équipement EQ-00002, avec des variations intrajournalières et interjournalières. La plupart des anomalies détectées en début de période (1er et 2 janvier) se situent dans la plage de puissance normale, suggérant qu'elles pourraient être des anomalies comportementales plutôt que des dépassements de seuil absolus. Cependant, à partir du 3 janvier, des anomalies de puissance très élevées (72 kW, 75 kW, 66 kW, 71 kW) sont observées, indiquant des pics de consommation ou des dysfonctionnements majeurs. Ces pics anormaux sont bien au-dessus de la plage de fonctionnement habituelle de l'équipement, ce qui justifie une investigation approfondie pour comprendre leur cause et leur impact potentiel sur la performance ou la durée de vie de l'équipement.",
-      "image_hash": "55ed7f60528ff1f3f4658b18ce3e536fa39df782ff57eed395749d671023d9fe"
+      "confiance_extraction": 98.0,
+      "resume_executif": "Le graphique présente les revenus trimestriels des ventes pour l'année 2024, montrant une fluctuation avec un pic en Q4. Les ventes ont augmenté de Q1 à Q2, ont diminué en Q3, puis ont fortement rebondi pour atteindre leur niveau le plus élevé en Q4.",
+      "interpretation_initiale": "Les revenus des ventes de 2024 ont débuté à 125 unités au premier trimestre, puis ont connu une croissance significative pour atteindre 180 unités au deuxième trimestre. Une baisse a été observée au troisième trimestre, ramenant les ventes à 140 unités, potentiellement due à des facteurs saisonniers ou de marché. Le quatrième trimestre a enregistré la meilleure performance de l'année avec 210 unités, indiquant une forte reprise et clôturant l'année sur une note positive. La tendance générale est à la croissance annuelle, malgré une légère contraction au troisième trimestre.",
+      "image_hash": "8bccae6f48987c8b824ffe570af692121bdfe9abdb14f9d6c4c5c003ab79d1c1"
     },
-    "timestamp": 1786388382.5027437
+    "timestamp": 1787242628.5550458
+  },
+  "3e9168e87ae4e1d1e4819f14e2faed459a217483d1e18d8655f86cb8d86bb26a": {
+    "data": {
+      "type_graphique": "LINE",
+      "titre": "Annual User Growth Trend (2021-2024)",
+      "sous_titre": "",
+      "axe_x_label": "",
+      "axe_y_label": "Users (thousands)",
+      "unites": "thousands",
+      "legendes": [],
+      "series": [
+        {
+          "series_name": "User Growth",
+          "categories": [
+            "2021",
+            "2022",
+            "2023",
+            "2024"
+          ],
+          "values": [
+            15.0,
+            29.0,
+            42.0,
+            69.0
+          ],
+          "unit": "thousands"
+        }
+      ],
+      "donnees_tabulaires": [
+        {
+          "categorie": "2021",
+          "valeur": 15.0
+        },
+        {
+          "categorie": "2022",
+          "valeur": 29.0
+        },
+        {
+          "categorie": "2023",
+          "valeur": 42.0
+        },
+        {
+          "categorie": "2024",
+          "valeur": 69.0
+        }
+      ],
+      "metadonnees": {
+        "source": "Extraction Vision VLM"
+      },
+      "confiance_extraction": 99.0,
+      "resume_executif": "Le graphique illustre une tendance de croissance annuelle des utilisateurs de 2021 à 2024, montrant une augmentation constante du nombre d'utilisateurs. Le nombre d'utilisateurs est passé de 15 000 en 2021 à 69 000 en 2024.",
+      "interpretation_initiale": "Le graphique linéaire présente une croissance robuste et accélérée du nombre d'utilisateurs sur la période de quatre ans. Initialement à 15 000 utilisateurs en 2021, le nombre a presque doublé pour atteindre 29 000 en 2022, puis a continué d'augmenter significativement à 42 000 en 2023. La croissance la plus spectaculaire est observée entre 2023 et 2024, avec une augmentation de 27 000 utilisateurs pour atteindre 69 000, suggérant une accélération de l'adoption ou de l'engagement des utilisateurs au fil du temps.",
+      "image_hash": "3e9168e87ae4e1d1e4819f14e2faed459a217483d1e18d8655f86cb8d86bb26a"
+    },
+    "timestamp": 1787242636.3987718
   }
 }
