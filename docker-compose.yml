@@ -1,51 +1,158 @@
-version: '3.8'
+# ==============================================================================
+# GraphEin AI — Docker Compose (Développement Local)
+# ==============================================================================
+# Services :
+#   - api        : FastAPI backend avec Hot-Reload (volume de code monté)
+#   - streamlit  : Interface utilisateur interactive (profil "ui", optionnel)
+#   - redis      : Cache & Broker pour Sprint 3 (réseau interne, non exposé publiquement)
+#   - maildev    : Capture des emails transactionnels en local (Web UI sur 1080)
+#
+# INJECTION DES SECRETS (INFISICAL SECRETOPS) :
+#   Option A (Recommandée) : Lancer avec la CLI Infisical :
+#       infisical run --env=dev -- docker-compose up
+#   Option B (Fallback .env.local) :
+#       Utiliser 'env_file: .env.local' et activer INFISICAL_ENABLED=false
+# ==============================================================================
 
 services:
-  graphein-api:
+  # ----------------------------------------------------------------------------
+  # 1. Backend API (FastAPI + Hot Reload)
+  # ----------------------------------------------------------------------------
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: graphein-api-server
+      target: runner
+    container_name: graphein-api-dev
+    command: ["uvicorn", "src.app.api:app", "--host", "0.0.0.0", "--port", "8088", "--reload"]
     ports:
-      - "8088:8088"
+      - "${PORT:-8088}:8088"
+    # Option A (par défaut avec CLI Infisical) : variables injectées depuis le shell
+    # Option B (sans Infisical CLI) : décommenter 'env_file: .env.local'
     env_file:
-      - .env
+      - path: .env.local
+        required: false
     environment:
-      - PORT=8088
+      - ENVIRONMENT=development
       - HOST=0.0.0.0
+      - PORT=8088
+      - REDIS_URL=redis://redis:6379/0
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-maildev}
+      - MAILDEV_HOST=maildev
+      - MAILDEV_PORT=1025
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${SUPABASE_KEY:-}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-}
     volumes:
-      - graphein-data:/app/data
-      - graphein-logs:/app/logs
-      - graphein-backups:/app/backups
-    restart: unless-stopped
+      # Montage du code source local pour prise en compte immédiate des modifications (Hot-Reload)
+      - .:/app
+      # Préservation des données persistantes, logs et backups hors du conteneur
+      - graphein-dev-data:/app/data
+      - graphein-dev-logs:/app/logs
+      - graphein-dev-backups:/app/backups
+    depends_on:
+      redis:
+        condition: service_healthy
+      maildev:
+        condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8088/api/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
+      start_period: 10s
+    networks:
+      - graphein-dev-network
 
-  graphein-streamlit:
+  # ----------------------------------------------------------------------------
+  # 2. Frontend Dashboard Streamlit (Optionnel - profil "ui")
+  # Lancement : infisical run --env=dev -- docker-compose --profile ui up
+  # ----------------------------------------------------------------------------
+  streamlit:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: graphein-streamlit-app
+      target: runner
+    container_name: graphein-streamlit-dev
+    profiles: ["ui"]
     command: ["streamlit", "run", "src/app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
     ports:
       - "8501:8501"
     env_file:
-      - .env
+      - path: .env.local
+        required: false
+    environment:
+      - ENVIRONMENT=development
+      - BACKEND_API_URL=http://api:8088
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${SUPABASE_KEY:-}
     volumes:
-      - graphein-data:/app/data
-      - graphein-logs:/app/logs
-    restart: unless-stopped
+      - .:/app
+      - graphein-dev-data:/app/data
+      - graphein-dev-logs:/app/logs
     depends_on:
-      graphein-api:
+      api:
         condition: service_healthy
+    networks:
+      - graphein-dev-network
+
+  # ----------------------------------------------------------------------------
+  # 3. Cache & Message Broker (Redis 7) — Préparation Sprint 3
+  # SÉCURITÉ : Ne pas exposer publiquement sur l'hôte, accessible uniquement sur le réseau interne
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: graphein-redis-dev
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    expose:
+      - "6379"
+    volumes:
+      - redis-dev-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - graphein-dev-network
+
+  # ----------------------------------------------------------------------------
+  # 4. MailDev (Serveur SMTP local + Web UI pour inspecter les emails de dev)
+  # ----------------------------------------------------------------------------
+  maildev:
+    image: maildev/maildev:2.1.0
+    container_name: graphein-maildev-dev
+    ports:
+      - "1080:1080"  # Web UI inspecteur d'emails
+    expose:
+      - "1025"       # Serveur SMTP interne
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:1080/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - graphein-dev-network
+
+# ------------------------------------------------------------------------------
+# Réseaux et Volumes persistants
+# ------------------------------------------------------------------------------
+networks:
+  graphein-dev-network:
+    driver: bridge
+    name: graphein-dev-network
 
 volumes:
-  graphein-data:
-    driver: local
-  graphein-logs:
-    driver: local
-  graphein-backups:
-    driver: local
+  graphein-dev-data:
+    name: graphein-dev-data
+  graphein-dev-logs:
+    name: graphein-dev-logs
+  graphein-dev-backups:
+    name: graphein-dev-backups
+  redis-dev-data:
+    name: graphein-redis-dev-data

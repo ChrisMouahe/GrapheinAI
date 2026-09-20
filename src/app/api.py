@@ -15,15 +15,15 @@ env_path = Path(__file__).resolve().parent.parent.parent / ".env"
 loaded = load_dotenv(dotenv_path=env_path)
 
 if loaded:
-    print("✅ Fichier .env chargé avec succès !")
+    print("[INFO] Fichier .env charge avec succes !")
 else:
-    print("⚠️ Attention : Impossible de trouver ou charger le fichier .env")
+    print("[WARNING] Impossible de trouver ou charger le fichier .env")
 
 # Vérification immédiate de la présence de la clé API
 if not os.getenv("GEMINI_API_KEY"):
-    print("❌ Clé GEMINI_API_KEY introuvable dans l'environnement !")
+    print("[WARNING] Cle GEMINI_API_KEY introuvable dans l'environnement standard (utilise Infisical si actif).")
 else:
-    print("🔑 Clé GEMINI_API_KEY détectée.")
+    print("[INFO] Cle GEMINI_API_KEY detectee.")
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -102,8 +102,8 @@ from src.utils.stat_calculator import StatisticalEngine
 from src.utils.structured_logger import StructuredLogger
 
 app = FastAPI(
-    title="GrapheinAI SaaS Enterprise API",
-    description="REST API backend for GrapheinAI Multimodal Visual Analytics SaaS Platform.",
+    title="LumiChart SaaS Enterprise API",
+    description="REST API backend for LumiChart Multimodal Visual Analytics SaaS Platform.",
     version="5.0.0",
 )
 
@@ -126,6 +126,26 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
+
+
+@app.on_event("startup")
+async def verify_service_role_isolation_on_startup():
+    """Vérifie au démarrage que la service_role est strictement réservée au backend."""
+    from src.config.settings import settings
+
+    if settings.environment == "production":
+        # Vérification qu'aucun fichier statique frontend ne contient de fuite
+        static_dir = Path(__file__).resolve().parent / "static"
+        if static_dir.exists():
+            for f in static_dir.rglob("*"):
+                if f.is_file() and f.suffix in (".html", ".js", ".css"):
+                    content = f.read_text(encoding="utf-8", errors="ignore")
+                    if "SUPABASE_SERVICE_ROLE_KEY" in content:
+                        raise RuntimeError(
+                            f"[SECURITY BREACH PREVENTED] SUPABASE_SERVICE_ROLE_KEY trouvée dans l'asset public {f.name}! "
+                            "Démarrage refusé en production."
+                        )
+
 
 
 START_TIME = time.time()
@@ -225,7 +245,7 @@ def get_current_user(authorization: str | None = Header(None)) -> UserProfile:
     if not user:
         raise HTTPException(
             status_code=401,
-            detail="Accès non autorisé. Veuillez vous connecter à votre compte GrapheinAI.",
+            detail="Accès non autorisé. Veuillez vous connecter à votre compte LumiChart.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     if getattr(user, "is_suspended", False):
@@ -295,7 +315,7 @@ def status_check() -> dict[str, Any]:
 def version_info() -> dict[str, Any]:
     """Version metadata endpoint."""
     return {
-        "app_name": "GrapheinAI Commercial SaaS Enterprise",
+        "app_name": "LumiChart Commercial SaaS Enterprise",
         "version": "5.0.0",
         "environment": "production",
         "api_docs_url": "/docs",

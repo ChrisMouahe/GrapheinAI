@@ -36,14 +36,14 @@ class NumberedCanvas(canvas.Canvas):
                 self.saveState()
                 self.setFont("Helvetica-Bold", 8)
                 self.setFillColor(colors.HexColor("#64748B"))
-                self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — FEUILLE DE ROUTE STRATÉGIQUE & ROADMAP R&D")
+                self.drawString(36, 11 * 72 - 30, "LUMICHART AI — FEUILLE DE ROUTE STRATÉGIQUE & ROADMAP R&D")
                 self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "CONFIDENTIEL (FCFA)")
                 self.setStrokeColor(colors.HexColor("#CBD5E1"))
                 self.setLineWidth(0.5)
                 self.line(36, 11 * 72 - 34, 8.5 * 72 - 36, 11 * 72 - 34)
                 self.line(36, 40, 8.5 * 72 - 36, 40)
                 self.setFont("Helvetica", 8)
-                self.drawString(36, 28, "© 2026 GraphEin AI Inc. — Roadmap Stratégique de Production (Côte d'Ivoire / International)")
+                self.drawString(36, 28, "© 2026 LumiChart Inc. — Roadmap Stratégique de Production (Côte d'Ivoire / International)")
                 self.drawRightString(8.5 * 72 - 36, 28, f"Page {self._pageNumber} / {num_pages}")
                 self.restoreState()
             canvas.Canvas.showPage(self)
@@ -79,7 +79,7 @@ def build_roadmap():
 
     # Header Card
     h_data = [
-        [Paragraph("<b>GRAPHEIN AI — FEUILLE DE ROUTE STRATÉGIQUE & PLAN DE DÉPLOIEMENT R&D</b>", styles["RTitle"])],
+        [Paragraph("<b>LUMICHART AI — FEUILLE DE ROUTE STRATÉGIQUE & PLAN DE DÉPLOIEMENT R&D</b>", styles["RTitle"])],
         [Paragraph("Plan d'Ingénierie, de Sécurité et d'Expansion Commerciale (1 mois à 24 mois) • Contexte Ivoirien & International", styles["RSub"])],
         [Paragraph("<b>Auteurs :</b> Direction Technique (CTO, Principal Architect, Senior MLOps) | <b>Devise de Référence :</b> Franc CFA (XOF)", 
                    ParagraphStyle('HMeta', fontName='Helvetica', fontSize=8, leading=11, textColor=colors.HexColor('#E2E8F0')))]
@@ -147,7 +147,7 @@ def build_roadmap():
         [Paragraph("Chantier / Livrable", styles["RTH"]), Paragraph("Description Technique Détaillée", styles["RTH"]), Paragraph("Impact Métier", styles["RTH"]), Paragraph("Échéance", styles["RTH"])],
         [Paragraph("Moteur On-Premise Mistral", styles["RTDBold"]), Paragraph("Conteneurisation de Mistral Pixtral 12B sur serveur GPU local (NVIDIA L4 / A10G) avec vLLM", styles["RTD"]), Paragraph("Confinement total des données pour secret bancaire et défense nationale", styles["RTD"]), Paragraph("Mois 9", styles["RTD"])],
         [Paragraph("Chiffrement BYOK (Clé Client)", styles["RTDBold"]), Paragraph("Gestion des clés de chiffrement de bout en bout directement par le client", styles["RTD"]), Paragraph("Garantie absolue de confidentialité sur les données sensibles", styles["RTD"]), Paragraph("Mois 10", styles["RTD"])],
-        [Paragraph("Marketplace Partenaires", styles["RTDBold"]), Paragraph("Portail pour intégrateurs certifiés et cabinets d'audit déployant GraphEin AI", styles["RTD"]), Paragraph("Effet de levier commercial et expansion indirecte en zone CEDEAO", styles["RTD"]), Paragraph("Mois 12", styles["RTD"])],
+        [Paragraph("Marketplace Partenaires", styles["RTDBold"]), Paragraph("Portail pour intégrateurs certifiés et cabinets d'audit déployant LumiChart", styles["RTD"]), Paragraph("Effet de levier commercial et expansion indirecte en zone CEDEAO", styles["RTD"]), Paragraph("Mois 12", styles["RTD"])],
     ]
     t_p3 = Table(p3_data, colWidths=[1.6*inch, 2.7*inch, 2.3*inch, 0.9*inch])
     t_p3.setStyle(TableStyle([

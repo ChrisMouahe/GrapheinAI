@@ -1,0 +1,50 @@
+# ==============================================================================
+# GraphEin AI — Pre-commit Hooks Configuration
+# ==============================================================================
+# Sécurité & Qualité du Code (Sprint 0 - Pilier 1)
+# Pour installer les hooks : pre-commit install
+# Pour tester manuellement : pre-commit run --all-files
+# ==============================================================================
+
+repos:
+  # 1. Protection Anti-Fuite de Secrets (detect-secrets)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+            package-lock\.json|
+            poetry\.lock|
+            \.secrets\.baseline|
+            data/.*|
+            docs/.*\.pdf
+          )$
+
+  # 2. Sécurité Générale & Intégrité des Fichiers Git
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=5000']
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+
+  # 3. Linter Rapide Python (Ruff)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # 4. Formateur de Code Python (Black)
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        language_version: python3

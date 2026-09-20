@@ -1,4 +1,4 @@
-"""Email Providers package for GraphEin AI Enterprise Email Infrastructure."""
+"""Email Providers package for LumiChart Enterprise Email Infrastructure."""
 
 from src.services.email.providers.base import BaseEmailProvider, EmailMessage
 from src.services.email.providers.brevo import BrevoProvider

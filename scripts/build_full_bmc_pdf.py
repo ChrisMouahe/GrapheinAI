@@ -36,14 +36,14 @@ class NumberedCanvas(canvas.Canvas):
                 self.saveState()
                 self.setFont("Helvetica-Bold", 8)
                 self.setFillColor(colors.HexColor("#64748B"))
-                self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — BUSINESS MODEL CANVAS & STRATÉGIE FINANCIÈRE")
+                self.drawString(36, 11 * 72 - 30, "LUMICHART AI — BUSINESS MODEL CANVAS & STRATÉGIE FINANCIÈRE")
                 self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "CONFIDENTIEL (FCFA)")
                 self.setStrokeColor(colors.HexColor("#CBD5E1"))
                 self.setLineWidth(0.5)
                 self.line(36, 11 * 72 - 34, 8.5 * 72 - 36, 11 * 72 - 34)
                 self.line(36, 40, 8.5 * 72 - 36, 40)
                 self.setFont("Helvetica", 8)
-                self.drawString(36, 28, "© 2026 GraphEin AI Inc. — Analyse de Monétisation en Franc CFA (XOF)")
+                self.drawString(36, 28, "© 2026 LumiChart Inc. — Analyse de Monétisation en Franc CFA (XOF)")
                 self.drawRightString(8.5 * 72 - 36, 28, f"Page {self._pageNumber} / {num_pages}")
                 self.restoreState()
             canvas.Canvas.showPage(self)
@@ -79,7 +79,7 @@ def build_bmc():
 
     # Header Card
     h_data = [
-        [Paragraph("<b>GRAPHEIN AI — BUSINESS MODEL CANVAS STRATÉGIQUE & MODÈLE FINANCIER</b>", styles["BTitle"])],
+        [Paragraph("<b>LUMICHART AI — BUSINESS MODEL CANVAS STRATÉGIQUE & MODÈLE FINANCIER</b>", styles["BTitle"])],
         [Paragraph("Modélisation Approfondie de la Monétisation, Canaux Locaux (Mobile Money) & Unit Economics en Franc CFA (XOF)", styles["BSub"])],
         [Paragraph("<b>Auteurs :</b> Direction Stratégique, Business Analyst & VC Advisory | <b>Parité Fixe :</b> 1 EUR = 655,957 FCFA", 
                    ParagraphStyle('HMeta', fontName='Helvetica', fontSize=8, leading=11, textColor=colors.HexColor('#E2E8F0')))]
@@ -135,7 +135,7 @@ def build_bmc():
     story.append(Paragraph(
         "En Côte d'Ivoire et en Afrique de l'Ouest, le taux de pénétration des cartes bancaires internationales reste sous les 15%, "
         "tandis que le Mobile Money (Wave, Orange Money, MTN MoMo, Moov Money) dépasse les 80% d'usage actif. "
-        "GraphEin AI intègre nativement ces moyens de paiement locaux, réduisant le taux de friction à l'inscription payante de plus de 70% "
+        "LumiChart intègre nativement ces moyens de paiement locaux, réduisant le taux de friction à l'inscription payante de plus de 70% "
         "par rapport aux solutions SaaS étrangères (qui imposent Stripe avec carte bancaire US/EU).",
         styles["BBody"]
     ))

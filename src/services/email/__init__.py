@@ -1,4 +1,4 @@
-"""Email Services package for GraphEin AI Enterprise Infrastructure."""
+"""Email Services package for LumiChart Enterprise Infrastructure."""
 
 from src.services.email.email_service import EmailService
 from src.services.email.notifications import NotificationService

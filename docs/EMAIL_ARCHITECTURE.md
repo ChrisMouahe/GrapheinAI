@@ -1,11 +1,11 @@
-# Email Infrastructure Architecture - GraphEin AI Enterprise
+# Email Infrastructure Architecture - LumiChart Enterprise
 
 ## Overview
-GraphEin AI implements a pluggable, asynchronous, enterprise-grade Email Infrastructure built on clean architecture principles. It abstracts email delivery providers, signs and verifies JWT security tokens, processes background dispatches via an async queue, renders localized dark-mode-ready HTML/Text email templates, and exposes Admin Observability endpoints.
+LumiChart implements a pluggable, asynchronous, enterprise-grade Email Infrastructure built on clean architecture principles. It abstracts email delivery providers, signs and verifies JWT security tokens, processes background dispatches via an async queue, renders localized dark-mode-ready HTML/Text email templates, and exposes Admin Observability endpoints.
 
 ```
                   ┌─────────────────────────────────────┐
-                  │          GraphEin AI App            │
+                  │          LumiChart App            │
                   │ (FastAPI, Supabase, Workspaces)     │
                   └──────────────────┬──────────────────┘
                                      │

@@ -1,4 +1,4 @@
-"""Generate professional Excel workbook for GraphEin AI cost estimation across 100, 1k, 10k, and 100k users in FCFA (Franc CFA / Contexte Ivoirien)."""
+"""Generate professional Excel workbook for LumiChart cost estimation across 100, 1k, 10k, and 100k users in FCFA (Franc CFA / Contexte Ivoirien)."""
 
 import sys
 from pathlib import Path
@@ -59,7 +59,7 @@ def create_cost_workbook():
 
     # Title Banner
     ws1.merge_cells("A1:G2")
-    ws1["A1"] = "GRAPHEIN AI — MODÉLISATION FINANCIÈRE & FINOPS EN FCFA (CONTEXTE IVOIRIEN & UEMOA)"
+    ws1["A1"] = "LUMICHART AI — MODÉLISATION FINANCIÈRE & FINOPS EN FCFA (CONTEXTE IVOIRIEN & UEMOA)"
     ws1["A1"].font = font_title
     ws1["A1"].fill = dark_slate
     ws1["A1"].alignment = Alignment(horizontal="center", vertical="center")

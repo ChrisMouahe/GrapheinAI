@@ -1,6 +1,6 @@
-# 🛠️ Guide d'Installation & Dépannage — GraphEin AI
+# 🛠️ Guide d'Installation & Dépannage — LumiChart
 
-Ce guide contient toutes les instructions pour installer et exécuter **GraphEin AI** sur votre environnement local, dans un conteneur Docker ou sur les plateformes cloud.
+Ce guide contient toutes les instructions pour installer et exécuter **LumiChart** sur votre environnement local, dans un conteneur Docker ou sur les plateformes cloud.
 
 ---
 
@@ -29,8 +29,8 @@ Ce guide contient toutes les instructions pour installer et exécuter **GraphEin
 
 ### Étape 1 : Obtenir le Code Source
 ```bash
-git clone https://github.com/your-org/GrapheinAI.git
-cd GrapheinAI
+git clone https://github.com/your-org/LumiChart.git
+cd LumiChart
 ```
 
 ### Étape 2 : Créer et Activer l'Environnement Virtuel

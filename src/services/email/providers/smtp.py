@@ -1,4 +1,4 @@
-"""Generic Enterprise SMTP Email Provider for GraphEin AI."""
+"""Generic Enterprise SMTP Email Provider for LumiChart."""
 
 import os
 import smtplib
@@ -33,7 +33,7 @@ class SMTPProvider(BaseEmailProvider):
         self.password = password or os.getenv("SMTP_PASSWORD", "")
         self.use_tls = use_tls
         self.from_email = from_email or os.getenv("EMAIL_FROM", "no-reply@graphein.ai")
-        self.from_name = from_name or os.getenv("EMAIL_NAME", "GraphEin AI Enterprise")
+        self.from_name = from_name or os.getenv("EMAIL_NAME", "LumiChart Enterprise")
 
     def send_email(self, message: EmailMessage) -> EmailDispatchResult:
         """Dispatches an email via generic SMTP connection."""

@@ -1,10 +1,10 @@
-# Email Templates Catalog & Customization Guide - GraphEin AI
+# Email Templates Catalog & Customization Guide - LumiChart
 
 ## Overview
-All email templates in GraphEin AI are designed to meet modern SaaS standards (Notion, Linear, GitHub, Figma, Vercel). They feature:
+All email templates in LumiChart are designed to meet modern SaaS standards (Notion, Linear, GitHub, Figma, Vercel). They feature:
 - Responsive mobile & desktop layouts
 - Dark mode compatibility (`color-scheme: light dark`)
-- GraphEin AI brand identity (indigo color palette `#6366F1`, dark canvas `#0F172A`, surface `#1E293B`)
+- LumiChart brand identity (indigo color palette `#6366F1`, dark canvas `#0F172A`, surface `#1E293B`)
 - Dual HTML and Plain Text fallback rendering
 - French (`fr`) and English (`en`) localizations
 

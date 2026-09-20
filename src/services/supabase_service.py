@@ -47,7 +47,7 @@ class SupabaseService:
             "name": "Demo User",
             "email": "demo@graphein.ai",
             "avatar_url": None,
-            "entreprise": "Graphein Corp",
+            "entreprise": "LumiChart Corp",
             "secteur_activite": "Finance",
             "secteur_autre": "",
             "fonction": "Data Analyst",

@@ -1,4 +1,4 @@
-"""Email Template Renderer for GraphEin AI Enterprise Platform.
+"""Email Template Renderer for LumiChart Enterprise Platform.
 
 Supports responsive HTML, plain text fallbacks, dark mode styling, and French / English localizations.
 """
@@ -7,7 +7,7 @@ from typing import Any
 
 
 class EmailTemplateRenderer:
-    """Renders responsive HTML and Plain Text email templates for all GraphEin AI notification types."""
+    """Renders responsive HTML and Plain Text email templates for all LumiChart notification types."""
 
     BASE_HTML_WRAPPER = """<!DOCTYPE html>
 <html lang="{lang}">
@@ -138,7 +138,7 @@ class EmailTemplateRenderer:
     </div>
     <div class="email-footer">
       <p style="margin-bottom: 4px; font-size: 12px; color: #64748B;">
-        &copy; 2026 GraphEin AI Enterprise. Tous droits réservés.
+        &copy; 2026 LumiChart Enterprise. Tous droits réservés.
       </p>
       <p style="margin: 0; font-size: 11px; color: #475569;">
         Plateforme SaaS d'Intelligence Graphique VLM, AST & Data Analytics.
@@ -167,19 +167,19 @@ class EmailTemplateRenderer:
         otp_code = ctx.get("otp_code", "123456")
 
         if template_name == "welcome":
-            subject = "Bienvenue sur GraphEin AI Enterprise 🎉" if is_fr else "Welcome to GraphEin AI Enterprise 🎉"
+            subject = "Bienvenue sur LumiChart Enterprise 🎉" if is_fr else "Welcome to LumiChart Enterprise 🎉"
             html_content = f"""
-              <h1>{"Bienvenue sur GraphEin AI" if is_fr else "Welcome to GraphEin AI"}, {user_name} !</h1>
+              <h1>{"Bienvenue sur LumiChart" if is_fr else "Welcome to LumiChart"}, {user_name} !</h1>
               <p>{"Votre compte Enterprise a été créé avec succès. Vous avez désormais accès à notre suite d'intelligence graphique propulsée par Gemini Flash Vision, OpenCV et AST." if is_fr else "Your Enterprise account has been successfully created. You now have access to our graph intelligence suite powered by Gemini Flash Vision, OpenCV, and AST."}</p>
               <div class="info-box">
                 <strong>{"Détails de votre accès :" if is_fr else "Access Details:"}</strong><br>
-                • {"Entreprise :" if is_fr else "Company:"} {ctx.get("company", "Graphein Corp")}<br>
+                • {"Entreprise :" if is_fr else "Company:"} {ctx.get("company", "LumiChart Corp")}<br>
                 • {"Rôle :" if is_fr else "Role:"} {ctx.get("role", "Standard User")}<br>
                 • {"Module d'explicabilité & AST actif" if is_fr else "Explainability & AST module active"}
               </div>
               <a href="{action_url}" class="btn-primary">{"Accéder au Studio d'Analyse" if is_fr else "Access Analysis Studio"}</a>
             """
-            text_body = f"Bienvenue sur GraphEin AI, {user_name}!\nAccédez à votre espace: {action_url}"
+            text_body = f"Bienvenue sur LumiChart, {user_name}!\nAccédez à votre espace: {action_url}"
 
         elif template_name in ("verify_email", "verification"):
             subject = "Vérification de votre adresse e-mail" if is_fr else "Verify your email address"
@@ -205,7 +205,7 @@ class EmailTemplateRenderer:
             inviter = ctx.get("inviter_name", "Un administrateur" if is_fr else "An administrator")
             subject = f"Invitation à rejoindre le Workspace {workspace_name}" if is_fr else f"Invitation to join Workspace {workspace_name}"
             html_content = f"""
-              <h1>{"Invitation Workspace GraphEin AI" if is_fr else "GraphEin AI Workspace Invitation"}</h1>
+              <h1>{"Invitation Workspace LumiChart" if is_fr else "LumiChart Workspace Invitation"}</h1>
               <p>{inviter} {"vous a invité à collaborer sur le workspace" if is_fr else "invited you to collaborate on workspace"} <strong>{workspace_name}</strong> {"avec le rôle" if is_fr else "with the role"} <strong>{ctx.get("role", "Editeur")}</strong>.</p>
               <a href="{action_url}" class="btn-primary">{"Accepter l'Invitation" if is_fr else "Accept Invitation"}</a>
             """
@@ -241,10 +241,10 @@ class EmailTemplateRenderer:
               <div class="otp-code">{otp_code}</div>
               <p style="font-size: 12px; color: #64748B;">{"Ce code expire dans 15 minutes." if is_fr else "This code expires in 15 minutes."}</p>
             """
-            text_body = f"Votre code OTP GraphEin AI: {otp_code}"
+            text_body = f"Votre code OTP LumiChart: {otp_code}"
 
         elif template_name == "profile_updated":
-            subject = "Mise à jour de votre profil GraphEin AI" if is_fr else "GraphEin AI Profile Updated"
+            subject = "Mise à jour de votre profil LumiChart" if is_fr else "LumiChart Profile Updated"
             html_content = f"""
               <h1>{"Profil Mis à Jour" if is_fr else "Profile Updated"}</h1>
               <p>{"Bonjour" if is_fr else "Hello"} {user_name}, {"les informations de votre profil professionnel ont été mises à jour avec succès." if is_fr else "your professional profile details have been successfully updated."}</p>
@@ -258,7 +258,7 @@ class EmailTemplateRenderer:
 
         elif template_name == "account_deleted":
             subject = "Confirmation de suppression de compte" if is_fr else "Account Deletion Confirmation"
-            html_content = f"<h1>{"Compte Supprimé" if is_fr else "Account Deleted"}</h1><p>{"Votre compte GraphEin AI a été définitivement supprimé." if is_fr else "Your GraphEin AI account has been permanently deleted."}</p>"
+            html_content = f"<h1>{"Compte Supprimé" if is_fr else "Account Deleted"}</h1><p>{"Votre compte LumiChart a été définitivement supprimé." if is_fr else "Your LumiChart account has been permanently deleted."}</p>"
             text_body = "Votre compte a été supprimé."
 
         elif template_name == "workspace_created":
@@ -272,7 +272,7 @@ class EmailTemplateRenderer:
             text_body = f"Workspace {workspace_name} supprimé."
 
         else:
-            subject = ctx.get("subject", "Notification GraphEin AI")
+            subject = ctx.get("subject", "Notification LumiChart")
             msg_text = ctx.get("message", "Nouvelle notification disponible.")
             html_content = f"<h1>Notification</h1><p>{msg_text}</p><a href='{action_url}' class='btn-primary'>Ouvrir l'application</a>"
             text_body = msg_text

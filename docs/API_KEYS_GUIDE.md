@@ -1,6 +1,6 @@
-# 🔑 Guide des Clés API & Configuration d'Environnement - GraphEin AI Enterprise
+# 🔑 Guide des Clés API & Configuration d'Environnement - LumiChart Enterprise
 
-Ce document répertorie l'ensemble des **clés API, identifiants et secrets d'environnement** nécessaires au fonctionnement optimal de la plateforme GraphEin AI Enterprise.
+Ce document répertorie l'ensemble des **clés API, identifiants et secrets d'environnement** nécessaires au fonctionnement optimal de la plateforme LumiChart Enterprise.
 
 ---
 
@@ -69,7 +69,7 @@ Copiez ce contenu dans un fichier `.env` situé à la racine du projet :
 
 ```env
 # ====================================================================
-# GRAPHEIN AI ENTERPRISE - CONFIGURATION SYSTEME & CLES API
+# LUMICHART AI ENTERPRISE - CONFIGURATION SYSTEME & CLES API
 # ====================================================================
 
 # 1. Moteur Gemini Flash Vision VLM
@@ -82,7 +82,7 @@ SUPABASE_KEY=votre_cle_anon_supabase_ici
 # 3. Email Platform Config (maildev | resend | brevo | smtp)
 EMAIL_PROVIDER=maildev
 EMAIL_FROM=no-reply@graphein.ai
-EMAIL_NAME=GraphEin AI Enterprise
+EMAIL_NAME=LumiChart Enterprise
 
 # Si EMAIL_PROVIDER=resend
 RESEND_API_KEY=re_123456789_abcdefg

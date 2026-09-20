@@ -1,6 +1,6 @@
 # ⚡ Optimisation Radical de l'API Gemini & Architecture IA Modulaire
 
-Ce document présente l'architecture optimisée du module IA de **GraphEin AI Enterprise** (`src/services/gemini/`). Ce réusinage vise une réduction drastique du nombre d'appels à l'API Gemini Flash Vision, une baisse significative de la consommation de tokens, une diminution des coûts futurs et une extensibilité sans couture via la classe abstraite `BaseAIService`.
+Ce document présente l'architecture optimisée du module IA de **LumiChart Enterprise** (`src/services/gemini/`). Ce réusinage vise une réduction drastique du nombre d'appels à l'API Gemini Flash Vision, une baisse significative de la consommation de tokens, une diminution des coûts futurs et une extensibilité sans couture via la classe abstraite `BaseAIService`.
 
 ---
 
@@ -67,7 +67,7 @@ L'endpoint REST `GET /api/gemini/metrics` fournit en temps réel les indicateurs
 
 ## 🔮 Extensibilité Multi-Provider Future
 
-Le reste de l'application GraphEin AI ne dépend désormais plus que de l'interface abstraite **`BaseAIService`**.
+Le reste de l'application LumiChart ne dépend désormais plus que de l'interface abstraite **`BaseAIService`**.
 
 Pour ajouter un nouveau fournisseur IA à l'avenir (ex: OpenAI GPT-4o ou Anthropic Claude 3.5 Sonnet) :
 1. Dériver une nouvelle classe `OpenAIService(BaseAIService)` dans `src/services/gemini/` (ou `src/services/ai/`).

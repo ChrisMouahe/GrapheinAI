@@ -1,4 +1,4 @@
-"""Production Automated Backup Manager for GrapheinAI.
+"""Production Automated Backup Manager for LumiChart.
 
 Backs up:
 - Extracted charts & raw data (data/raw)
@@ -59,7 +59,7 @@ def cleanup_old_backups(max_keep: int = 10, dest_dir: Path = BACKUP_DIR) -> None
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="GrapheinAI Production Backup Manager")
+    parser = argparse.ArgumentParser(description="LumiChart Production Backup Manager")
     parser.add_argument("--keep", type=int, default=10, help="Number of recent backups to keep")
     args = parser.parse_args()
 

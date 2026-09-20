@@ -1,4 +1,4 @@
-# 📊 GrapheinAI — Plateforme SaaS d'Intelligence Graphique Enterprise & Multimodale
+# 📊 LumiChart — Plateforme SaaS d'Intelligence Graphique Enterprise & Multimodale
 
 [![Python Version](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688.svg)](https://fastapi.tiangolo.com)
@@ -14,7 +14,7 @@
 
 ## 🌟 Présentation & Vision
 
-**GrapheinAI** est une plateforme SaaS industrielle d'intelligence graphique multimodale conçue pour les entreprises, chercheurs, analystes financiers et décideurs. Elle automatise l'extraction, la validation, l'analyse, l'interprétation narrative et la synthèse décisionnelle à partir de tout type de visuels de données (histogrammes, courbes, camemberts, nuages de points, graphiques boursiers et planches multi-graphiques complexes).
+**LumiChart** est une plateforme SaaS industrielle d'intelligence graphique multimodale conçue pour les entreprises, chercheurs, analystes financiers et décideurs. Elle automatise l'extraction, la validation, l'analyse, l'interprétation narrative et la synthèse décisionnelle à partir de tout type de visuels de données (histogrammes, courbes, camemberts, nuages de points, graphiques boursiers et planches multi-graphiques complexes).
 
 ### Vision Produit
 Consolider l'alliance entre la **Vision par Ordinateur**, les **Grands Modèles Vision-Langage (VLM)** et l'**Évaluation Mathématique Déterministe** afin de garantir une précision absolue à zéro hallucination sur les calculs analytiques tout en offrant une expérience utilisateur fluide, collaborative et prête pour la production d'entreprise.
@@ -201,8 +201,8 @@ L'application expose une API REST complète documentée via Swagger (`/docs`) et
 ### 1. Clonage & Environnement Virtuel
 
 ```bash
-git clone https://github.com/your-org/GrapheinAI.git
-cd GrapheinAI
+git clone https://github.com/your-org/LumiChart.git
+cd LumiChart
 
 python -m venv venv
 # Linux / macOS :
@@ -263,7 +263,7 @@ docker-compose up -d --build
 ## 📊 Structure du Projet
 
 ```
-GrapheinAI/
+LumiChart/
 ├── app.py                         # Point d'entrée principal (FastAPI ASGI / Streamlit)
 ├── requirements.txt               # Dépendances de production Python
 ├── pyproject.toml                 # Configuration Pytest, Ruff, Black
@@ -373,5 +373,5 @@ R : Dès l'étape 3 du workflow, la grille de données interactive (HITL DataGri
 
 ## 📄 Licence
 
-Copyright © 2026 **GrapheinAI Team**. Tous droits réservés.  
+Copyright © 2026 **LumiChart Team**. Tous droits réservés.  
 Proprietary SaaS Enterprise Application.

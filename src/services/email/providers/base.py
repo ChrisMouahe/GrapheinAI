@@ -1,4 +1,4 @@
-"""Abstract base class and data models for email providers in GraphEin AI."""
+"""Abstract base class and data models for email providers in LumiChart."""
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -30,7 +30,7 @@ class EmailDispatchResult(BaseModel):
 
 
 class BaseEmailProvider(ABC):
-    """Abstract interface for all pluggable GraphEin AI email providers."""
+    """Abstract interface for all pluggable LumiChart email providers."""
 
     def __init__(self, provider_name: str) -> None:
         self.provider_name = provider_name

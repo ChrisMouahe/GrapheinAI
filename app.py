@@ -1,4 +1,4 @@
-"""Root Application Entrypoint for GrapheinAI.
+"""Root Application Entrypoint for LumiChart.
 
 Supports:
 1. Streamlit Community Cloud & Hugging Face Spaces (via Streamlit execution)

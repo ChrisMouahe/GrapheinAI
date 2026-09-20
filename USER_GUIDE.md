@@ -1,6 +1,6 @@
-# 📖 Guide Utilisateur — GraphEin AI
+# 📖 Guide Utilisateur — LumiChart
 
-Bienvenue dans le guide utilisateur officiel de **GraphEin AI**, votre assistant d'intelligence graphique multimodale.
+Bienvenue dans le guide utilisateur officiel de **LumiChart**, votre assistant d'intelligence graphique multimodale.
 
 ---
 
@@ -17,7 +17,7 @@ Bienvenue dans le guide utilisateur officiel de **GraphEin AI**, votre assistant
 
 ## 1. Prise en Main de l'Interface
 
-L'interface de **GraphEin AI** se compose de :
+L'interface de **LumiChart** se compose de :
 - **La Barre Latérale (Sidebar)** : Permet de naviguer entre le *Tableau de Bord*, le *Studio d'Analyse*, l'*Historique* et les *Paramètres*.
 - **Le Stepper Horizontal** : Indique l'avancement du traitement en 5 étapes claires.
 - **La Zone Principale de Travail** : Contient l'aperçu du graphique, la grille de données et le chat IA.

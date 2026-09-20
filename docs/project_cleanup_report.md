@@ -1,8 +1,8 @@
-# 📋 Rapport Officiel d'Audit & Nettoyage — GrapheinAI
+# 📋 Rapport Officiel d'Audit & Nettoyage — LumiChart
 
 **Date de réalisation :** 20 Août 2026  
 **Équipe d'Ingénierie :** Principal Software Architect, Senior Python Engineer, Senior Full-Stack Engineer, DevOps Engineer, Tech Lead, Software Quality Engineer, MLOps Engineer.  
-**Projet :** GraphEin AI (v4.0 SaaS Enterprise)  
+**Projet :** LumiChart (v4.0 SaaS Enterprise)  
 **Branche Git :** `refactor/project-cleanup`
 
 ---

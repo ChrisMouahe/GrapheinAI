@@ -1,4 +1,4 @@
-"""Email Templates package for GraphEin AI."""
+"""Email Templates package for LumiChart."""
 
 from src.services.email.templates.template_renderer import EmailTemplateRenderer
 

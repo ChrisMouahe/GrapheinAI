@@ -1,4 +1,4 @@
-"""Email Provider Factory for dynamic provider instantiation in GraphEin AI."""
+"""Email Provider Factory for dynamic provider instantiation in LumiChart."""
 
 import os
 import logging

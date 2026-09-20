@@ -36,14 +36,14 @@ class NumberedCanvas(canvas.Canvas):
                 self.saveState()
                 self.setFont("Helvetica-Bold", 8)
                 self.setFillColor(colors.HexColor("#64748B"))
-                self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — EXECUTIVE SUMMARY & NOTE DE SYNTHÈSE DÉCISIONNELLE")
+                self.drawString(36, 11 * 72 - 30, "LUMICHART AI — EXECUTIVE SUMMARY & NOTE DE SYNTHÈSE DÉCISIONNELLE")
                 self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "INVESTISSEURS & JURY (FCFA)")
                 self.setStrokeColor(colors.HexColor("#CBD5E1"))
                 self.setLineWidth(0.5)
                 self.line(36, 11 * 72 - 34, 8.5 * 72 - 36, 11 * 72 - 34)
                 self.line(36, 40, 8.5 * 72 - 36, 40)
                 self.setFont("Helvetica", 8)
-                self.drawString(36, 28, "© 2026 GraphEin AI Inc. — Mémorandum d'Investissement & Due Diligence (Franc CFA)")
+                self.drawString(36, 28, "© 2026 LumiChart Inc. — Mémorandum d'Investissement & Due Diligence (Franc CFA)")
                 self.drawRightString(8.5 * 72 - 36, 28, f"Page {self._pageNumber} / {num_pages}")
                 self.restoreState()
             canvas.Canvas.showPage(self)
@@ -79,7 +79,7 @@ def build_exec_summary():
 
     # Header Card
     h_data = [
-        [Paragraph("<b>GRAPHEIN AI — SYNTHÈSE EXÉCUTIVE & MÉMORANDUM D'INVESTISSEMENT</b>", styles["ETitle"])],
+        [Paragraph("<b>LUMICHART AI — SYNTHÈSE EXÉCUTIVE & MÉMORANDUM D'INVESTISSEMENT</b>", styles["ETitle"])],
         [Paragraph("Executive Summary pour Investisseurs, Bailleurs de Fonds et Jury de Soutenance • Évaluation en Franc CFA (XOF)", styles["ESub"])],
         [Paragraph("<b>Panel d'Audit :</b> Consortium d'Experts SaaS & IA | <b>Score Global :</b> <font color='#86EFAC'><b>9.2 / 10 (Grade A+)</b></font> | <b>Verdict :</b> <font color='#86EFAC'><b>GO PRODUCTION</b></font>", 
                    ParagraphStyle('HMeta', fontName='Helvetica', fontSize=8, leading=11, textColor=colors.HexColor('#E2E8F0')))]
@@ -100,7 +100,7 @@ def build_exec_summary():
         "Dans l'économie de la connaissance et de la finance (Côte d'Ivoire, zone UEMOA et international), plus de <b>65% des données analytiques</b> "
         "sont partagées sous forme de graphiques statiques (rapports annuels PDF, bilans BRVM, captures d'écran de tableaux de bord). "
         "Les modèles d'IA généralistes (ChatGPT, Claude) échouent avec plus de 30% d'erreurs d'arithmétique sur les images. "
-        "<b>GraphEin AI résout définitivement ce problème en introduisant le premier moteur d'évaluation déterministe certifié 100% sans hallucination.</b>",
+        "<b>LumiChart résout définitivement ce problème en introduisant le premier moteur d'évaluation déterministe certifié 100% sans hallucination.</b>",
         styles["EBody"]
     ))
 
@@ -147,7 +147,7 @@ def build_exec_summary():
     v_data = [
         [
             Paragraph("<b>DÉCISION DU PANEL D'AUDIT :</b> <font color='#059669' size=10.5><b>AVIS TRÈS FAVORABLE — GO PRODUCTION</b></font><br/>"
-                      "Le projet GraphEin AI combine une excellence architecturale certifiée (Score : <b>9.2 / 10 - Grade A+</b>), "
+                      "Le projet LumiChart combine une excellence architecturale certifiée (Score : <b>9.2 / 10 - Grade A+</b>), "
                       "un moteur d'exactitude mathématique unique au monde et un modèle FinOps hautement scalable avec plus de <b>97% de marge brute</b>.<br/>"
                       "<b>Recommandation Prioritaire :</b> Déployer l'intégration des passerelles Mobile Money (Wave, Orange Money) dès le premier sprint pour capturer immédiatement le marché B2B ivoirien et régional.",
                       styles["EBody"])

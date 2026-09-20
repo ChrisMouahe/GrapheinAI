@@ -1,4 +1,4 @@
-"""High-grade ReportLab PDF Generator for GraphEin AI Technical Audit, Roadmap, Business Model Canvas, and Executive Summary with all financials in FCFA."""
+"""High-grade ReportLab PDF Generator for LumiChart Technical Audit, Roadmap, Business Model Canvas, and Executive Summary with all financials in FCFA."""
 
 import io
 import os
@@ -45,7 +45,7 @@ class NumberedCanvas(canvas.Canvas):
             self.setFillColor(colors.HexColor("#64748B"))
             
             # Running Header
-            self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — AUDIT TECHNIQUE, ARCHITECTURAL & STRATÉGIQUE (V5.0)")
+            self.drawString(36, 11 * 72 - 30, "LUMICHART AI — AUDIT TECHNIQUE, ARCHITECTURAL & STRATÉGIQUE (V5.0)")
             self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "CONFIDENTIEL / DUE DILIGENCE (FCFA)")
             
             self.setStrokeColor(colors.HexColor("#CBD5E1"))
@@ -55,7 +55,7 @@ class NumberedCanvas(canvas.Canvas):
             # Running Footer
             self.line(36, 40, 8.5 * 72 - 36, 40)
             self.setFont("Helvetica", 8)
-            self.drawString(36, 28, "© 2026 GraphEin AI Inc. — Évaluation Financière en Franc CFA (XOF / Côte d'Ivoire)")
+            self.drawString(36, 28, "© 2026 LumiChart Inc. — Évaluation Financière en Franc CFA (XOF / Côte d'Ivoire)")
             page_text = f"Page {self._pageNumber} / {page_count}"
             self.drawRightString(8.5 * 72 - 36, 28, page_text)
             self.restoreState()
@@ -202,7 +202,7 @@ def generate_audit_pdf():
             Paragraph("<b>RAPPORT D'AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET</b>", styles["CoverTitle"]),
         ],
         [
-            Paragraph("<b>Projet GraphEin AI — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle</b><br/>"
+            Paragraph("<b>Projet LumiChart — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle</b><br/>"
                       "Version 5.0.0 Enterprise • Modélisation Financière en Franc CFA (XOF / Côte d'Ivoire)", styles["CoverSubtitle"]),
         ],
         [
@@ -276,7 +276,7 @@ def generate_audit_pdf():
     story.append(Paragraph("<b>PARTIE 1 : ÉTAT ACTUEL & CONTEXTE IVOIRIEN / UEMOA</b>", styles["H1_Audit"]))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#2563EB"), spaceAfter=8))
     story.append(Paragraph(
-        "<b>GraphEin AI</b> s'établit comme la première solution SaaS d'intelligence graphique multimodale adaptée aux exigences du marché ivoirien et de la zone UEMOA. "
+        "<b>LumiChart</b> s'établit comme la première solution SaaS d'intelligence graphique multimodale adaptée aux exigences du marché ivoirien et de la zone UEMOA. "
         "Elle répond aux besoins critiques des banques (Abidjan), de la BRVM, des cabinets de conseil et des acteurs agro-industriels (Cacao, Anacarde, Palmier) "
         "en extrayant avec une <b>exactitude mathématique absolue (0 hallucination)</b> les données chiffrées enfermées dans les rapports PDF et images.",
         styles["Body_Audit"]
@@ -344,7 +344,7 @@ def generate_audit_pdf():
     verdict_data = [
         [
             Paragraph("<b>DÉCISION DU PANEL D'AUDIT :</b> <font color='#059669' size=12><b>FAVORABLE — GO PRODUCTION</b></font><br/>"
-                      "GraphEin AI combine excellence technologique (Score 9.2/10), modèle FinOps ultra-rentable (marge brute > 97%) et adéquation parfaite avec les besoins décisionnels en Côte d'Ivoire et à l'international.<br/>"
+                      "LumiChart combine excellence technologique (Score 9.2/10), modèle FinOps ultra-rentable (marge brute > 97%) et adéquation parfaite avec les besoins décisionnels en Côte d'Ivoire et à l'international.<br/>"
                       "<b>Recommandation Prioritaire :</b> Intégrer les passerelles de paiement Mobile Money locales (Wave, Orange Money) lors du Sprint 1 pour maximiser la conversion commerciale.",
                       styles["Callout_Audit"])
         ]
@@ -370,7 +370,7 @@ def generate_roadmap_pdf():
     styles = get_corporate_styles()
     story = []
 
-    story.append(Paragraph("<b>GRAPHEIN AI — FEUILLE DE ROUTE STRATÉGIQUE & PLAN DE PRODUCTION</b>", styles["CoverTitle"]))
+    story.append(Paragraph("<b>LUMICHART AI — FEUILLE DE ROUTE STRATÉGIQUE & PLAN DE PRODUCTION</b>", styles["CoverTitle"]))
     story.append(Paragraph("Feuille de route R&D et déploiement industriel (1 mois à 24 mois) — Marché Ivoirien & International", styles["CoverSubtitle"]))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1E3A8A"), spaceAfter=15))
 
@@ -421,7 +421,7 @@ def generate_bmc_pdf():
     styles = get_corporate_styles()
     story = []
 
-    story.append(Paragraph("<b>GRAPHEIN AI — BUSINESS MODEL CANVAS STRATÉGIQUE (FCFA)</b>", styles["CoverTitle"]))
+    story.append(Paragraph("<b>LUMICHART AI — BUSINESS MODEL CANVAS STRATÉGIQUE (FCFA)</b>", styles["CoverTitle"]))
     story.append(Paragraph("Matrice d'analyse du modèle d'affaires, flux de revenus en Franc CFA et unit economics", styles["CoverSubtitle"]))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1E3A8A"), spaceAfter=15))
 
@@ -466,7 +466,7 @@ def generate_exec_summary_pdf():
     styles = get_corporate_styles()
     story = []
 
-    story.append(Paragraph("<b>GRAPHEIN AI — SYNTHÈSE EXÉCUTIVE POUR INVESTISSEURS & JURY</b>", styles["CoverTitle"]))
+    story.append(Paragraph("<b>LUMICHART AI — SYNTHÈSE EXÉCUTIVE POUR INVESTISSEURS & JURY</b>", styles["CoverTitle"]))
     story.append(Paragraph("Executive Summary • Note de Synthèse Décisionnelle en Franc CFA (XOF / Contexte Ivoirien)", styles["CoverSubtitle"]))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1E3A8A"), spaceAfter=15))
 
@@ -474,7 +474,7 @@ def generate_exec_summary_pdf():
     story.append(Paragraph(
         "En Côte d'Ivoire et dans la sous-région UEMOA, la digitalisation accélérée produit des millions de rapports et graphiques d'activité non exploitables automatiquement. "
         "Les modèles d'IA généralistes (ChatGPT, Claude) échouent sur les calculs avec plus de 30% d'erreurs. "
-        "<b>GraphEin AI apporte la première solution certifiée 100% sans hallucination mathématique grâce à son moteur déterministe AST.</b>",
+        "<b>LumiChart apporte la première solution certifiée 100% sans hallucination mathématique grâce à son moteur déterministe AST.</b>",
         styles["Body_Audit"]
     ))
 
@@ -498,7 +498,7 @@ def generate_exec_summary_pdf():
     verdict_data = [
         [
             Paragraph("<b>SCORE GLOBAL D'AUDIT : 9.2 / 10 (GRADE A+) — AVIS FAVORABLE POUR DÉPLOIEMENT EN PRODUCTION</b><br/>"
-                      "GraphEin AI constitue une opportunité d'investissement et de déploiement hautement stratégique pour le marché ivoirien et international.",
+                      "LumiChart constitue une opportunité d'investissement et de déploiement hautement stratégique pour le marché ivoirien et international.",
                       styles["Callout_Audit"])
         ]
     ]

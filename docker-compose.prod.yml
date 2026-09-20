@@ -1,0 +1,126 @@
+# ==============================================================================
+# GraphEin AI — Docker Compose (Production Durcie)
+# ==============================================================================
+# Architecture de production conteneurisée :
+#   - api     : FastAPI ASGI en mode immuable (aucun volume de code monté)
+#   - redis   : Cache & Broker avec persistance AOF (strictement isolé sur réseau interne)
+#   - worker  : Worker asynchrone Celery (placeholder préparé pour Sprint 3)
+#
+# GESTION DES SECRETS EN PRODUCTION :
+#   - Les secrets sont injectés soit par Machine Identity Infisical (Universal Auth),
+#     soit via la variable INFISICAL_TOKEN transmise au démarrage.
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Backend API (FastAPI - Production Immuable)
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: graphein-api-prod
+    restart: unless-stopped
+    command: ["uvicorn", "src.app.api:app", "--host", "0.0.0.0", "--port", "8088", "--workers", "4"]
+    ports:
+      - "${PORT:-8088}:8088"
+    environment:
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8088
+      - REDIS_URL=redis://redis:6379/0
+      - INFISICAL_ENABLED=${INFISICAL_ENABLED:-true}
+      - INFISICAL_ENVIRONMENT=${INFISICAL_ENVIRONMENT:-prod}
+      - INFISICAL_TOKEN=${INFISICAL_TOKEN:-}
+      - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID:-}
+      - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
+      - INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${SUPABASE_KEY:-}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-}
+    volumes:
+      # Uniquement les volumes de données et logs persistants (PAS de montage de code source en prod)
+      - graphein-prod-data:/app/data
+      - graphein-prod-logs:/app/logs
+      - graphein-prod-backups:/app/backups
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.50"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    networks:
+      - graphein-prod-network
+
+  # ----------------------------------------------------------------------------
+  # 2. Redis 7 avec Persistance AOF (Append-Only File) — Préparation Sprint 3
+  # SÉCURITÉ : Strictement isolé sur le réseau interne. Aucun port n'est exposé à l'extérieur.
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: graphein-redis-prod
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--no-appendfsync-on-rewrite", "no", "--auto-aof-rewrite-percentage", "100", "--auto-aof-rewrite-min-size", "64mb"]
+    expose:
+      - "6379"
+    volumes:
+      - redis-prod-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - graphein-prod-network
+
+# ------------------------------------------------------------------------------
+# Réseaux et Volumes persistants de Production
+# ------------------------------------------------------------------------------
+networks:
+  graphein-prod-network:
+    driver: bridge
+    name: graphein-prod-network
+
+volumes:
+  graphein-prod-data:
+    name: graphein-prod-data
+  graphein-prod-logs:
+    name: graphein-prod-logs
+  graphein-prod-backups:
+    name: graphein-prod-backups
+  redis-prod-data:
+    name: graphein-redis-prod-data

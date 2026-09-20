@@ -1,6 +1,6 @@
-# 🚀 Guide de Déploiement Production — GraphEin AI
+# 🚀 Guide de Déploiement Production — LumiChart
 
-Ce document constitue le guide officiel de déploiement pour la plateforme SaaS **GraphEin AI**.
+Ce document constitue le guide officiel de déploiement pour la plateforme SaaS **LumiChart**.
 Il permet à n'importe quel développeur ou ingénieur DevOps d'installer et de déployer le projet en **moins de 10 minutes**.
 
 ---
@@ -51,8 +51,8 @@ SMTP_PASSWORD=your_app_password
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/your-org/GrapheinAI.git
-cd GrapheinAI
+git clone https://github.com/your-org/LumiChart.git
+cd LumiChart
 
 # 2. Créer l'environnement virtuel Python
 python -m venv venv
@@ -76,7 +76,7 @@ streamlit run src/app/streamlit_app.py
 
 ## 4. Déploiement avec Docker & Docker Compose
 
-GraphEin AI inclut une image Docker multi-stage optimisée avec utilisateur non-root et bibliothèques OpenCV pré-installées.
+LumiChart inclut une image Docker multi-stage optimisée avec utilisateur non-root et bibliothèques OpenCV pré-installées.
 
 ### Lancement avec Docker Compose (Recommandé)
 ```bash
@@ -124,14 +124,14 @@ docker run -d \
 
 ## 7. Déploiement sur Render (via Blueprint)
 
-GraphEin AI inclut un fichier `render.yaml` prêt à l'emploi (Render Blueprint) configurant l'API REST FastAPI backend et l'interface Web Streamlit UI.
+LumiChart inclut un fichier `render.yaml` prêt à l'emploi (Render Blueprint) configurant l'API REST FastAPI backend et l'interface Web Streamlit UI.
 
 ### Étapes de déploiement en 1-clic :
 1. Pushez vos modifications sur GitHub/GitLab.
 2. Connectez-vous sur votre tableau de bord [Render Dashboard](https://dashboard.render.com).
 3. Cliquez sur **New +** -> **Blueprint**.
-4. Séléctionnez votre dépôt Git `GrapheinAI`.
-5. Render détectera automatiquement le fichier [render.yaml](file:///c:/Users/chris/Desktop/GrapheinAI/render.yaml) et proposera de créer 2 services :
+4. Séléctionnez votre dépôt Git `LumiChart`.
+5. Render détectera automatiquement le fichier [render.yaml](file:///c:/Users/chris/Desktop/LumiChart/render.yaml) et proposera de créer 2 services :
    - **`graphein-ai-api`** : Serveur REST FastAPI (`uvicorn src.app.api:app`) avec health check automatique (`/health`).
    - **`graphein-ai-ui`** : Application Streamlit UI (`streamlit run app.py`).
 6. Saisissez les valeurs des variables d'environnement requises (`GEMINI_API_KEY`, etc.).

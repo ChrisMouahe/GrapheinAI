@@ -1,4 +1,4 @@
-"""Script to generate architecture_target.drawio and architecture_target.png for GraphEin AI."""
+"""Script to generate architecture_target.drawio and architecture_target.png for LumiChart."""
 
 import os
 import sys
@@ -13,8 +13,8 @@ if sys.platform == "win32":
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 def generate_drawio():
-    drawio_content = """<mxfile host="app.diagrams.net" modified="2026-08-31T20:00:00.000Z" agent="GraphEin AI Audit Team" version="24.0.0" type="device">
-  <diagram id="graphein-arch-target" name="GraphEin AI Production Cloud Architecture">
+    drawio_content = """<mxfile host="app.diagrams.net" modified="2026-08-31T20:00:00.000Z" agent="LumiChart Audit Team" version="24.0.0" type="device">
+  <diagram id="graphein-arch-target" name="LumiChart Production Cloud Architecture">
     <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -161,7 +161,7 @@ def generate_png():
     ax.set_facecolor('#0F172A')
     
     # Title
-    plt.text(9, 10.5, "GraphEin AI — Enterprise Target Cloud Architecture (Production)", 
+    plt.text(9, 10.5, "LumiChart — Enterprise Target Cloud Architecture (Production)", 
              fontsize=20, fontweight='bold', color='#38BDF8', ha='center', va='center')
     plt.text(9, 10.1, "High-Availability, Multi-Tenant, Zero-Hallucination Multimodal Architecture", 
              fontsize=12, color='#94A3B8', ha='center', va='center')

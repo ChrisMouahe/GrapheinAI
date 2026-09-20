@@ -46,7 +46,7 @@ class NumberedCanvas(canvas.Canvas):
             self.setFillColor(colors.HexColor("#64748B"))
             
             # Running Header
-            self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE (V6.0.0)")
+            self.drawString(36, 11 * 72 - 30, "LUMICHART AI — AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE (V6.0.0)")
             self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "PRODUCTION ROADMAP & GO-TO-MARKET (FCFA)")
             
             self.setStrokeColor(colors.HexColor("#CBD5E1"))
@@ -56,7 +56,7 @@ class NumberedCanvas(canvas.Canvas):
             # Running Footer
             self.line(36, 38, 8.5 * 72 - 36, 38)
             self.setFont("Helvetica", 8)
-            self.drawString(36, 26, "© 2026 GraphEin AI Inc. — Rapport d'Audit & Production Roadmap (Côte d'Ivoire & UEMOA)")
+            self.drawString(36, 26, "© 2026 LumiChart Inc. — Rapport d'Audit & Production Roadmap (Côte d'Ivoire & UEMOA)")
             page_text = f"Page {self._pageNumber} / {page_count}"
             self.drawRightString(8.5 * 72 - 36, 26, page_text)
             self.restoreState()
@@ -258,7 +258,7 @@ def build_pdf():
             Paragraph("<b>RAPPORT D'AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET</b>", styles["CoverMainTitle"]),
         ],
         [
-            Paragraph("<b>Projet GraphEin AI — Version 6.0.0 Production Roadmap & Go-to-Market</b><br/>"
+            Paragraph("<b>Projet LumiChart — Version 6.0.0 Production Roadmap & Go-to-Market</b><br/>"
                       "Dossier de Référence de Passation, d'Investissement, FinOps et de Déploiement Industriel", styles["CoverSub"]),
         ],
         [
@@ -341,7 +341,7 @@ def build_pdf():
     story.append(Spacer(1, 8))
     
     story.append(Paragraph(
-        "<b>GraphEin AI</b> s'affirme comme une plateforme SaaS industrielle d'intelligence graphique multimodale pionnière, "
+        "<b>LumiChart</b> s'affirme comme une plateforme SaaS industrielle d'intelligence graphique multimodale pionnière, "
         "conçue pour résoudre l'un des goulets d'étranglement les plus coûteux des entreprises et institutions : "
         "l'extraction, la vérification mathématique et la synthèse décisionnelle des données encapsulées dans des visuels complexes "
         "(courbes boursières, bilans annuels, histogrammes d'activité, planches multi-graphiques). "
@@ -383,7 +383,7 @@ def build_pdf():
     story.append(Paragraph(
         "En Côte d'Ivoire et dans la zone UEMOA, plus de <b>65 % des métriques décisionnelles</b> demeurent prisonnières de rapports PDF ou captures d'écran. "
         "Les analystes financiers de la place d'Abidjan et les contrôleurs de gestion consacrent en moyenne 4,5 heures par semaine à ressaisir manuellement des valeurs sous Excel, "
-        "avec un taux d'erreur documenté entre 3 % et 8 %. GraphEin AI digitalise, extrait et fiabilise ce patrimoine visuel en moins de 2 secondes.",
+        "avec un taux d'erreur documenté entre 3 % et 8 %. LumiChart digitalise, extrait et fiabilise ce patrimoine visuel en moins de 2 secondes.",
         styles["BodyCustom"]
     ))
 
@@ -398,7 +398,7 @@ def build_pdf():
     story.append(Spacer(1, 4))
     story.append(Paragraph("<b>1.3. Matrice de Différenciation Marché (UVP)</b>", styles["PartH2"]))
     uvp_data = [
-        [Paragraph("Défi du Marché Actuel", styles["TH"]), Paragraph("Solution Technologique GraphEin AI", styles["TH"]), Paragraph("Bénéfice Quantifiable", styles["TH"])],
+        [Paragraph("Défi du Marché Actuel", styles["TH"]), Paragraph("Solution Technologique LumiChart", styles["TH"]), Paragraph("Bénéfice Quantifiable", styles["TH"])],
         [Paragraph("Hallucinations arithmétiques des LLM", styles["TD"]), Paragraph("Calcul déterministe par AST Python (aucun eval)", styles["TD"]), Paragraph("<b>100 % exactitude calculs</b>", styles["TDBold"])],
         [Paragraph("Extraction visuelle opaque ou erronée", styles["TD"]), Paragraph("Grille interactive Human-in-the-Loop (HITL)", styles["TD"]), Paragraph("Validation humaine en 1 clic", styles["TD"])],
         [Paragraph("Absence de paiement bancaire régional", styles["TD"]), Paragraph("Intégration Mobile Money native (Wave, Orange, MTN)", styles["TD"]), Paragraph("Monétisation fluide UEMOA", styles["TD"])],
@@ -487,7 +487,7 @@ def build_pdf():
     story.append(Paragraph("<b>Limites Opérationnelles du VLM & Garde-Fous Statistiques (Partie 4)</b>", styles["PartH2"]))
     story.append(Paragraph(
         "L'inférence visuelle par Gemini 2.5 Flash présente des risques objectifs de mauvaise lecture sur les graphiques à faible contraste (&lt;150 DPI) ou à polices exotiques. "
-        "GraphEin AI déploie une triple barrière de sécurité :<br/>"
+        "LumiChart déploie une triple barrière de sécurité :<br/>"
         "1. <b>Validation Croisée OpenCV :</b> Comparaison spatiale des boîtes de détection géométrique avec les libellés restitués.<br/>"
         "2. <b>Détection Statistique d'Anomalies :</b> Calcul automatisé du Z-Score et de l'IQR sur chaque série extraite ; signalement visuel immédiat des points aberrants (&gt; 3&sigma;).<br/>"
         "3. <b>Interrupteur HITL :</b> Dès que le score de confiance global passe sous 80 %, l'interface bloque l'interprétation automatique et requiert l'approbation de l'analyste.",
@@ -632,7 +632,7 @@ def build_pdf():
 
     story.append(Paragraph("<b>Arbitrage Final d'Investissement : GO CONDITIONNEL (Score 8.4 / 10)</b>", styles["PartH2"]))
     story.append(make_callout(
-        "<b>Avis Final d'Audit :</b> Le potentiel technologique de GraphEin AI est validé. "
+        "<b>Avis Final d'Audit :</b> Le potentiel technologique de LumiChart est validé. "
         "L'autorisation de Go-Live commercial est accordée sous condition suspensive de livrer d'ici 90 jours : "
         "1. La passerelle Mobile Money CinetPay fonctionnelle • 2. L'asynchrone Celery/Redis • "
         "3. L'enforceur de quotas d'API • 4. La déclaration ARTCI et facturation TVA 18 %."

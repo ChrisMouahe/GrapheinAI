@@ -1,6 +1,6 @@
-# 🔄 Flux de Données & Pipelines — GraphEin AI
+# 🔄 Flux de Données & Pipelines — LumiChart
 
-Ce document détaille les flux de données bout-en-bout, la modélisation de la base de données et les pipelines d'exécution multimodaux de **GraphEin AI**.
+Ce document détaille les flux de données bout-en-bout, la modélisation de la base de données et les pipelines d'exécution multimodaux de **LumiChart**.
 
 ---
 

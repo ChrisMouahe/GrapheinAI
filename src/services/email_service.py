@@ -25,7 +25,7 @@ class EmailService:
         self.smtp_user = smtp_user or os.getenv("SMTP_USER", "")
         self.smtp_password = smtp_password or os.getenv("SMTP_PASSWORD", "")
         self.sender_email = self.smtp_user if self.smtp_user and "@" in self.smtp_user else "no-reply@graphein.ai"
-        self.sender_name = "GrapheinAI Enterprise Collaboration"
+        self.sender_name = "LumiChart Enterprise Collaboration"
 
     def send_invitation_email(
         self,
@@ -37,13 +37,13 @@ class EmailService:
         role: str,
     ) -> bool:
         """Sends an HTML invitation email containing a signed secure link and expiration timestamp."""
-        subject = f"Invitation à collaborer sur {resource_name} - GraphEin AI"
+        subject = f"Invitation à collaborer sur {resource_name} - LumiChart"
 
         body_html = f"""
         <html>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: #1E88E5; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="color: #ffffff; margin: 0;">GraphEin AI Collaboration</h1>
+              <h1 style="color: #ffffff; margin: 0;">LumiChart Collaboration</h1>
             </div>
             <div style="background: #ffffff; padding: 24px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
               <p>Bonjour,</p>
@@ -58,7 +58,7 @@ class EmailService:
               </p>
               <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
               <p style="font-size: 11px; color: #999; text-align: center;">
-                GraphEin AI SaaS Enterprise Platform • Propriété confidentielle
+                LumiChart SaaS Enterprise Platform • Propriété confidentielle
               </p>
             </div>
           </body>

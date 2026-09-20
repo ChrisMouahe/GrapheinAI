@@ -1,4 +1,4 @@
-"""Brevo (Sendinblue) Email Provider for production email delivery in GraphEin AI."""
+"""Brevo (Sendinblue) Email Provider for production email delivery in LumiChart."""
 
 import json
 import os
@@ -24,7 +24,7 @@ class BrevoProvider(BaseEmailProvider):
         super().__init__(provider_name="brevo")
         self.api_key = api_key or os.getenv("BREVO_API_KEY", "")
         self.from_email = from_email or os.getenv("EMAIL_FROM", "no-reply@graphein.ai")
-        self.from_name = from_name or os.getenv("EMAIL_NAME", "GraphEin AI Enterprise")
+        self.from_name = from_name or os.getenv("EMAIL_NAME", "LumiChart Enterprise")
         self.api_url = "https://api.brevo.com/v3/smtp/email"
 
     def send_email(self, message: EmailMessage) -> EmailDispatchResult:

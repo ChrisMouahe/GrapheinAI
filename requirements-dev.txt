@@ -1,0 +1,13 @@
+# LumiChart — Development & CI/CD Dependencies
+-r requirements.txt
+
+# Pre-commit & Secret Scanning
+pre-commit>=3.6.0
+detect-secrets>=1.5.0
+
+# Code Quality, Formatting & Testing
+ruff>=0.3.0
+black>=24.2.0
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0

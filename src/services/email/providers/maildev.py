@@ -1,4 +1,4 @@
-"""MailDev Email Provider for local development in GraphEin AI."""
+"""MailDev Email Provider for local development in LumiChart."""
 
 import os
 import smtplib
@@ -27,7 +27,7 @@ class MailDevProvider(BaseEmailProvider):
         self.host = host or os.getenv("MAILDEV_HOST", "localhost")
         self.port = port or int(os.getenv("MAILDEV_PORT", "1025"))
         self.from_email = from_email or os.getenv("EMAIL_FROM", "no-reply@graphein.ai")
-        self.from_name = from_name or os.getenv("EMAIL_NAME", "GraphEin AI Enterprise")
+        self.from_name = from_name or os.getenv("EMAIL_NAME", "LumiChart Enterprise")
 
     def send_email(self, message: EmailMessage) -> EmailDispatchResult:
         """Dispatches an email to local MailDev SMTP server."""

@@ -1,4 +1,4 @@
-"""Multi-channel Notification Service for GraphEin AI (Email, In-App, and Push)."""
+"""Multi-channel Notification Service for LumiChart (Email, In-App, and Push)."""
 
 import time
 import uuid
@@ -67,7 +67,7 @@ class NotificationService:
                 self.email_service.sendCommentNotification(
                     to_email=user_email,
                     user_name=user_id,
-                    commenter_name="GraphEin AI",
+                    commenter_name="LumiChart",
                     comment_text=message,
                     chart_title=title,
                     workspace_name="GraphEin Workspace",

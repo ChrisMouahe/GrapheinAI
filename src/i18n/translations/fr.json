@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "GrapheinAI",
+    "title": "LumiChart",
     "subtitle": "Plateforme SaaS d'Analyse de Graphiques Scientifiques pour Entreprises et Particuliers"
   },
   "nav": {
@@ -110,7 +110,7 @@
   },
   "onboarding": {
     "tag": "Guided Product Tour",
-    "title": "Bienvenue dans GraphEin AI",
+    "title": "Bienvenue dans LumiChart",
     "desc": "Découvrez notre plateforme d'intelligence graphique Enterprise. Suivez ces 3 étapes simples pour analyser vos données visuelles.",
     "skip": "Passer",
     "next": "Suivant →",
@@ -320,7 +320,7 @@
     "prefs_desc": "Choisissez la langue d'affichage et de rapportation.",
     "lang_label": "Langue de l'Interface & Rapports PDF",
     "appearance_title": "Thème & Apparence",
-    "appearance_desc": "Personnalisez l'apparence visuelle de GraphEin AI.",
+    "appearance_desc": "Personnalisez l'apparence visuelle de LumiChart.",
     "theme_toggle": "Basculer le Thème (Clair / Sombre)",
     "theme_note": "Adapte automatiquement les couleurs de l'application",
     "ai_title": "Configuration de l'Assistant IA",

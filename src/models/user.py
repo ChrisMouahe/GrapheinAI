@@ -1,4 +1,4 @@
-"""Enterprise User and authentication Pydantic v2 data models for GrapheinAI."""
+"""Enterprise User and authentication Pydantic v2 data models for LumiChart."""
 
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator

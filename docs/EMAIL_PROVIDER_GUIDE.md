@@ -1,4 +1,4 @@
-# Email Provider Setup Guide - GraphEin AI
+# Email Provider Setup Guide - LumiChart
 
 ## 1. MailDev Setup (Development)
 

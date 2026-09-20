@@ -1,4 +1,4 @@
-"""Services package for GrapheinAI."""
+"""Services package for LumiChart."""
 
 from src.services.cache_manager import CacheManager
 from src.services.session_manager import AnalysisSessionManager

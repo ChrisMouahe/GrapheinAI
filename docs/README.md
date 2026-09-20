@@ -1,4 +1,4 @@
-# Documentation Index — GraphEin AI
+# Documentation Index — LumiChart
 
 All technical documentation files are available in both the root directory and the `docs/` folder:
 

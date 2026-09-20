@@ -1,4 +1,4 @@
-# 🔌 Spécification Technique des API REST — GraphEin AI
+# 🔌 Spécification Technique des API REST — LumiChart
 
 **Version API** : v5.0.0  
 **Format de Données** : JSON / Multipart Form-Data  

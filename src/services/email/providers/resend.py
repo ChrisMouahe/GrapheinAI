@@ -1,4 +1,4 @@
-"""Resend Email Provider for production email delivery in GraphEin AI."""
+"""Resend Email Provider for production email delivery in LumiChart."""
 
 import json
 import os
@@ -24,7 +24,7 @@ class ResendProvider(BaseEmailProvider):
         super().__init__(provider_name="resend")
         self.api_key = api_key or os.getenv("RESEND_API_KEY", "")
         self.from_email = from_email or os.getenv("EMAIL_FROM", "onboarding@resend.dev")
-        self.from_name = from_name or os.getenv("EMAIL_NAME", "GraphEin AI Enterprise")
+        self.from_name = from_name or os.getenv("EMAIL_NAME", "LumiChart Enterprise")
         self.api_url = "https://api.resend.com/emails"
 
     def send_email(self, message: EmailMessage) -> EmailDispatchResult:

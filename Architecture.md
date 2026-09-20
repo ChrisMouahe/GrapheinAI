@@ -1,6 +1,6 @@
-# 🏗 Manuel Spécificatif & Architecture Technique — GrapheinAI
+# 🏗 Manuel Spécificatif & Architecture Technique — LumiChart
 
-**Projet** : GrapheinAI — SaaS Enterprise d'Intelligence Graphique Multimodale  
+**Projet** : LumiChart — SaaS Enterprise d'Intelligence Graphique Multimodale  
 **Version du Système** : 5.0.0 Enterprise  
 **Statut** : Production / SRE Ready  
 
@@ -19,7 +19,7 @@
 
 ## 1. Vue d'Ensemble & Alignment Architectural
 
-GrapheinAI repose sur un motif **Hexagonal (Ports & Adapters)** hautement découplé. L'application sépare rigoureusement :
+LumiChart repose sur un motif **Hexagonal (Ports & Adapters)** hautement découplé. L'application sépare rigoureusement :
 - **La Couche d'Interface (Adapteurs Entrants)** : Interface Web SPA légère (Vanilla JS/CSS), Application Streamlit interactive, API REST FastAPI ASGI.
 - **Le Cœur Métier & Moteur d'IA (Domain Core)** : Orchestrateur `PipelineAgent`, agents d'IA spécialisés, analyseur AST déterministe, moteurs de calculs statistiques et générateurs de rapports.
 - **La Couche d'Infrastructure (Adapteurs Sortants)** : Persistence PostgreSQL Supabase avec Row Level Security (RLS), moteur de recherche vectoriel FAISS local, génération de documents PDF (ReportLab), services d'emails transactionnels (Resend).
@@ -99,9 +99,9 @@ graph TB
 
 ## 2. Matrice Exhaustive des Technologies & Bibliothèques
 
-Le tableau suivant présente **l'intégralité des technologies, frameworks et bibliothèques** intégrés dans GrapheinAI, leurs particularités majeures et leur utilité exacte dans le projet.
+Le tableau suivant présente **l'intégralité des technologies, frameworks et bibliothèques** intégrés dans LumiChart, leurs particularités majeures et leur utilité exacte dans le projet.
 
-| Domaine / Catégorie | Technologie / Library | Particularités Techniques | Rôle & Utilité dans GrapheinAI |
+| Domaine / Catégorie | Technologie / Library | Particularités Techniques | Rôle & Utilité dans LumiChart |
 | :--- | :--- | :--- | :--- |
 | **Backend Core & API** | **FastAPI** `0.110.0+` | Framework Python ASGI haute performance basé sur Starlette et Pydantic. Validation automatique et documentation OpenAPI/Swagger. | Propose l'API REST de production (25+ endpoints), gère le routage asynchrone des requêtes d'analyse, l'authentification et les exports. |
 | **Serveur ASGI** | **Uvicorn** `0.28.0+` | Serveur web ASGI ultra-rapide basé sur `uvloop` et `httptools`. | Exécute l'application FastAPI en production avec haute concurrence et gestion asynchrone des sockets. |
@@ -226,7 +226,7 @@ sequenceDiagram
 
 ## 5. Sécurité Multi-Tenant & Modèle de Base de Données RLS
 
-GrapheinAI s'appuie sur **Supabase PostgreSQL** avec des politiques de **Row Level Security (RLS)** natives. Chaque donnée (session d'analyse, membre d'espace de travail, journal d'activité) est strictement isolée au niveau de la base de données.
+LumiChart s'appuie sur **Supabase PostgreSQL** avec des politiques de **Row Level Security (RLS)** natives. Chaque donnée (session d'analyse, membre d'espace de travail, journal d'activité) est strictement isolée au niveau de la base de données.
 
 ### 5.1. Schéma des Tables Principales (`supabase/schema.sql`)
 
@@ -283,7 +283,7 @@ CREATE POLICY "Select Analysis Sessions Policy" ON public.analysis_sessions
 
 ## 6. Observabilité, Caching & Performance SRE
 
-Pour garantir une disponibilité de classe entreprise (SLA 99.9%), GrapheinAI intègre :
+Pour garantir une disponibilité de classe entreprise (SLA 99.9%), LumiChart intègre :
 
 1. **Routage de Cache Hybride (`CacheManager`)** :
    - **LRU In-Memory Cache** : Conserve les résultats des requêtes fréquentes en mémoire vive.
@@ -300,7 +300,7 @@ Pour garantir une disponibilité de classe entreprise (SLA 99.9%), GrapheinAI in
 
 ## 7. Éco-Conception & Sobriété Numérique (RGPD)
 
-GrapheinAI a été conçue selon des principes stricts de **sobriété numérique et de responsabilité éco-conçue** :
+LumiChart a été conçue selon des principes stricts de **sobriété numérique et de responsabilité éco-conçue** :
 
 1. **Économie de Calcul LLM (Routage Intelligente)** :
    - Les questions de calcul simple ou de statistiques basiques sont directement évaluées par le module Python `SafeCalculator` ou l'index FAISS local. Cela évite des appels VLM distants énergivores et réduit la consommation d'énergie jusqu'à **75%**.

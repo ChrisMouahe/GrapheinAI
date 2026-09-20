@@ -1,10 +1,73 @@
-# Python
+# ==============================================================================
+# GraphEin AI — Reinforced .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment Variables & Secret Management (ZERO TOLERANCE LEAK)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+.env.local
+.env.development
+.env.staging
+.env.production
+.env.test
+!.env.example
+
+# Infisical & Doppler SecretOps CLI cache & local bindings
+.infisical/
+.infisical.token
+.infisical.env
+.doppler/
+.doppler.yaml
+.doppler.json
+
+# Private Keys, Certificates, and Keystores
+*.pem
+*.key
+*.pub
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.asc
+*.gpg
+*.sig
+
+# Cloud & Service Account Credentials
+*credentials*.json
+*service-account*.json
+*client_secret*.json
+*-credentials.json
+gcp-key.json
+firebase-adminsdk*.json
+
+# SSH & Local Machine Keys
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Shell History & Secret Dumps
+.bash_history
+.zsh_history
+*.history
+passwords.txt
+secrets.txt
+
+# ------------------------------------------------------------------------------
+# 2. Python & Package Distribution
+# ------------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 env/
+venv/
+ENV/
+.venv/
 build/
 develop-eggs/
 dist/
@@ -21,24 +84,40 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-venv/
-ENV/
-.venv/
-
-# Testing & Coverage
+# ------------------------------------------------------------------------------
+# 3. Testing, Coverage & Quality Assurance
+# ------------------------------------------------------------------------------
 .pytest_cache/
 .coverage
 htmlcov/
 coverage.xml
+coverage/
+.tox/
+.nox/
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
 
-# IDE & Editors
-.vscode/
+# ------------------------------------------------------------------------------
+# 4. IDEs, Editors & OS Metadata
+# ------------------------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
 
-# Data & Output Artifacts
+# ------------------------------------------------------------------------------
+# 5. Data, Cache, Backups & Model Artifacts
+# ------------------------------------------------------------------------------
 data/processed/plots/
 data/raw/crops/
 data/raw/*.png
@@ -46,9 +125,15 @@ data/raw/*.png
 data/sessions/
 models/cache/
 logs/
+*.log
 backups/
+*.dump
+*.tar.gz
+*.zip
+*.bak
 
-# Environment Variables & Secrets
-.env
-.env.*
-!.env.example
+# SQLite databases (runtime/testing)
+*.sqlite
+*.sqlite3
+*.db
+!tests/fixtures/*.db

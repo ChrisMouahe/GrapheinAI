@@ -1,6 +1,6 @@
-# 🛠️ Guide d'Administration & SRE — GraphEin AI
+# 🛠️ Guide d'Administration & SRE — LumiChart
 
-Ce guide est destiné aux administrateurs système, DevOps et ingénieurs SRE responsables de l'exploitation de **GraphEin AI**.
+Ce guide est destiné aux administrateurs système, DevOps et ingénieurs SRE responsables de l'exploitation de **LumiChart**.
 
 ---
 
@@ -15,7 +15,7 @@ Ce guide est destiné aux administrateurs système, DevOps et ingénieurs SRE re
 
 ## 1. Gestion des Rôles & Sécurité RBAC
 
-GraphEin AI prend en charge 4 rôles d'utilisateurs distincts :
+LumiChart prend en charge 4 rôles d'utilisateurs distincts :
 
 | Rôle | Privilèges & Accès |
 | :--- | :--- |

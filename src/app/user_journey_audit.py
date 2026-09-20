@@ -1,4 +1,4 @@
-"""Automated User Journey Audit & UI/UX Evaluation Script for GrapheinAI SaaS Web App."""
+"""Automated User Journey Audit & UI/UX Evaluation Script for LumiChart SaaS Web App."""
 
 import json
 import time
@@ -9,7 +9,7 @@ BASE_URL = "http://127.0.0.1:8085"
 
 def run_user_journey_audit():
     print("=" * 70)
-    print("STARTING USER JOURNEY AUDIT & UX EVALUATION - GrapheinAI v4.0")
+    print("STARTING USER JOURNEY AUDIT & UX EVALUATION - LumiChart v4.0")
     print("=" * 70)
 
     # 1. Health Check Endpoint Evaluation
@@ -24,7 +24,7 @@ def run_user_journey_audit():
     resp_index = requests.get(f"{BASE_URL}/")
     dt_index = round(time.time() - t0, 3)
     print(f"\n[STEP 2 - DASHBOARD PAGE LOAD] Status Code: {resp_index.status_code} | Size: {len(resp_index.content)} bytes | Latency: {dt_index}s")
-    assert "<title>GrapheinAI | Research-Grade Chart Analysis Platform</title>" in resp_index.text
+    assert "<title>LumiChart | Research-Grade Chart Analysis Platform</title>" in resp_index.text
 
     # 3. Dynamic Initial Extraction on Load
     t0 = time.time()

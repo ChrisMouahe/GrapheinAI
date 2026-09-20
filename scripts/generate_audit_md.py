@@ -1,4 +1,4 @@
-"""Script to generate the comprehensive, exhaustive master audit markdown document for GraphEin AI with all financials in FCFA."""
+"""Script to generate the comprehensive, exhaustive master audit markdown document for LumiChart with all financials in FCFA."""
 
 import sys
 from pathlib import Path
@@ -11,9 +11,9 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_FILE = ROOT_DIR / "audit_complet_graphein_ai.md"
 
 def build_audit_markdown():
-    content = """# 📊 RAPPORT D'AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET — GRAPHEIN AI
+    content = """# 📊 RAPPORT D'AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET — LUMICHART AI
 
-**Projet** : GraphEin AI — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle  
+**Projet** : LumiChart — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle  
 **Version Évaluée** : 5.0.0 Enterprise Production-Ready  
 **Type de Mission** : Technical Due Diligence, Architectural Review, Security Audit & Strategic Roadmap  
 **Zone Économique & Marché Cible** : Côte d'Ivoire / Zone UEMOA & Expansion Panafricaine / Internationale  
@@ -49,14 +49,14 @@ def build_audit_markdown():
 # PARTIE 1 : ÉTAT ACTUEL DU PROJET & VISION STRATÉGIQUE
 
 ### 1.1. Vision Fondatrice & Ancrage dans l'Écosystème Ivoirien et Africain
-**GraphEin AI** ambitionne d'établir le standard continental et mondial du **Visual Data Understanding**. En Côte d'Ivoire et dans toute la zone UEMOA, la transformation numérique des institutions financières (BRVM, banques commerciales, microfinance), des cabinets d'audit, des ministères et des entreprises agro-industrielles produit un volume massif de rapports d'activité, bilans annuels et présentations stratégiques au format PDF ou images scannées.
+**LumiChart** ambitionne d'établir le standard continental et mondial du **Visual Data Understanding**. En Côte d'Ivoire et dans toute la zone UEMOA, la transformation numérique des institutions financières (BRVM, banques commerciales, microfinance), des cabinets d'audit, des ministères et des entreprises agro-industrielles produit un volume massif de rapports d'activité, bilans annuels et présentations stratégiques au format PDF ou images scannées.
 
 Cependant, plus de **65% des métriques décisionnelles** demeurent prisonnières de ces graphiques statiques, nécessitant des saisies manuelles fastidieuses sous Excel et exposant les organisations à des erreurs d'analyse coûteuses.
 
-La vision de GraphEin AI est de fournir une infrastructure d'intelligence artificielle souveraine, capable d'extraire instantanément la donnée brute avec une **précision mathématique déterministe certifiée (zéro hallucination)**, d'en expliquer les causalités et de proposer des recommandations stratégiques actionnables.
+La vision de LumiChart est de fournir une infrastructure d'intelligence artificielle souveraine, capable d'extraire instantanément la donnée brute avec une **précision mathématique déterministe certifiée (zéro hallucination)**, d'en expliquer les causalités et de proposer des recommandations stratégiques actionnables.
 
 ### 1.2. Mission
-La mission de GraphEin AI est d'accélérer la prise de décision des dirigeants, analystes financiers, contrôleurs de gestion, chercheurs et consultants à travers :
+La mission de LumiChart est d'accélérer la prise de décision des dirigeants, analystes financiers, contrôleurs de gestion, chercheurs et consultants à travers :
 1. L'interrogation en langage naturel (français / anglais) avec réponse chiffrée exacte.
 2. L'édition et la réconciliation immédiate des valeurs extraites via une boucle *Human-in-the-Loop* (HITL).
 3. La collaboration en équipe au sein d'espaces de travail partagés (*Workspaces* multi-tenants).
@@ -79,10 +79,10 @@ La mission de GraphEin AI est d'accélérer la prise de décision des dirigeants
 # PARTIE 2 : CARTOGRAPHIE COMPLÈTE DU CODEBASE & ARCHITECTURE LOGICIELLE
 
 ### 2.1. Structure du Répertoire Projet
-L'architecture de GraphEin AI respecte les principes de l'**Architecture Hexagonale (Clean Architecture / Ports & Adapters)** :
+L'architecture de LumiChart respecte les principes de l'**Architecture Hexagonale (Clean Architecture / Ports & Adapters)** :
 
 ```
-GrapheinAI/
+LumiChart/
 ├── Dockerfile                       # Image Docker multi-stage optimisée (< 450 Mo)
 ├── docker-compose.yml               # Orchestration locale (FastAPI + Redis + PostgreSQL)
 ├── requirements.txt                 # Dépendances verrouillées
@@ -323,7 +323,7 @@ L'architecture cible repose sur un cluster Kubernetes (k3s / EKS) avec :
 
 ```mermaid
 gantt
-    title Roadmap Stratégique GraphEin AI (2026 - 2028)
+    title Roadmap Stratégique LumiChart (2026 - 2028)
     dateFormat  YYYY-MM-DD
     section Mois 1 - 3 (Fondations)
     Découplage Asynchrone Celery/Redis     :a1, 2026-09-01, 45d
@@ -345,7 +345,7 @@ gantt
 
 # PARTIE 15 : ANALYSE CONCURRENTIELLE
 
-| Critère d'Évaluation | GraphEin AI 5.0 | ChatGPT Plus (GPT-4o) | Claude Pro (3.5 Sonnet) | Power BI / Tableau |
+| Critère d'Évaluation | LumiChart 5.0 | ChatGPT Plus (GPT-4o) | Claude Pro (3.5 Sonnet) | Power BI / Tableau |
 | :--- | :---: | :---: | :---: | :---: |
 | **Fiabilité des Calculs** | **100% (AST Déterministe)** | 62% (Hallucinations) | 78% (Erreurs fréquentes) | 100% (Sur bases SQL) |
 | **Analyse sur Image Pure**| **Excellente (Spécialisée)**| Moyenne (Généraliste) | Bonne (Généraliste) | ❌ Inopérant sur image |
@@ -372,7 +372,7 @@ gantt
 ### 17.1. Diagnostic Final
 **VERDICT : GO POUR LA MISE EN PRODUCTION (SCORE GLOBAL : 9.2 / 10).**
 
-GraphEin AI résout le problème critique de la fiabilité mathématique dans l'analyse de visuels de données grâce à son moteur AST déterministe. Avec un coût d'infrastructure maîtrisé (**moins de 360 FCFA par utilisateur/mois**), la plateforme offre une rentabilité exceptionnelle (> 97% de marge brute) et un positionnement hautement différenciant sur le marché ivoirien, africain et international.
+LumiChart résout le problème critique de la fiabilité mathématique dans l'analyse de visuels de données grâce à son moteur AST déterministe. Avec un coût d'infrastructure maîtrisé (**moins de 360 FCFA par utilisateur/mois**), la plateforme offre une rentabilité exceptionnelle (> 97% de marge brute) et un positionnement hautement différenciant sur le marché ivoirien, africain et international.
 """
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(content)

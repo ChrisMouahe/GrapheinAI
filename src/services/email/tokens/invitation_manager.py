@@ -1,4 +1,4 @@
-"""Invitation Manager for GraphEin AI handling multi-tenant workspace & collaborator invitations."""
+"""Invitation Manager for LumiChart handling multi-tenant workspace & collaborator invitations."""
 
 import logging
 from typing import Any

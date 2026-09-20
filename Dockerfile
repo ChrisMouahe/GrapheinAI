@@ -1,4 +1,4 @@
-# Multi-Stage Production Dockerfile for GrapheinAI
+# Multi-Stage Production Dockerfile for LumiChart
 # Stage 1: Build & Dependencies
 FROM python:3.12-slim AS builder
 

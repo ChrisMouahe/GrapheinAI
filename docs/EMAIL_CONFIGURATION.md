@@ -1,4 +1,4 @@
-# Email Configuration Guide - GraphEin AI
+# Email Configuration Guide - LumiChart
 
 ## Environment Variables (.env)
 
@@ -14,7 +14,7 @@ EMAIL_PROVIDER=maildev
 
 # Default Sender Identity
 EMAIL_FROM=no-reply@graphein.ai
-EMAIL_NAME=GraphEin AI Enterprise
+EMAIL_NAME=LumiChart Enterprise
 
 # Application Public Base URL
 APP_BASE_URL=http://localhost:8088

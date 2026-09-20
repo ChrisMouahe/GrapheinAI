@@ -1,4 +1,4 @@
-"""Central EmailService module for GraphEin AI Enterprise Platform.
+"""Central EmailService module for LumiChart Enterprise Platform.
 
 Orchestrates template rendering, token signing, async queueing, and multi-provider dispatches.
 """
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """Centralized Email Infrastructure manager handling all transactional & notification emails for GraphEin AI."""
+    """Centralized Email Infrastructure manager handling all transactional & notification emails for LumiChart."""
 
     def __init__(
         self,
@@ -51,7 +51,7 @@ class EmailService:
         return self.queue.enqueue(msg)
 
     # 1. Welcome Email
-    def sendWelcomeEmail(self, to_email: str, user_name: str, company: str = "Graphein Corp", role: str = "Standard User", lang: str = "fr") -> QueuedEmailJob:
+    def sendWelcomeEmail(self, to_email: str, user_name: str, company: str = "LumiChart Corp", role: str = "Standard User", lang: str = "fr") -> QueuedEmailJob:
         ctx = {"user_name": user_name, "company": company, "role": role, "action_url": f"{self.app_base_url}"}
         return self._dispatch("welcome", to_email, lang=lang, context=ctx)
 

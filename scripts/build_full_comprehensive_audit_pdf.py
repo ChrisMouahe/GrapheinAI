@@ -46,7 +46,7 @@ class NumberedCanvas(canvas.Canvas):
             self.setFillColor(colors.HexColor("#64748B"))
             
             # Running Header
-            self.drawString(36, 11 * 72 - 30, "GRAPHEIN AI — AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET (V5.0)")
+            self.drawString(36, 11 * 72 - 30, "LUMICHART AI — AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET (V5.0)")
             self.drawRightString(8.5 * 72 - 36, 11 * 72 - 30, "CONFIDENTIEL / DUE DILIGENCE (FCFA)")
             
             self.setStrokeColor(colors.HexColor("#CBD5E1"))
@@ -56,7 +56,7 @@ class NumberedCanvas(canvas.Canvas):
             # Running Footer
             self.line(36, 40, 8.5 * 72 - 36, 40)
             self.setFont("Helvetica", 8)
-            self.drawString(36, 28, "© 2026 GraphEin AI Inc. — Document certifié par le Consortium d'Experts (Contexte Ivoirien & UEMOA)")
+            self.drawString(36, 28, "© 2026 LumiChart Inc. — Document certifié par le Consortium d'Experts (Contexte Ivoirien & UEMOA)")
             page_text = f"Page {self._pageNumber} / {page_count}"
             self.drawRightString(8.5 * 72 - 36, 28, page_text)
             self.restoreState()
@@ -200,7 +200,7 @@ def build_pdf():
             Paragraph("<b>RAPPORT D'AUDIT TECHNIQUE, ARCHITECTURAL ET STRATÉGIQUE COMPLET</b>", styles["CoverMainTitle"]),
         ],
         [
-            Paragraph("<b>Projet GraphEin AI — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle</b><br/>"
+            Paragraph("<b>Projet LumiChart — SaaS Multimodal d'Analyse Graphique et d'Intelligence Visuelle</b><br/>"
                       "Version 5.0.0 Enterprise • Dossier de Passation, d'Investissement et de Production", styles["CoverSub"]),
         ],
         [
@@ -278,11 +278,11 @@ def build_pdf():
     
     story.append(Paragraph("<b>1.1. Vision Fondatrice</b>", styles["PartH2"]))
     story.append(Paragraph(
-        "<b>GraphEin AI</b> ambitionne de transformer la manière dont les organisations interagissent avec l'information quantitative visualisée. "
+        "<b>LumiChart</b> ambitionne de transformer la manière dont les organisations interagissent avec l'information quantitative visualisée. "
         "En Côte d'Ivoire, dans l'espace UEMOA et à l'échelle internationale, plus de <b>65% des données analytiques</b> partagées en entreprise transitent sous forme "
         "d'images, de captures d'écran et de présentations PDF statiques (rapports financiers, bilans d'activité, comptes-rendus de recherche). "
         "L'information y demeure 'piégée', non requêtable et exposée aux erreurs d'interprétation humaine. "
-        "GraphEin AI établit le <b>standard mondial de l'intelligence visuelle d'entreprise</b> en extrayant la donnée sous-jacente avec une <b>exactitude mathématique certifiée (zéro hallucination)</b>.",
+        "LumiChart établit le <b>standard mondial de l'intelligence visuelle d'entreprise</b> en extrayant la donnée sous-jacente avec une <b>exactitude mathématique certifiée (zéro hallucination)</b>.",
         styles["BodyCustom"]
     ))
 
@@ -295,7 +295,7 @@ def build_pdf():
 
     story.append(Paragraph("<b>1.3. Proposition de Valeur Unique (UVP) & Différenciation</b>", styles["PartH2"]))
     uvp_data = [
-        [Paragraph("Défi du Marché Actuel", styles["TH"]), Paragraph("Solution Technologique GraphEin AI", styles["TH"]), Paragraph("Bénéfice Quantifiable", styles["TH"])],
+        [Paragraph("Défi du Marché Actuel", styles["TH"]), Paragraph("Solution Technologique LumiChart", styles["TH"]), Paragraph("Bénéfice Quantifiable", styles["TH"])],
         [Paragraph("Hallucinations des LLM sur images (ChatGPT invente des chiffres)", styles["TD"]), Paragraph("Moteur d'évaluation déterministe par AST Python (SafeCalculator)", styles["TD"]), Paragraph("<b>100% de fiabilité mathématique</b>", styles["TDBold"])],
         [Paragraph("Données graphiques statiques et non éditables", styles["TD"]), Paragraph("Grille interactive Human-in-the-Loop (AgGrid)", styles["TD"]), Paragraph("Correction et validation en 1 clic", styles["TD"])],
         [Paragraph("Opacité des modèles IA (Effet boîte noire)", styles["TD"]), Paragraph("Moteur d'explicabilité XAI avec 10 métriques de traçabilité", styles["TD"]), Paragraph("Auditabilité complète pour DPO/Banques", styles["TD"])],
@@ -428,7 +428,7 @@ def build_pdf():
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#2563EB"), spaceAfter=6))
     
     tech_data = [
-        [Paragraph("Composant", styles["TH"]), Paragraph("Technologie", styles["TH"]), Paragraph("Rôle Exact dans GraphEin AI", styles["TH"])],
+        [Paragraph("Composant", styles["TH"]), Paragraph("Technologie", styles["TH"]), Paragraph("Rôle Exact dans LumiChart", styles["TH"])],
         [Paragraph("Backend REST", styles["TDBold"]), Paragraph("FastAPI 0.110+", styles["TD"]), Paragraph("Expose 25+ routes asynchrones, validation Pydantic V2, documentation OpenAPI Swagger", styles["TD"])],
         [Paragraph("Serveur ASGI", styles["TDBold"]), Paragraph("Uvicorn 0.28+", styles["TD"]), Paragraph("Serveur web ASGI ultra-rapide avec gestion optimisée des sockets et de la concurrence", styles["TD"])],
         [Paragraph("Vision-Language Model", styles["TDBold"]), Paragraph("Gemini 2.5 Flash", styles["TD"]), Paragraph("Cœur multimodal analysant les images et extrayant les séries en JSON structuré", styles["TD"])],
@@ -497,7 +497,7 @@ def build_pdf():
 
     story.append(Paragraph("<b>11.1. Benchmark Comparatif des Modèles de Vision-Langage</b>", styles["PartH2"]))
     vlm_data = [
-        [Paragraph("Modèle VLM", styles["TH"]), Paragraph("Précision OCR", styles["TH"]), Paragraph("Raisonnement", styles["TH"]), Paragraph("Latence p50", styles["TH"]), Paragraph("Coût / 1M Tokens (In/Out)", styles["TH"]), Paragraph("Verdict GraphEin AI", styles["TH"])],
+        [Paragraph("Modèle VLM", styles["TH"]), Paragraph("Précision OCR", styles["TH"]), Paragraph("Raisonnement", styles["TH"]), Paragraph("Latence p50", styles["TH"]), Paragraph("Coût / 1M Tokens (In/Out)", styles["TH"]), Paragraph("Verdict LumiChart", styles["TH"])],
         [Paragraph("<b>Gemini 2.5 Flash</b>", styles["TDBold"]), Paragraph("96.4%", styles["TD"]), Paragraph("94.8%", styles["TD"]), Paragraph("1.1 s", styles["TD"]), Paragraph("50 F / 200 F (0.075$/0.30$)", styles["TD"]), Paragraph("🏆 <b>Choix Principal (Top ROI)</b>", styles["TD"])],
         [Paragraph("<b>Claude 3.5 Sonnet</b>", styles["TDBold"]), Paragraph("97.8%", styles["TD"]), Paragraph("98.2%", styles["TD"]), Paragraph("2.4 s", styles["TD"]), Paragraph("1 970 F / 9 840 F (3$/15$)", styles["TD"]), Paragraph("🥈 Fallback Haute Précision", styles["TD"])],
         [Paragraph("<b>GPT-4o (OpenAI)</b>", styles["TDBold"]), Paragraph("95.1%", styles["TD"]), Paragraph("95.0%", styles["TD"]), Paragraph("1.8 s", styles["TD"]), Paragraph("1 640 F / 6 560 F (2.5$/10$)", styles["TD"]), Paragraph("Concurrent solide mais 30x + cher", styles["TD"])],
@@ -625,7 +625,7 @@ def build_pdf():
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#2563EB"), spaceAfter=6))
 
     comp_data = [
-        [Paragraph("Critère Comparatif", styles["TH"]), Paragraph("GraphEin AI 5.0", styles["TH"]), Paragraph("ChatGPT Plus (GPT-4o)", styles["TH"]), Paragraph("Claude Pro (3.5 Sonnet)", styles["TH"]), Paragraph("Power BI / Tableau", styles["TH"])],
+        [Paragraph("Critère Comparatif", styles["TH"]), Paragraph("LumiChart 5.0", styles["TH"]), Paragraph("ChatGPT Plus (GPT-4o)", styles["TH"]), Paragraph("Claude Pro (3.5 Sonnet)", styles["TH"]), Paragraph("Power BI / Tableau", styles["TH"])],
         [Paragraph("<b>Exactitude Mathématique</b>", styles["TDBold"]), Paragraph("<b>100% (AST Déterministe)</b>", styles["TD"]), Paragraph("62% (Hallucinations)", styles["TD"]), Paragraph("78% (Erreurs fréquentes)", styles["TD"]), Paragraph("100% (Sur bases SQL)", styles["TD"])],
         [Paragraph("<b>Analyse sur Image Pure</b>", styles["TDBold"]), Paragraph("<b>Excellente (Spécialisée)</b>", styles["TD"]), Paragraph("Moyenne (Généraliste)", styles["TD"]), Paragraph("Bonne (Généraliste)", styles["TD"]), Paragraph("❌ Inopérant sur image", styles["TD"])],
         [Paragraph("<b>Édition Human-in-the-Loop</b>", styles["TDBold"]), Paragraph("<b>Oui (Grille interactive)</b>", styles["TD"]), Paragraph("❌ Non", styles["TD"]), Paragraph("❌ Non", styles["TD"]), Paragraph("N/A", styles["TD"])],
@@ -662,7 +662,7 @@ def build_pdf():
     verdict_data = [
         [
             Paragraph("<b>DÉCISION UNANIME DU PANEL D'EXPERTS :</b> <font color='#059669' size=11><b>FAVORABLE — GO POUR LA PRODUCTION</b></font><br/>"
-                      "Le projet <b>GraphEin AI</b> présente une maturité technique et architecturale remarquable (Note : <b>9.2 / 10 - Grade A+</b>). "
+                      "Le projet <b>LumiChart</b> présente une maturité technique et architecturale remarquable (Note : <b>9.2 / 10 - Grade A+</b>). "
                       "L'alliance entre l'extraction visuelle VLM et l'évaluation déterministe AST élimine le verrou critique de l'hallucination dans l'analyse de données d'entreprise.<br/>"
                       "<b>Recommandations Prioritaires :</b><br/>"
                       "1. Finaliser l'intégration des passerelles Mobile Money (Wave, Orange Money) lors du Sprint 1 pour sécuriser l'adoption commerciale locale.<br/>"

@@ -1,6 +1,6 @@
-# 🔒 Politique de Sécurité & Architecture de Protection — GraphEin AI
+# 🔒 Politique de Sécurité & Architecture de Protection — LumiChart
 
-Ce document décrit la politique de sécurité, les mécanismes d'isolation et la protection des données de la plateforme **GraphEin AI**.
+Ce document décrit la politique de sécurité, les mécanismes d'isolation et la protection des données de la plateforme **LumiChart**.
 
 ---
 
@@ -16,7 +16,7 @@ Ce document décrit la politique de sécurité, les mécanismes d'isolation et l
 
 ## 1. Vue d'Ensemble de la Sécurité
 
-GraphEin AI applique le principe de **Défense en Profondeur (Defense in Depth)** sur toutes les couches applicatives :
+LumiChart applique le principe de **Défense en Profondeur (Defense in Depth)** sur toutes les couches applicatives :
 - **Réseau & Transport** : En-têtes HTTP de sécurité OWASP strictes.
 - **Identité** : Jetons JWT Supabase signés et vérifiés par FastAPI.
 - **Données** : Isolation multi-tenant au niveau de la base de données via PostgreSQL Row Level Security (RLS).
@@ -39,7 +39,7 @@ CREATE POLICY "Tenant_Data_Isolation" ON public.analyses
 
 ## 3. Isolation Sandbox AST SafeCalculator
 
-Pour éviter l'exécution de code arbitraire (Remote Code Execution), GraphEin AI remplace l'instruction `eval()` par un interpréteur d'Arbre Syntaxique Abstrait (`ast.parse`) ultra-strict :
+Pour éviter l'exécution de code arbitraire (Remote Code Execution), LumiChart remplace l'instruction `eval()` par un interpréteur d'Arbre Syntaxique Abstrait (`ast.parse`) ultra-strict :
 
 - **Nœuds Autorisés** : `Add`, `Sub`, `Mult`, `Div`, `Pow`, `USub`, `UAdd`, `Constant`, `Num`.
 - **Nœuds Interdits** : `Call`, `Import`, `Attribute`, `Name`, `Exec`, `Lambda`, `Subscript`.

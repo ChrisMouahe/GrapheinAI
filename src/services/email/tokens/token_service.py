@@ -23,7 +23,7 @@ class TokenPayload(BaseModel):
 
 
 class TokenService:
-    """Generates, signs, verifies, and revokes secure time-bound tokens for GraphEin AI email dispatches."""
+    """Generates, signs, verifies, and revokes secure time-bound tokens for LumiChart email dispatches."""
 
     def __init__(self, secret_key: str | None = None) -> None:
         self.secret_key = secret_key or os.getenv("JWT_SECRET_KEY", os.getenv("SECRET_KEY", "graphein_enterprise_secret_key_2026"))
