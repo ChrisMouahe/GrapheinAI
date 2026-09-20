@@ -1,5 +1,5 @@
 /**
- * ThemeManager - Instant Client-Side Light / Dark Theme Controller for GrapheinAI
+ * ThemeManager - Instant Client-Side Light / Dark Theme Controller for LumiChart
  */
 (function () {
   const THEME_KEY = 'graphein_theme';
