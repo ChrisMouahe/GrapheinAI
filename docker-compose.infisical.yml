@@ -1,5 +1,5 @@
 # ==============================================================================
-# GraphEin AI — Docker Compose Override : Infisical Agent Sidecar
+# LumiChart — Docker Compose Override : Infisical Agent Sidecar
 # ==============================================================================
 # Ce fichier d'extension permet d'exécuter un agent sidecar Infisical
 # pour le rechargement automatique des secrets et certificats sans redémarrage.
@@ -11,14 +11,14 @@
 services:
   infisical-agent:
     image: infisical/infisical:latest
-    container_name: graphein-infisical-agent
+    container_name: lumichart-infisical-agent
     restart: unless-stopped
     environment:
       - INFISICAL_TOKEN=${INFISICAL_TOKEN:-}
       - INFISICAL_SITE_URL=${INFISICAL_SITE_URL:-https://app.infisical.com}
     volumes:
       - ./infra/infisical/agent-config.yaml:/etc/infisical/agent-config.yaml:ro
-      - graphein-dev-data:/shared-secrets
+      - lumichart-dev-data:/shared-secrets
     command: ["agent", "--config", "/etc/infisical/agent-config.yaml"]
     networks:
-      - graphein-dev-network
+      - lumichart-dev-network

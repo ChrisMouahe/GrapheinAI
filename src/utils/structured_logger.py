@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 # Configure production rotating log file handler
 LOG_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE = LOG_DIR / "graphein_app.log"
+LOG_FILE = LOG_DIR / "lumichart_app.log"
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.INFO)

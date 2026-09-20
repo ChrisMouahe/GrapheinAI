@@ -1,5 +1,5 @@
 # ==============================================================================
-# GraphEin AI — Docker Compose (Développement Local)
+# LumiChart — Docker Compose (Développement Local)
 # ==============================================================================
 # Services :
 #   - api        : FastAPI backend avec Hot-Reload (volume de code monté)
@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runner
-    container_name: graphein-api-dev
+    container_name: lumichart-api-dev
     command: ["uvicorn", "src.app.api:app", "--host", "0.0.0.0", "--port", "8088", "--reload"]
     ports:
       - "${PORT:-8088}:8088"
@@ -50,9 +50,9 @@ services:
       # Montage du code source local pour prise en compte immédiate des modifications (Hot-Reload)
       - .:/app
       # Préservation des données persistantes, logs et backups hors du conteneur
-      - graphein-dev-data:/app/data
-      - graphein-dev-logs:/app/logs
-      - graphein-dev-backups:/app/backups
+      - lumichart-dev-data:/app/data
+      - lumichart-dev-logs:/app/logs
+      - lumichart-dev-backups:/app/backups
     depends_on:
       redis:
         condition: service_healthy
@@ -65,7 +65,7 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - graphein-dev-network
+      - lumichart-dev-network
 
   # ----------------------------------------------------------------------------
   # 2. Frontend Dashboard Streamlit (Optionnel - profil "ui")
@@ -76,7 +76,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runner
-    container_name: graphein-streamlit-dev
+    container_name: lumichart-streamlit-dev
     profiles: ["ui"]
     command: ["streamlit", "run", "src/app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
     ports:
@@ -91,13 +91,13 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY:-}
     volumes:
       - .:/app
-      - graphein-dev-data:/app/data
-      - graphein-dev-logs:/app/logs
+      - lumichart-dev-data:/app/data
+      - lumichart-dev-logs:/app/logs
     depends_on:
       api:
         condition: service_healthy
     networks:
-      - graphein-dev-network
+      - lumichart-dev-network
 
   # ----------------------------------------------------------------------------
   # 3. Cache & Message Broker (Redis 7) — Préparation Sprint 3
@@ -105,12 +105,12 @@ services:
   # ----------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: graphein-redis-dev
+    container_name: lumichart-redis-dev
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     expose:
       - "6379"
     volumes:
-      - redis-dev-data:/data
+      - lumichart-redis-dev-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -118,14 +118,14 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - graphein-dev-network
+      - lumichart-dev-network
 
   # ----------------------------------------------------------------------------
   # 4. MailDev (Serveur SMTP local + Web UI pour inspecter les emails de dev)
   # ----------------------------------------------------------------------------
   maildev:
     image: maildev/maildev:2.1.0
-    container_name: graphein-maildev-dev
+    container_name: lumichart-maildev-dev
     ports:
       - "1080:1080"  # Web UI inspecteur d'emails
     expose:
@@ -137,22 +137,22 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - graphein-dev-network
+      - lumichart-dev-network
 
 # ------------------------------------------------------------------------------
 # Réseaux et Volumes persistants
 # ------------------------------------------------------------------------------
 networks:
-  graphein-dev-network:
+  lumichart-dev-network:
     driver: bridge
-    name: graphein-dev-network
+    name: lumichart-dev-network
 
 volumes:
-  graphein-dev-data:
-    name: graphein-dev-data
-  graphein-dev-logs:
-    name: graphein-dev-logs
-  graphein-dev-backups:
-    name: graphein-dev-backups
-  redis-dev-data:
-    name: graphein-redis-dev-data
+  lumichart-dev-data:
+    name: lumichart-dev-data
+  lumichart-dev-logs:
+    name: lumichart-dev-logs
+  lumichart-dev-backups:
+    name: lumichart-dev-backups
+  lumichart-redis-dev-data:
+    name: lumichart-redis-dev-data
