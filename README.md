@@ -374,4 +374,3 @@ R : Dès l'étape 3 du workflow, la grille de données interactive (HITL DataGri
 ## 📄 Licence
 
 Copyright © 2026 **LumiChart Team**. Tous droits réservés.  
-Proprietary SaaS Enterprise Application.
